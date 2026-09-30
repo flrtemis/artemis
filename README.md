@@ -1,4 +1,6 @@
-# ARTEMIS milestone 02 — complete application handoff
+# https://arena.ai/agent can be fully credited for consolidating nearly all of my GitHub repositories because were it not for them, none of this would've been possible! Thank You https://arena.ai/agent Any references in here about a "ZIP" file, is strictly due to https://arena.ai/agent compiling all the work it did there, into a "ZIP" file for me when asked to. So, basically just ignore that part, since I've already extracted that same "ZIP" file before uploading its contents here.
+
+# ARTEMIS milestone 02
 
 ## Contents
 - `artemis/`: application source, built frontend, local UI/avatar/worklet/narration assets, retained upstream source, test suites and recorded results, setup/import/verification scripts, dependency declarations, provenance and capability plan.
