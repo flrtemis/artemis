@@ -1,0 +1,11 @@
+{
+    "type": "function",
+    "function": {
+        "name": "list_tools",
+        "description": "Scan the local workspace registry and return a list of all currently available external tools",
+        "parameters": {
+            "type": "object",
+            "properties": {}
+        }
+    }
+}

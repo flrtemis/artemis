@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="18" time="27.315" timestamp="2026-09-30T01:11:40.747401+00:00" hostname="e2b.local"><testcase classname="tests.test_subsystems" name="test_autonomous_wake_real_sage_parser_private_projection" time="0.111" /><testcase classname="tests.test_subsystems" name="test_garbled_wake_retries_once_no_mutations" time="0.076" /><testcase classname="tests.test_subsystems" name="test_nonfinite_wake_action_rejected_before_commit" time="0.061" /><testcase classname="tests.test_subsystems" name="test_autonomy_bound_schedule_and_letters_opaque" time="0.059" /><testcase classname="tests.test_subsystems" name="test_interactive_preempts_stale_wake" time="0.188" /><testcase classname="tests.test_subsystems" name="test_actual_bwrap_host_files_and_network_inaccessible" time="0.192" /><testcase classname="tests.test_subsystems" name="test_execution_promotion_revision_drift_blocked" time="0.173" /><testcase classname="tests.test_subsystems" name="test_execution_timeout_and_symlink_fail_closed" time="1.358" /><testcase classname="tests.test_subsystems" name="test_native_physics_ground_and_collision" time="4.247" /><testcase classname="tests.test_subsystems" name="test_partial_vision_and_revision_contract" time="0.227" /><testcase classname="tests.test_subsystems" name="test_native_replay_reproduces_sensor_hashes" time="1.937" /><testcase classname="tests.test_subsystems" name="test_participant_token_cannot_access_operator_truth_or_files" time="0.234" /><testcase classname="tests.test_subsystems" name="test_model_world_step_receives_only_sensors_and_no_tools" time="0.240" /><testcase classname="tests.test_subsystems" name="test_real_cpu_lora_composite_objectives_and_checkpoint" time="5.473" /><testcase classname="tests.test_subsystems" name="test_cuda_missing_is_not_faked" time="0.003" /><testcase classname="tests.test_subsystems" name="test_managed_training_proposal_lifecycle" time="7.739" /><testcase classname="tests.test_subsystems" name="test_speech_remote_consent_and_one_use_grants" time="0.104" /><testcase classname="tests.test_subsystems" name="test_native_piper_whisper_roundtrip" time="2.971"><failure message="ValueError: Cannot load the vocabulary from the model directory">tmp_path = PosixPath('/tmp/pytest-of-user/pytest-1/test_native_piper_whisper_roun0')
+
+    def test_native_piper_whisper_roundtrip(tmp_path):
+        if not PIPER.exists() or not (WHISPER/'model.bin').exists():pytest.skip('Optional real CPU speech models not installed')
+        from artemis_app.speech import Speech
+        async def exercise():
+            app=host(tmp_path);s=app.state.runtime.extensions.speech
+            await s.configure(speech_config())
+            try:
+                result=await s.synthesize('The unified workspace is ready.');assert result['samples']&gt;4000 and result['quality']=='actual_piper_synthesis'
+                transcript=await s.transcribe(base64.b64decode(result['pcm16']));assert 'workspace' in transcript['text'].lower(),transcript
+            finally:await s.close();app.state.store.close()
+&gt;       asyncio.run(exercise())
+
+tests/test_subsystems.py:179: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.13/asyncio/runners.py:196: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/asyncio/runners.py:119: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/asyncio/base_events.py:725: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+tests/test_subsystems.py:177: in exercise
+    transcript=await s.transcribe(base64.b64decode(result['pcm16']));assert 'workspace' in transcript['text'].lower(),transcript
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+artemis_app/speech.py:45: in transcribe
+    if c['stt_backend']=='local':return await self.local('stt',pcm16=base64.b64encode(pcm).decode())
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;artemis_app.speech.Speech object at 0x7f4749f36dd0&gt;, typ = 'stt'
+kwargs = {'pcm16': '/v8EAP7/+P/+/wEA//8AAAIA//8AAAAAAgAAAAAA/v8CAP//AAAAAP3/AgAAAAAAAAD//wEAAwAGAPz/AgAAAPz/AQD///z//f8BAAAAAAA...AAAD+/wMAAQABAP//AAACAPz/AgACAP3/BAABAP3/AAD+/wQAAAD9//7/AwADAP/////9/wQAAAD8/wAAAgAEAAIAAgD7//z/+//+/wUA//8FAAgABwA='}
+id = 2
+line = b'{"id": 2, "error": "Cannot load the vocabulary from the model directory"}\n'
+result = {'error': 'Cannot load the vocabulary from the model directory', 'id': 2}
+
+    async def local(self,typ,**kwargs):
+        async with self.lock:
+            await self.start_worker();self.counter+=1;id=self.counter
+            self.worker.stdin.write((json.dumps({'id':id,'type':typ,**kwargs})+'\n').encode());await self.worker.stdin.drain()
+            try:line=await asyncio.wait_for(self.worker.stdout.readline(),60)
+            except BaseException:await self.stop_worker();raise
+            if not line:raise ValueError('Speech worker exited; inspect authenticated Operations diagnostics')
+            result=json.loads(line)
+&gt;           if result.get('error'):raise ValueError(result['error'])
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: Cannot load the vocabulary from the model directory
+
+artemis_app/speech.py:38: ValueError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,8 @@
+; ARTEMIS authoritative headless World. Frontend is a projection, not the simulator.
+config_version=5
+[application]
+config/name="ARTEMIS World worker"
+[physics]
+common/physics_ticks_per_second=60
+[rendering]
+renderer/rendering_method="gl_compatibility"

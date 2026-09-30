@@ -1,0 +1,25 @@
+ARTEMIS COMMAND CENTER — the walkable 3D facility with the two brain clouds
+===========================================================================
+v3: fixed a fatal JavaScript error in the April file (duplicate `logSelfModify` declaration — a SyntaxError in a module script that stopped the whole page before the loading bar could move). Three.js is bundled in vendor/ — no internet needed.
+which is why you saw "Initializing Environment" and an empty bar forever.)
+
+In WSL:
+  cd ~/command-center
+  source ~/venvs/gemma-avatar-s2s/bin/activate      # has torch + fastapi already
+  python3 demo/demo_server.py
+
+Open in Edge/Chrome:   http://localhost:8765
+  (8765 is also speech-to-speech's port — don't run gemma-avatar's backend at the same time)
+
+Then:
+  1. Click to Enter  (locks the mouse)
+  2. WASD move · mouse look · SHIFT sprint · ESC release
+  3. From the Central Hub go NORTH up the corridor into the AI SYSTEMS LAB.
+     Two 8,192-point brain clouds at head height, 1.65 units apart:
+       left  = human, anatomical, coloured by lobe, pulsing with your Izhikevich neurons (real)
+       right = AI, driven by the metric stream (synthetic here; real hooks in dashboard_server.py)
+  4. Press F anywhere for GALAXY MODE — your 50,000-file semantic galaxy over the room.
+
+Also:  http://localhost:8765/may3   — the May 3rd fork: Pip-Boy HUD + the "Press E — Talk to Sage" door
+
+If the bar STILL doesn't move: press F12 in the browser → Console tab → paste me the red line.

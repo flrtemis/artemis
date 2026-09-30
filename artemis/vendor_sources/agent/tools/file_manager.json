@@ -1,0 +1,28 @@
+{
+    "type": "function",
+    "function": {
+        "name": "file_manager",
+        "description": "Create and manage files with various content types",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "The operation to perform (create, read, update, delete)",
+                    "type": "string"
+                },
+                "content": {
+                    "description": "Content to write to the file",
+                    "type": "string"
+                },
+                "filename": {
+                    "description": "The name of the file to operate on",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "action",
+                "filename"
+            ]
+        }
+    }
+}

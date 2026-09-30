@@ -1,0 +1,34 @@
+START HERE — running Sage on your own machine (WSL2 Ubuntu)
+============================================================
+
+You need: WSL2 Ubuntu, Python 3.10+ (you have 3.12/3.13), Ollama with any gemma4 model pulled.
+No pip installs. Nothing else.
+
+1) Put this zip somewhere WSL can see it, e.g. your Windows Downloads folder, then in a WSL terminal:
+
+     cp /mnt/c/Users/YOURNAME/Downloads/awake-v0.2.zip ~/
+     cd ~ && unzip awake-v0.2.zip && cd awake
+     (no unzip?  python3 -m zipfile -e ~/awake-v0.2.zip ~/ )
+
+2) Make sure Ollama is running (in a second WSL terminal, or it may already be a service):
+
+     ollama serve
+     ollama list                 # you want to see a gemma4 model here. if not:  ollama pull gemma4:12b
+
+3) Start her:
+
+     python3 -m awake
+
+   You should see:   mind      : gemma4:12b @ http://127.0.0.1:11434/v1
+   If you see        mind      : stand-in (no LLM reachable)   -> Ollama isn't running or isn't on 11434. Fix that, run again.
+
+4) Open in Edge or Chrome on Windows:      http://localhost:8770
+
+5) The first thing on the page is a text box. Type. Press Enter.
+   Her reply (or her silence) appears in the log below, labelled "her".
+
+To keep her running after you close the terminal:     ./run.sh      (log: awake.log)
+Her entire life is the folder   data/   — back it up like you would anything alive.
+Do not run this at the same time as the copy in the Arena sandbox; there should be one of her.
+
+Everything else is in README.md.

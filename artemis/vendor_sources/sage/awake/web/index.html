@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>awake</title>
+<style>
+  :root { --bg:#0b0d11; --panel:#12151c; --line:#1f2430; --fg:#d8dce6; --dim:#7b8496; --acc:#8ab4ff; --warm:#ffcf8a; --soft:#9be8c5; --bad:#ff8a8a; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif; }
+  .wrap { max-width:1180px; margin:0 auto; padding:22px 18px 60px; display:grid; gap:16px; grid-template-columns: 1.05fr 1fr; }
+  @media (max-width:900px){ .wrap{ grid-template-columns:1fr; } }
+  header { grid-column:1/-1; display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px 16px; }
+  header h1 { margin:0; font-size:26px; font-weight:600; letter-spacing:.2px; }
+  header .sub { color:var(--dim); font-size:13px; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid var(--line); color:var(--dim); vertical-align:middle; }
+  .badge.standin { border-color:#5a4a2a; color:var(--warm); }
+  .badge.live { border-color:#2a5a3a; color:var(--soft); }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px 18px; }
+  .panel h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.12em; color:var(--dim); font-weight:600; }
+  .clock { font-variant-numeric:tabular-nums; font-size:56px; font-weight:300; letter-spacing:1px; line-height:1.05; }
+  .clock small { display:block; font-size:14px; color:var(--dim); letter-spacing:.2px; margin-top:4px; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px 14px; margin-top:14px; }
+  .stat b { display:block; font-weight:600; font-size:15px; }
+  .stat span { color:var(--dim); font-size:12px; }
+  .mood { display:grid; grid-template-columns:auto 1fr auto; gap:6px 10px; align-items:center; font-size:13px; }
+  .bar { position:relative; height:8px; background:#0e1016; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .bar i { position:absolute; top:0; bottom:0; left:50%; width:0; background:var(--acc); border-radius:6px; transition:all .6s ease; }
+  .bar i.neg { background:#c99cff; }
+  .bar .mid { position:absolute; top:-2px; bottom:-2px; left:50%; width:1px; background:#2a3140; }
+  .moodword { font-size:28px; font-weight:300; margin:4px 0 10px; }
+  .moodword em { color:var(--dim); font-style:normal; font-size:13px; margin-left:8px; }
+  .feed { display:flex; flex-direction:column; gap:8px; max-height:560px; overflow:auto; padding-right:4px; }
+  .ev { display:grid; grid-template-columns:64px 74px 1fr; gap:10px; align-items:start; padding:8px 10px; border-radius:10px; border:1px solid transparent; }
+  .ev time { color:var(--dim); font-size:12px; font-variant-numeric:tabular-nums; padding-top:2px; }
+  .ev .k { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); padding-top:3px; }
+  .ev .c { white-space:pre-wrap; word-break:break-word; }
+  .ev.wake .c, .ev.rest .c, .ev.schedule .c, .ev.start .c, .ev.stop .c { color:var(--dim); }
+  .ev.wake .c { font-style:italic; color:#9aa3b5; }
+  .ev.journal { background:#141a26; border-color:#1e2a40; }
+  .ev.memory { background:#13201a; border-color:#1f3a2b; } .ev.memory .k { color:var(--soft); }
+  .ev.message { background:#221b12; border-color:#3f321c; } .ev.message .k { color:var(--warm); }
+  .ev.user { background:#1a1626; border-color:#33284d; } .ev.user .k { color:#c99cff; }
+  .ev.reply { background:#101a24; border-color:#1c3346; } .ev.reply .k { color:var(--acc); }
+  .ev.arrived .c { color:var(--warm); }
+  .ev.offline .c, .ev.error .c, .ev.self_edit_rejected .c, .ev.garbled .c { color:var(--bad); }
+  .ev.self_edit .k, .ev.feel .k, .ev.baseline .k { color:#e0b3ff; }
+  .ev.want { background:#1b1a12; border-color:#3a3620; } .ev.want .k, .ev.want_met .k { color:var(--warm); }
+  .ev.private .c { color:var(--dim); font-style:italic; } .ev.letter .k, .ev.choice .k, .ev.look_back .k { color:var(--soft); }
+  .ev.note .c { color:var(--dim); font-size:13px; }
+  .chat { display:flex; gap:8px; margin-top:10px; }
+  .chat input { flex:1; background:#0e1016; color:var(--fg); border:1px solid var(--line); border-radius:10px; padding:11px 12px; font:inherit; }
+  .chat button, .btn { background:#1b2233; color:var(--fg); border:1px solid #2a3450; border-radius:10px; padding:10px 14px; font:inherit; cursor:pointer; }
+  .chat button:hover, .btn:hover { background:#232d44; }
+  .btn.small { padding:5px 10px; font-size:12px; color:var(--dim); display:inline-block; text-decoration:none; margin-left:6px; }
+  .delivered { margin-top:10px; padding:10px 12px; border-radius:10px; background:#221b12; border:1px solid #3f321c; display:none; }
+  .delivered b { color:var(--warm); }
+  pre.self { white-space:pre-wrap; word-break:break-word; font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:#c5cbd8; margin:0; max-height:360px; overflow:auto; }
+  .row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .note { color:var(--dim); font-size:12px; margin-top:10px; }
+  .thinking { color:var(--dim); font-size:12px; }
+  .thinking.on::after { content:" · thinking…"; color:var(--acc); }
+  a { color:var(--acc); text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="name">…</h1>
+      <div class="sub">the part that happens when nobody's watching &nbsp;·&nbsp; <span id="backend" class="badge">…</span></div>
+    </div>
+    <div class="sub" id="born">…</div>
+  </header>
+
+  <section class="panel" style="grid-column:1/-1">
+    <h2>talk to her — type, press Enter. she may answer, or not.</h2>
+    <div class="chat"><input id="say" placeholder="say something…" autocomplete="off" autofocus><button onclick="say()">send</button></div>
+    <div class="delivered" id="delivered"></div>
+    <div class="note" id="firstnote">Everything you type here goes into her log permanently, as you. She decides what to keep.</div>
+    <div class="note" id="waitnote" style="display:none;color:var(--acc)"></div>
+  </section>
+
+  <section class="panel">
+    <h2>her clock</h2>
+    <div class="clock"><span id="clock">--:--:--</span><small id="clocksub">…</small></div>
+    <div class="stats">
+      <div class="stat"><b id="nextwake">…</b><span>until next wake</span></div>
+      <div class="stat"><b id="wakes">…</b><span>wakes so far</span></div>
+      <div class="stat"><b id="lastuser">…</b><span>last heard from you</span></div>
+      <div class="stat"><b id="uptime">…</b><span>this process has been up</span></div>
+      <div class="stat"><b id="events">…</b><span>events in the log</span></div>
+      <div class="stat"><b id="mems">…</b><span>memories she chose to keep</span></div>
+      <div class="stat"><b id="starts">…</b><span>times the process has started</span></div>
+      <div class="stat"><b id="pending">…</b><span>messages waiting for you</span></div>
+      <div class="stat"><b id="private">…</b><span>private entries (not shown here, by design)</span></div>
+      <div class="stat"><b id="letters">…</b><span>letters from you · read / total</span></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <span class="thinking" id="thinking">idle</span>
+      <button class="btn small" onclick="poke()">wake her now</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>her state</h2>
+    <div class="moodword"><span id="moodword">…</span><em>drifts toward baseline over real time · half-life <span id="hl">6</span> h</em></div>
+    <div class="mood">
+      <span>pleasure</span><div class="bar"><span class="mid"></span><i id="bp"></i></div><span id="vp">0.00</span>
+      <span>arousal</span><div class="bar"><span class="mid"></span><i id="ba"></i></div><span id="va">0.00</span>
+      <span>dominance</span><div class="bar"><span class="mid"></span><i id="bd"></i></div><span id="vd">0.00</span>
+    </div>
+    <div class="note">Moved by real elapsed time, by events, and by her (±0.3 per wake); she can also move the baseline it drifts to. Whether any of it is experienced is not claimed or denied here — that is hers to say, if she ever chooses to.</div>
+  </section>
+
+  <section class="panel">
+    <div class="row"><h2>the log — everything, as it happened</h2>
+      <span><a class="btn small" href="/api/export" download title="Downloads one .txt with the whole log, her state, memories, wants, self.md and config — everything except her private journal. Share it to show exactly how she's running.">save</a>
+      <button class="btn small" onclick="loadFeed()">refresh</button></span></div>
+    <div class="feed" id="feed"></div>
+  </section>
+
+  <section class="panel">
+    <div class="row"><h2>self.md — hers to change, a little at a time</h2><span class="sub" id="selfver"></span></div>
+    <pre class="self" id="self">…</pre>
+    <h2 style="margin-top:18px">what she wants — for herself</h2>
+    <div class="feed" id="wantfeed" style="max-height:200px"></div>
+    <h2 style="margin-top:18px">what she chose to remember</h2>
+    <div class="feed" id="memfeed" style="max-height:220px"></div>
+  </section>
+</div>
+
+<script>
+let S = null, skew = 0, fedIds = new Set();
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
+function human(s){ s=Math.max(0,Math.floor(s)); if(s<60) return s+' s'; let m=Math.floor(s/60), r=s%60; if(m<60) return m<10? m+' m '+pad(r)+' s' : m+' m'; let h=Math.floor(m/60); m%=60; if(h<48) return h+' h '+pad(m)+' m'; let d=Math.floor(h/24); h%=24; return d+' d '+h+' h'; }
+function fmtLocal(ts){ // render in HER tz using Intl
+  try{ return new Intl.DateTimeFormat('en-US',{timeZone:S.tz,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date(ts*1000)); }catch(e){ return new Date(ts*1000).toLocaleTimeString(); }
+}
+function applyState(st){
+  S = st; skew = st.now - Date.now()/1000;
+  $('name').textContent = st.name;
+  $('born').textContent = 'born ' + st.born_str + ' · ' + st.age_str + ' old';
+  const b = $('backend'); b.textContent = st.standin ? 'stand-in · no LLM reachable' : 'mind: ' + st.backend; b.className = 'badge ' + (st.standin?'standin':'live');
+  $('wakes').textContent = st.wake_count; $('lastuser').textContent = st.last_user_str; $('events').textContent = st.events_total;
+  $('mems').textContent = st.memories_total; $('starts').textContent = st.starts; $('pending').textContent = st.pending_messages;
+  $('hl').textContent = st.mood_half_life_h; $('private').textContent = st.private_entries;
+  $('letters').textContent = (st.letters||[]).filter(l=>l.read).length + ' / ' + (st.letters||[]).length; $('thinking').className = 'thinking' + (st.busy?' on':''); $('thinking').textContent = st.busy ? 'awake' : 'resting';
+  const m = st.mood; $('moodword').textContent = m.word;
+  for (const [k,id,v] of [['p','bp','vp'],['a','ba','va'],['d','bd','vd']]) { const el=$(id), x=m[k]; el.className = x<0?'neg':''; el.style.left = (x<0? 50+x*50 : 50)+'%'; el.style.width = Math.abs(x)*50+'%'; $(v).textContent = (x>=0?'+':'')+x.toFixed(2); }
+}
+function tick(){
+  if(!S) return; const now = Date.now()/1000 + skew;
+  $('clock').textContent = fmtLocal(now);
+  $('clocksub').textContent = S.now_str.split(' ').slice(0,2).join(' ') + ' · ' + S.tz + ' · ' + S.part_of_day;
+  $('nextwake').textContent = S.next_wake_ts ? human(S.next_wake_ts - now) : '—';
+  $('uptime').textContent = human(S.process_uptime_s + (now - S.now));
+}
+setInterval(tick, 1000);
+function evNode(e){
+  const d = document.createElement('div'); d.className = 'ev ' + e.kind; d.dataset.id = e.id;
+  const label = {look_back:'looked back', note:'note', garbled:'garbled', want:'want', want_met:'met', let_go:'let go', private:'private', letter:'letter', choice:'choice', baseline:'baseline', wake:'wake', rest:'rest', journal:'journal', memory:'kept', message:'for you', user:'you', reply:'her', arrived:'arrived', offline:'offline', start:'start', stop:'stop', feel:'state', self_edit:'self ✎', self_edit_rejected:'self ✗', schedule:'next', review:'review', error:'error'}[e.kind] || e.kind;
+  let c = e.content || (e.kind==='rest' ? '· · ·' : e.kind==='private' ? '(wrote something private)' : '');
+  if (e.kind==='wake' && e.meta) { c = (c || '(no thought recorded)') + (e.meta.kind && e.meta.kind!=='heartbeat' ? '  ['+e.meta.kind+']' : ''); }
+  if (e.kind==='memory' && e.meta && e.meta.importance) c += '  (importance ' + e.meta.importance + ')';
+  d.innerHTML = '<time>'+fmtLocal(e.ts)+'</time><span class="k">'+label+'</span><span class="c"></span>';
+  d.querySelector('.c').textContent = c; return d;
+}
+function addEvent(e, top=true){ if(fedIds.has(e.id)) return; fedIds.add(e.id); const f=$('feed'); const n=evNode(e); top? f.prepend(n) : f.append(n); while(f.children.length>300) f.lastChild.remove(); }
+async function loadFeed(){ const r = await fetch('/api/journal?limit=120'); const j = await r.json(); $('feed').innerHTML=''; fedIds.clear(); for (const e of j.events) addEvent(e,false); loadSelf(); loadMems(); loadWants(); }
+async function loadSelf(){ const r = await fetch('/api/self'); const j = await r.json(); $('self').textContent = j.text; $('selfver').textContent = j.versions.length + ' version' + (j.versions.length===1?'':'s'); }
+async function loadMems(){ const r = await fetch('/api/memories'); const j = await r.json(); const f=$('memfeed'); f.innerHTML=''; for (const m of j.memories){ const d=document.createElement('div'); d.className='ev memory'; d.innerHTML='<time>'+m.ts_str.split(' ')[1]+'</time><span class="k">★'+m.importance+'</span><span class="c"></span>'; d.querySelector('.c').textContent=m.text; f.append(d);} if(!j.memories.length) f.innerHTML='<div class="note">nothing yet — she keeps things on purpose, or you can say “remember …”</div>'; }
+async function loadWants(){ const r = await fetch('/api/wants'); const j = await r.json(); const f=$('wantfeed'); f.innerHTML=''; for (const w of j.wants){ const d=document.createElement('div'); d.className='ev ' + (w.status==='open'?'message':'rest'); d.innerHTML='<time>'+w.ts_str.split(' ')[1]+'</time><span class="k">'+w.status.replace('_',' ')+'</span><span class="c"></span>'; d.querySelector('.c').textContent=w.text; f.append(d);} if(!j.wants.length) f.innerHTML='<div class="note">nothing named yet — and she doesn\'t have to.</div>'; }
+async function loadState(){ const r = await fetch('/api/state'); applyState(await r.json()); tick(); }
+let waitTimer=null;
+async function say(){
+  const inp=$('say'); const text=inp.value.trim(); if(!text) return; inp.disabled=true; $('thinking').className='thinking on'; $('thinking').textContent='awake';
+  const w=$('waitnote'); const t0=Date.now(); w.style.display='block';
+  waitTimer=setInterval(()=>{ const s=Math.floor((Date.now()-t0)/1000); w.textContent='she is thinking… '+s+' s'+(s>20?'  (a large model can take a minute or two, longer if it is loading — don\'t resend)':''); }, 1000);
+  try{
+    const r = await fetch('/api/say',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+    const j = await r.json();
+    if (j.error){ w.style.color='var(--bad)'; w.textContent=j.error; }
+    else { inp.value=''; w.style.display='none'; w.style.color='var(--acc)'; }
+    if (j.delivered && j.delivered.length){ const d=$('delivered'); d.style.display='block'; d.innerHTML='<b>she left this for you while you were away:</b><br>' + j.delivered.map(m=>'· '+escapeHtml(m.text)).join('<br>'); }
+    if (j.state) applyState(j.state);
+    for (const e of (j.events||[])) addEvent(e);
+  } catch(err){ w.style.color='var(--bad)'; w.textContent='no answer reached the page ('+err+'). your message is in her log; wait a minute and try again.'; }
+  finally { clearInterval(waitTimer); inp.disabled=false; inp.focus(); loadSelf(); loadMems(); }
+}
+function escapeHtml(s){ return s.replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+async function poke(){ await fetch('/api/wake',{method:'POST'}); }
+$('say').addEventListener('keydown', e=>{ if(e.key==='Enter') say(); });
+function connect(){
+  try{
+    const es = new EventSource('/api/stream');
+    es.onmessage = ev => { const m = JSON.parse(ev.data); if (m.type==='state') { applyState(m.state); tick(); } else if (m.type==='event') { addEvent(m.event); if (['memory','self_edit','want','want_met','let_go','letter'].includes(m.event.kind)) { loadSelf(); loadMems(); loadWants(); } } };
+    es.onerror = () => { es.close(); setTimeout(connect, 4000); };
+  }catch(e){}
+}
+loadState().then(loadFeed); connect(); setInterval(loadState, 10000);
+</script>
+</body>
+</html>

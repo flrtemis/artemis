@@ -1,0 +1,19 @@
+{
+    "type": "function",
+    "function": {
+        "name": "simple_web_fetcher",
+        "description": "",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "description": "The URL of the content to fetch.",
+                    "type": "STRING"
+                }
+            },
+            "required": [
+                "url"
+            ]
+        }
+    }
+}

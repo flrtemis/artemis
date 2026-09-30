@@ -1,0 +1,28 @@
+{
+    "type": "function",
+    "function": {
+        "name": "directory_manager",
+        "description": "Create and manage directories with various operations",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "The operation to perform (create, list, delete)",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Directory path",
+                    "type": "string"
+                },
+                "recursive": {
+                    "description": "Create parent directories if needed",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "action",
+                "path"
+            ]
+        }
+    }
+}

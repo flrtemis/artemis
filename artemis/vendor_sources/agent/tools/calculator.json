@@ -1,0 +1,24 @@
+{
+    "type": "function",
+    "function": {
+        "name": "calculator",
+        "description": "Perform basic mathematical calculations",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "numbers": {
+                    "description": "List of numbers to operate on",
+                    "type": "array"
+                },
+                "operation": {
+                    "description": "The mathematical operation to perform (add, subtract, multiply, divide)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "operation",
+                "numbers"
+            ]
+        }
+    }
+}

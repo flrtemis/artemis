@@ -1,0 +1,11 @@
+{
+    "type": "function",
+    "function": {
+        "name": "current_time",
+        "description": "Fetches the current local time in Frackville, Pennsylvania (Eastern Time Zone).",
+        "parameters": {
+            "type": "object",
+            "properties": {}
+        }
+    }
+}

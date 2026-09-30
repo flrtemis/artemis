@@ -1,0 +1,23 @@
+{
+    "type": "function",
+    "function": {
+        "name": "gmail_email_generator",
+        "description": "Generates a list of random, valid-formatted Gmail addresses for testing or placeholder purposes.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "description": "The number of email addresses to generate.",
+                    "type": "integer"
+                },
+                "use_digits": {
+                    "description": "Whether to include digits in the username.",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "count"
+            ]
+        }
+    }
+}

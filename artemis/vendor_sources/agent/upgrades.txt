@@ -1,0 +1,339 @@
+1) Add `FastWeightsRegistry` class: This is the software-level fast weight generator. It uses a vector tracking dictionary matrix to continuously step up weights when keywords are used, and multiplies them by a decay factor 0.85 over subsequent generation cycles to purge old memory attention.
+
+2) Add Context Pruning Function `weight_aware_tool_pruning`: If there's dozens of custom tools that end up being generated inside the tools directory, Ollama will experience context fatigue and stall out. The fast weight engine tracks which tools matter right now and filters out low-weight schemas dynamically before sending data over HTTP. (Be sure that existing tools within the tools directory are simply omitted during response generation but only if the model deems that specific tools as not required to complete the current response properly and new tools must first be dynamically created on the fly.)
+
+3) Add an Interception Endpoint `/api/chat/generate`: This maps incoming requests, scans text vectors to trigger early weight spikes, and appends the dynamic instructions right into the prompt stream seamlessly.
+
+4) Build out the tool-execution loop handler, so that when a high-weight tool is selected by the model, the server automatically triggers `handle_execute_tool` and loops the outcome back into the model's memory.
+
+5) Zero Switching Modalities: Rather than using one tool for web scraping, another for writing a script, and a third for creating an interactive document, aggregate everything into a single, multi-turn thread. 'agent.py' needs to seamlessly transition from performing live internet research to writing files, updating images, and checking its own terminal outputs until the overarching project goal is completed.
+
+6) In real-world AI applications, embedding "simulated data" or hardcoded fallback loops inside the core runtime code acts as a semantic anchor. It traps the AI model within a synthetic worldview, preventing it from adapting to true external volatility and causing immediate system failures when live data breaks the simulation parameters. To build a completely decoupled, production-grade agent, strip away all internal simulations and mock components. The toolset must act exclusively as an idempotent pipeline layer that takes raw system input, verifies it, executes real-world system mechanisms, and passes structural metrics back to the AI for dynamic routing.
+	Part(1) Tool Specifications: These schemas strictly interface with true real-world environmental endpoints, telemetry metrics, and systems.
+
+AI_TOOLS_SPECIFICATION = [
+    {
+        "type": "function",
+        "function": {
+            "name": "enforce_production_boundaries",
+            "description": "Step 1: Evaluates raw live telemetry against strict system configuration boundaries.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "live_metrics": {
+                        "type": "object",
+                        "properties": {
+                            "execution_time_ms": {"type": "integer", "description": "Actual elapsed time from system hardware clock."},
+                            "memory_consumption_mb": {"type": "integer", "description": "Active RSS RAM usage read from OS kernel."},
+                            "target_uri": {"type": "string", "description": "The literal network destination endpoint being accessed."}
+                        },
+                        "required": ["execution_time_ms", "memory_consumption_mb", "target_uri"]
+                    },
+                    "system_policy": {
+                        "type": "object",
+                        "properties": {
+                            "max_timeout_ms": {"type": "integer"},
+                            "ram_ceiling_mb": {"type": "integer"},
+                            "whitelisted_domains": {"type": "array", "items": {"type": "string"}}
+                        },
+                        "required": ["max_timeout_ms", "ram_ceiling_mb", "whitelisted_domains"]
+                    }
+                },
+                "required": ["live_metrics", "system_policy"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "dispatch_system_telemetry",
+            "description": "Step 2: Commits a live, structured JSON log directly into standard IO streams for active pipeline monitoring platforms.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "subsystem": {"type": "string", "description": "The literal module name generating the telemetry event."},
+                    "state_code": {"type": "string", "description": "The functional system status string code."},
+                    "severity": {"type": "string", "enum": ["INFO", "WARNING", "ERROR", "CRITICAL"]},
+                    "telemetry_payload": {"type": "object", "description": "The exact runtime metadata and execution state parameters."}
+                },
+                "required": ["subsystem", "state_code", "severity", "telemetry_payload"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "evaluate_network_readiness",
+            "description": "Step 3: Compares known environment architecture dependencies against actively verified system modules.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "required_infrastructure": {"type": "array", "items": {"type": "string"}, "description": "List of essential internal or external resource IDs."},
+                    "active_environment_resources": {"type": "array", "items": {"type": "string"}, "description": "List of modules confirmed online by infrastructure monitors."}
+                },
+                "required": ["required_infrastructure", "active_environment_resources"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "ping_live_endpoint",
+            "description": "Step 4: Executes a real-world HTTP HEAD/GET request to evaluate target endpoint status and confirm basic network visibility.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "target_url": {"type": "string", "description": "The fully qualified URL endpoint to probe."},
+                    "timeout_ms": {"type": "integer", "description": "Maximum hardware network socket read timeout limit."}
+                },
+                "required": ["target_url", "timeout_ms"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "commit_atomic_state",
+            "description": "Step 5: Enforces exact idempotency by writing or reading transaction completion hashes inside a dedicated persistence layer.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "db_connection_string": {"type": "string", "description": "Valid URI connection string to the operational persistence layer database."},
+                    "transaction_id": {"type": "string", "description": "Unique cryptographic execution tracking hash."},
+                    "payload_string": {"type": "string", "description": "The exact data serialization payload being saved."}
+                },
+                "required": ["db_connection_string", "transaction_id", "payload_string"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "verify_stream_schema",
+            "description": "Step 6: Evaluates an incoming stream packet against a rigid JSON schema, returning validation status or explicit structural exception blocks.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "inbound_packet": {"type": "object", "description": "The raw incoming JSON data object received from the network interface."},
+                    "target_schema": {"type": "object", "description": "The standard JSON schema declaration definition to validate against."}
+                },
+                "required": ["inbound_packet", "target_schema"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "resolve_latency_path",
+            "description": "Step 7 (Streamline): Maps raw performance arrays to identify the literal path of least resistance across live infrastructure.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "route_mapping": {"type": "object", "description": "Key-value map relating identifier keys to network service endpoints."},
+                    "live_latency_logs": {"type": "object", "description": "Dictionary of lists tracking actual measured connection latencies in seconds."}
+                },
+                "required": ["route_mapping", "live_latency_logs"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "execute_live_failover_route",
+            "description": "Step 8 (Provision): Dispatches an operational request payload to a primary network target, falling back instantly to a secondary node if the network interface errors.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "primary_target_url": {"type": "string", "description": "The main real-world operational service endpoint."},
+                    "secondary_target_url": {"type": "string", "description": "The emergency contingency service endpoint backup node."},
+                    "payload": {"type": "object", "description": "The raw JSON request payload data to deliver to the active target."}
+                },
+                "required": ["primary_target_url", "secondary_target_url", "payload"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculate_statistical_trends",
+            "description": "Step 9 (Evolve): Computes mathematical runtime metrics over historical logs to return raw performance values without hardcoded logic paths.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "runtime_intervals": {"type": "array", "items": {"type": "number"}, "description": "Chronological array of actual operational duration metrics in seconds."}
+                },
+                "required": ["runtime_intervals"]
+            }
+        }
+    }
+]
+
+	Part(2) Orchestrator: This code operates without mocks, stubs, or simulated exceptions. If a database is requested, it establishes a genuine connection; if a route drops, it reports a genuine system crash. This allows the AI model to handle real infrastructure events dynamically.
+
+import sys
+import json
+import logging
+import sqlite3
+import urllib.request
+import urllib.parse
+from jsonschema import validate, ValidationError as SchemaError
+from typing import Dict, Any, List
+
+class RealWorldAgentOrchestrator:
+    """Pure operational execution router without simulations, synthetic limits, or data anchors."""
+    def __init__(self):
+        self.orchestration_logger = logging.getLogger("AgentOrchestrator")
+        if not self.orchestration_logger.handlers:
+            handler = logging.StreamHandler(sys.stdout)
+            handler.setFormatter(logging.Formatter('%(message)s'))
+            self.orchestration_logger.addHandler(handler)
+        self.orchestration_logger.setLevel(logging.INFO)
+
+    def route_tool_execution(self, tool_name: str, parameters_json: str) -> str:
+        """Central ingestion gateway translating raw AI model tool calls to true infrastructure operations."""
+        try:
+            args = json.loads(parameters_json)
+            worker = getattr(self, f"_{tool_name}", None)
+            if not worker:
+                return json.dumps({"status": "SYSTEM_UNSUPPORTED", "message": f"Action '{tool_name}' unknown."})
+            
+            output = worker(**args)
+            return json.dumps({"status": "EXECUTION_COMPLETE", "result": output})
+        except Exception as hardware_or_os_fault:
+            return json.dumps({"status": "INFRASTRUCTURE_EXCEPTION", "details": str(hardware_or_os_fault)})
+
+    def _enforce_production_boundaries(self, live_metrics: dict, system_policy: dict) -> dict:
+        # Step 1: Objective boundaries evaluation
+        breaches = []
+        if live_metrics["execution_time_ms"] > system_policy["max_timeout_ms"]:
+            breaches.append("TIMEOUT_LIMIT_EXCEEDED")
+        if live_metrics["memory_consumption_mb"] > system_policy["ram_ceiling_mb"]:
+            breaches.append("RAM_LIMIT_EXCEEDED")
+        
+        parsed_url = urllib.parse.urlparse(live_metrics["target_uri"])
+        domain = parsed_url.netloc or parsed_url.path
+        if domain not in system_policy["whitelisted_domains"]:
+            breaches.append("NETWORK_DOMAIN_ACCESS_DENIED")
+            
+        return {"compliant": len(breaches) == 0, "breach_identifiers": breaches}
+
+    def _dispatch_system_telemetry(self, subsystem: str, state_code: str, severity: str, telemetry_payload: dict) -> dict:
+        # Step 2: Push log directly to system streaming stdout pipelines (e.g. Docker logs)
+        log_packet = {
+            "module": subsystem,
+            "state": state_code,
+            "alert_level": severity.upper(),
+            "telemetry": telemetry_payload
+        }
+        raw_output = json.dumps(log_packet)
+        if severity.upper() in ["CRITICAL", "ERROR"]:
+            self.orchestration_logger.error(raw_output)
+        else:
+            self.orchestration_logger.info(raw_output)
+        return {"committed": True}
+
+    def _evaluate_network_readiness(self, required_infrastructure: list, active_environment_resources: list) -> dict:
+        # Step 3: Direct set analysis of active infrastructure components
+        req_set = set(required_infrastructure)
+        active_set = set(active_environment_resources)
+        missing = list(req_set - active_set)
+        return {"readiness_cleared": len(missing) == 0, "unresolved_dependencies": missing}
+
+    def _ping_live_endpoint(self, target_url: str, timeout_ms: int) -> dict:
+        # Step 4: True network interface socket ping
+        timeout_sec = timeout_ms / 1000.0
+        try:
+            req = urllib.request.Request(target_url, method="HEAD")
+            with urllib.request.urlopen(req, timeout=timeout_sec) as response:
+                return {"reachable": True, "http_status_code": response.status}
+        except Exception as error:
+            return {"reachable": False, "network_error_payload": str(error)}
+
+    def _commit_atomic_state(self, db_connection_string: str, transaction_id: str, payload_string: str) -> dict:
+        # Step 5: True persistent storage engine initialization and commit
+        # Works with real database connection strings or localized system files
+        conn = sqlite3.connect(db_connection_string)
+        cursor = conn.cursor()
+        try:
+            with conn:
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS idempotency_ledger (
+                        tx_hash TEXT PRIMARY KEY, data TEXT, processed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                cursor.execute("SELECT tx_hash FROM idempotency_ledger WHERE tx_hash = ?", (transaction_id,))
+                if cursor.fetchone():
+                    return {"committed": False, "reason": "TRANSACTION_IDEMPOTENT_DUPLICATE_HALT"}
+                
+                cursor.execute("INSERT INTO idempotency_ledger (tx_hash, data) VALUES (?, ?)", (transaction_id, payload_string))
+            return {"committed": True, "checksum": transaction_id}
+        finally:
+            conn.close()
+
+    def _verify_stream_schema(self, inbound_packet: dict, target_schema: dict) -> dict:
+        # Step 6: Direct JSON schema validation protocol
+        try:
+            validate(instance=inbound_packet, schema=target_schema)
+            return {"valid": True, "quarantine_action_required": False, "anomalies": []}
+        except SchemaError as err:
+            return {"valid": False, "quarantine_action_required": True, "anomalies": [err.message]}
+
+    def _resolve_latency_path(self, route_mapping: dict, live_latency_logs: dict) -> dict:
+        # Step 7: Pure statistical path assessment from live network profiling inputs
+        optimal_key = None
+        lowest_average = float('inf')
+        
+        for identifier, metrics in live_latency_logs.items():
+            if not metrics or identifier not in route_mapping:
+                continue
+            avg_latency = sum(metrics) / len(metrics)
+            if avg_latency < lowest_average:
+                lowest_average = avg_latency
+                optimal_key = identifier
+                
+        if not optimal_key:
+            raise KeyError("Unable to compute path resolution. Latency profiles are empty or misaligned.")
+            
+        return {"resolved_route_key": optimal_key, "target_endpoint_uri": route_mapping[optimal_key], "mean_latency_sec": lowest_average}
+
+    def _execute_live_failover_route(self, primary_target_url: str, secondary_target_url: str, payload: dict) -> dict:
+        # Step 8: True dynamic dual-routing network pipeline
+        serialized_payload = json.dumps(payload).encode('utf-8')
+        headers = {'Content-Type': 'application/json'}
+        
+        # Primary Pipeline Run
+        try:
+            req = urllib.request.Request(primary_target_url, data=serialized_payload, headers=headers, method="POST")
+            with urllib.request.urlopen(req, timeout=5.0) as resp:
+                return {"delivered": True, "endpoint_utilized": "primary", "response_data": json.loads(resp.read().decode('utf-8'))}
+        except Exception as primary_fault:
+            # Contingency Pipeline Run (triggered seamlessly by true network faults, not simulations)
+            try:
+                req_backup = urllib.request.Request(secondary_target_url, data=serialized_payload, headers=headers, method="POST")
+                with urllib.request.urlopen(req_backup, timeout=10.0) as resp_backup:
+                    return {
+                        "delivered": True, 
+                        "endpoint_utilized": "secondary_contingency", 
+                        "primary_fault_log": str(primary_fault),
+                        "response_data": json.loads(resp_backup.read().decode('utf-8'))
+                    }
+            except Exception as cluster_collapse:
+                raise SystemError(f"CRITICAL OVERALL OUTAGE: Backup route failure. Details: {cluster_collapse}")
+
+    def _calculate_statistical_trends(self, runtime_intervals: list) -> dict:
+        # Step 9: Pure computational reduction of timing history
+        if not runtime_intervals:
+            return {"runs": 0, "average_seconds": 0.0, "status": "NO_TELEMETRY_DATA"}
+            
+        mean_val = sum(runtime_intervals) / len(runtime_intervals)
+        return {"runs": len(runtime_intervals), "average_seconds": round(mean_val, 6)}
+
+# Absolute Production Integration Testing Hook
+if __name__ == "__main__":
+    executor = RealWorldAgentOrchestrator()
+    
+    # Real-World Step 7 Function Call mapping payload directly from model context
+    call_payload = '{"route_mapping": {"primary_cluster": "https://core.internal", "edge_cdn": "https://edge.internal"}, "live_latency_logs": {"primary_cluster": [0.652, 0.711], "edge_cdn": [0.014, 0.019]}}'
+    
+    output_string = executor.route_tool_execution("resolve_latency_path", call_payload)
+    print(f"Verified Tool Output Stream:\n{output_string}")

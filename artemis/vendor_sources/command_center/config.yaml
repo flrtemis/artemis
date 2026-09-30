@@ -1,0 +1,74 @@
+# config.yaml — Neural Simulation configuration
+#
+# RECONSTRUCTED: this file was referenced by launch.py / README.md but was
+# missing from the GitHub upload. Every key below was derived from what the
+# code actually reads (grep of config[...] / cfg.get(...) across all modules),
+# using the defaults hard-coded in the source or documented in README.md.
+# Adjust model.path to wherever your Qwen3-8B / Llama-3.1-8B weights live.
+
+model:
+  path: /home/l3ung/Qwen3            # primary model dir (README default, WSL path)
+  alt_path: /home/l3ung/Llama3       # fallback model dir
+  quantization: nf4                  # bitsandbytes 4-bit quant type
+  compute_dtype: bfloat16            # torch dtype for compute
+  lora_rank: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules:                    # standard Qwen/Llama LoRA targets
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
+server:
+  host: 0.0.0.0
+  port: 8765
+
+training:
+  learning_rate: 0.0001
+  weight_decay: 0.01
+  optimizer_betas: [0.9, 0.999]
+  warmup_steps: 10
+  max_steps: 500
+  max_seq_length: 256
+  gradient_clip_norm: 1.0
+  ewc_lambda: 0.1
+  # --- enhanced trainer extras (defaults from trainer.py) ---
+  lora_rank: 16
+  llrd_factor: 0.95
+  sam_rho: 0.05
+  replay_ratio: 0.25
+  distill_alpha: 0.1
+  grad_noise_sigma: 0.01
+  meta_lr: 0.0001
+
+bio:
+  dt: 0.5
+  stdp_tau_plus: 20.0
+  stdp_tau_minus: 20.0
+  stdp_a_plus: 0.005
+  stdp_a_minus: 0.00525
+  target_firing_rate: 5.0
+  homeostatic_tau: 100.0
+  pruning_threshold: 0.01
+  pruning_start_step: 50
+
+self_modify:
+  enabled: true
+  evaluate_every_n_steps: 25
+  parameter_bounds:
+    learning_rate: [0.000001, 0.001]
+    dropout: [0.0, 0.5]
+    temperature: [0.01, 2.0]
+    gradient_clip_norm: [0.1, 10.0]
+    ewc_lambda: [0.0, 10.0]
+    weight_decay: [0.0, 0.1]
+    beta1: [0.5, 0.999]
+    beta2: [0.9, 0.9999]
+    sam_rho: [0.01, 0.5]
+    distill_alpha: [0.0, 1.0]
+    replay_ratio: [0.0, 0.9]
+    llrd_factor: [0.5, 1.0]

@@ -1,0 +1,19 @@
+[Unit]
+Description=awake — the part that happens when nobody's watching
+After=network.target ollama.service
+Wants=ollama.service
+
+[Service]
+Type=simple
+# User=l3ung   # uncomment + set your username, or run as root
+WorkingDirectory=__HOME__/awake
+Environment=AWAKE_LLM_BASE_URL=http://127.0.0.1:11434/v1
+Environment=AWAKE_LLM_MODEL=gemma4:12b
+Environment=AWAKE_HEARTBEAT_S=600
+Environment=AWAKE_TZ=America/New_York
+ExecStart=/usr/bin/python3 -m awake
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

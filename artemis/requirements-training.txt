@@ -1,0 +1,6 @@
+# Install the correct Torch CUDA build for your actual driver/GPU first.
+torch>=2.6,<3
+transformers>=4.50,<5
+peft>=0.15,<1
+safetensors>=0.5,<1
+# NF4/QLoRA additionally requires a compatible CUDA bitsandbytes build.

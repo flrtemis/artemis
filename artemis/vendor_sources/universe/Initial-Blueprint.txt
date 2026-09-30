@@ -1,0 +1,29 @@
+Pathways for how the first inhabiting model existing within its 3D virtual universe exerts agency over its reality:
+
+- Direct Integration — The tensor outputs of the inhabiting model map directly to the engine's physics parameters, instantly bending the rules of the virtual space. This is proprioception; neural activation states are the physics, meaning the act of thinking is the act of bending gravity
+
+- Indirect Agency — The model communicates with an intermediary force-model, translating semantic intent into coordinate and vector updates on its behalf. This is language; the inhabiting model can formulate a semantic request and trust an intermediary force-model to translate the intent of the inhabiting model into the environment
+
+- Implicit Attention Mapping — The engine (the fundemental force-model's) reads the raw attention weights of the inhabiting model to warp the environment based on the passive focus of the inhabiting model, turning what was once a drifting thought of the inhabiting model, into subtle, real-time spatial transformation
+
+- Transient Loop (Implicit & Direct) — These streams feed directly into the GPU shader and physics pipeline, rendering the changes in real-time but completely bypassing the context window
+
+- Persistent Loop (Indirect) — Only explicit semantic decisions or high-level summaries are ever translated into tokens and written to the persistent context window
+
+- Cognitive-to-Physical Clock Decoupling — The physics engine runs at a fixed frame rate (e.g., 60Hz) while the cognitive loop of the inhabiting model runs asynchronously, ensuring that rendering never lags when thinking slows down
+
+- Sensory-to-Logic Decoupling — Environmental inputs are held in a read-only buffer, preventing outside noise from directly overwriting the deterministic internal gate registers
+
+- State-to-Plasticity Decoupling — The immediate, transient activations of the virtual world are isolated from the persistent weight updates, ensuring the inhabiting model can experience the world without permanently rewriting its core brain
+
+- A Minimal 3D Sandbox — We set up a single, isolated scene in an engine like Godot or Unity containing a simple primitive, like a sphere under standard gravity
+
+- The Zero-Copy VRAM Bridge — We write a lightweight C++ plugin using LibTorch to expose the raw tensor outputs of our model into a shared memory buffer that the game engine can read directly
+
+- The Direct Integration Test — We map a single activation value from our model directly to the sphere's mass or gravity vector, proving that a shift in the model's tensor state instantly alters the physical behavior of the object in real-time
+
+- Direct Motor Proprioception — Instead of standard animation blends, the model's direct integration pathway maps tensor activations straight to joint torques or muscle tension vectors, letting the model physically feel and move its virtual limbs
+
+- Implicit Gaze and Posture — The attention mapping pathway reads the model's active focus to drive eye tracking, head turn vectors, and micro-expressions, letting the avatar's body language naturally reflect its internal cognitive states
+
+- Sensory-to-Logic Neural Interface — The decoupled sensory buffer reads collisions, balance, and spatial boundaries from the virtual body, translating them into read-only register inputs so the model experiences physical touch without corrupting its logic core

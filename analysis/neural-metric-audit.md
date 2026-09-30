@@ -1,0 +1,113 @@
+# Neural and bio diagnostic audit
+
+The intent is to preserve diagnostic questions while correcting their meanings. **48 advertised AI families are not 48 independent, validated measurements.** The schema serializes **63 AIMetrics fields**, including helpers; the biological schema has **41 BioMetrics fields**. The metric/analyzer copies in Command Center are byte-identical to Neural Sim.
+
+All AI formula findings below are source-derived, not validated with torch/GPU training. Evidence is anchored to each actual compute branch. One canonical metric registry must record name, schema/version, units, tensor/parameter IDs, time window, sampling, estimator, quality (`measured`, `proxy`, `simulated`, `reported`, `unavailable`) and provenance. Missing values are null/unavailable, not fabricated zero/default successes.
+
+## All 48 AI families
+
+| # | Declared family | What the code calculates | Final disposition / repair | Evidence |
+|---|---|---|---|---|
+| 1 | Connectivity | Mean of captured layer weight-norm summaries, not network connectivity. | Transform: call mean_layer_weight_norm; retain per-layer values (#9). | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L271-L274) |
+| 2 | Learning/loss curve | Current loss is assigned to loss_curve; short loss history lives internally. | Preserve: reconstruct actual timestamped loss series from durable run events. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L275-L277) |
+| 3 | Error signal | Current minus previous minibatch loss. | Transform: loss_delta; not a prediction-error or biological error measurement. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L278-L283) |
+| 4 | Mutual information | Mean positive layer activation norms; no mutual information estimator. | Transform: activation_norm_mean; implement a validated information estimator only if the research needs one. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L284-L288) |
+| 5 | Gradient norms | Captured layer backward-output tensor norms. | Preserve: specify tensor/layer/aggregation and sampling time; do not imply all parameter gradients. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L289-L291) |
+| 6 | Latent PCA | SVD coordinates of sampled mean-pooled hidden vectors; categorical labels are split by index. | Preserve projection; retire artificial semantic cluster labels and identify actual layer/sample coordinates. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L292-L307) |
+| 7 | Activation survival | Fraction of hidden activations above 1e-6 absolute magnitude. | Preserve thresholded activity; it is not evidence of living or dead neurons. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L308-L310) |
+| 8 | Attention entropy | Per-head attention distribution entropy and its mean. | Preserve: record mask/sequence/head/layer and availability. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L311-L318) |
+| 9 | Layer weight norms | Captured average norms of layer parameters. | Preserve detail; derive #1 in the same registry rather than a separate calculation/UI. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L319-L320) |
+| 10 | Loss landscape sharpness | Variance of the recent loss series. | Transform: loss_window_variance; curvature/sharpness requires a different controlled measurement. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L321-L326) |
+| 11 | LayerNorm statistics | Mean/variance of normalization weights, not normalization activations. | Transform: norm_gain_mean/variance; retain instrumented activation statistics separately if added. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L327-L330) |
+| 12 | Confidence / prediction entropy | Normalized entropy of last-position predictive softmax. | Preserve as predictive_entropy and entropy_complement; neither is calibrated truth confidence. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L331-L344) |
+| 13 | Momentum velocity | Mean norm of optimizer exp_avg tensors with gradients. | Preserve as first_moment_norm, with optimizer/group timing documented. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L345-L357) |
+| 14 | Effective learning rate | Scheduler/optimizer first parameter group only. | Transform: report all group rates and a clearly identified base/summary rate, especially under LLRD. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L358-L363) |
+| 15 | Weight sparsity | Fraction of trainable LoRA values below pruning threshold. | Preserve: adapter_near_zero_fraction, with threshold and tensor IDs; not whole-model structural sparsity. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L364-L375) |
+| 16 | Residual stream ratio | Input norm / (input norm + output-minus-input norm). | Preserve as residual_norm_ratio proxy, not a causal contribution fraction. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L376-L378) |
+| 17 | Embedding drift | One minus cosine similarity to the initial embedding tensor. | Preserve with frozen/trainable status; zero under frozen LoRA embeddings does not mean no adaptation. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L379-L396) |
+| 18 | Context utilization | Attention-position mass in the recent half of positions. | Transform: recent_position_attention_mass; do not imply cognitive context utilization. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L397-L403) |
+| 19 | Gradient clipping | Raw grad norm, clip flag and rolling clip-event fraction. | Preserve with objective/step ordering, including SAM/replay composition. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L404-L408) |
+| 20 | Forgetting score | Value supplied by trainer retention probes. | Preserve evaluation intent; require fixed, versioned held-out probes and measured before/after results. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L409-L411) |
+| 21 | Effective rank | Entropy-based effective rank of the largest trainable LoRA matrix. | Preserve with tensor identity, sampling, normalized dimension and adapter version. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L412-L428) |
+| 22 | Gradient SNR | Temporal mean divided by standard deviation of gradient norms. | Transform: gradient_norm_stability_ratio; actual gradient signal/noise requires repeated-gradient estimates. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L429-L434) |
+| 23 | Cross-layer CKA | Adjacent activation-norm min/max ratios. | Merge proxy with #48; name adjacent_activation_norm_balance. Proper CKA needs centered paired representations. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L435-L445) |
+| 24 | Expert routing entropy | Normalized attention-head entropies treated as expert loads. | Merge attention-balance proxy with #27; actual MoE routing is absent and should be unavailable for a dense model. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L446-L454) |
+| 25 | Perplexity | Supplied perplexity if positive; otherwise exp of clipped loss. Default input is 1.0. | Preserve only with true masked token NLL/denominator; absent input must not be reported as perfect perplexity. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L455-L457) |
+| 26 | Prediction calibration / ECE | 1 minus absolute gap between max softmax probability and 1-loss/10 proxy. | Transform: real held-out, label-based binned ECE/reliability; retire the misleading current score label. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L458-L470) |
+| 27 | Attention head entropy | Entropy of normalized per-head entropy values. | Preserve as attention_entropy_balance; use one implementation for the same #24 proxy. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L471-L479) |
+| 28 | Dead head fraction | Fraction of attention heads with near-zero entropy. | Transform: concentrated_attention_fraction; zero entropy can mean focused attention, not a dead head. Validate importance via ablations/gradients. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L480-L489) |
+| 29 | Gradient direction coherence | Cosine similarity between vectors of layer gradient norms, not signed gradients. | Transform: gradient_norm_profile_similarity or capture gradient sketches for actual direction coherence. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L490-L502) |
+| 30 | Weight update velocity | Mean absolute change in layer weight norms. | Transform: layer_weight_norm_delta; true ||W_t-W_(t-1)|| needs weight/sketch differences, not difference of norms. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L503-L516) |
+| 31 | Fisher-weighted loss | Layer Fisher summaries indexed using trainable parameter enumeration; mapping can mismatch. | Transform: keyed tensor/parameter Fisher mapping and clearly defined EWC objective contribution, not ambiguous rescaling. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L517-L529) |
+| 32 | Activation kurtosis | Approximate fourth moment from normalized 16-bin activation histograms. | Preserve as a sampled histogram estimate; keep bin edges, moments, tensor IDs and approximation quality. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L530-L548) |
+| 33 | Spectral radius | Largest singular value of largest trainable LoRA matrix. | Transform: adapter_operator_norm; spectral radius is not the largest singular value of an arbitrary rectangular matrix. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L549-L563) |
+| 34 | Hessian trace / Hutchinson | Mean squared dot product of existing gradients with random vectors; no Hessian-vector product. | Transform: implement budgeted v^T H v estimator with second derivatives, or label gradient-energy estimate. Do not keep the false Hessian label. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L564-L575) |
+| 35 | Layer saturation | Fraction above 90% of layer maximum magnitude, with norm-based fallback. | Transform: high_relative_activation_fraction; actual nonlinear saturation needs an explicitly defined activation/derivative criterion. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L576-L590) |
+| 36 | Feature redundancy | Mean absolute sampled channel correlations. | Preserve as sampled_feature_abs_correlation; specify channel/sample selection and constant-channel handling. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L591-L599) |
+| 37 | Token perplexity variance | Variance of exp(predictive entropy) over at most the first 32 positions, not target NLL. | Transform: predictive_effective_vocab_variance; true per-token perplexity requires target probabilities and masks. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L600-L619) |
+| 38 | Curriculum difficulty | Current loss divided by recent average loss, clipped. | Transform: relative_batch_loss; actual curriculum needs versioned sampler/task difficulty and outcome evaluation. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L620-L627) |
+| 39 | Adaptation speed | Negative linear trend slope in a recent loss window. | Preserve as moving_loss_improvement_per_step; do not interpret as causal/general adaptation capability. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L628-L640) |
+| 40 | Knowledge retention | max(0,1-forgetting_score). | Preserve as a derived retention_index linked to the validated #20 probe, not all knowledge. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L641-L643) |
+| 41 | Parameter efficiency | Effective rank divided by millions of trainable parameters. | Transform: adapter_rank_per_million_params; actual efficiency should also use held-out quality, memory/time and compute cost. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L644-L651) |
+| 42 | Generalization gap | Clipped twice the recent loss variance. | Merge current volatility derivation with #10; implement actual comparable held-out minus training loss. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L652-L655) |
+| 43 | SAM sharpness | Scalar supplied by the training recipe. | Preserve only with same-batch/same-objective base-versus-perturbed loss and correctly restored SAM state. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L656-L658) |
+| 44 | Meta-gradient alignment | Gradient-norm-profile similarity gated by positive meta loss. | Transform: actual inner/outer gradient/sketch alignment or honestly label the gated proxy; do not double-report #29 as meta alignment. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L659-L662) |
+| 45 | Replay benefit | max(0,1-replay_loss/current_loss) across potentially different batches. | Transform: matched before/after held-out comparison; retain raw objective terms but not a causal benefit claim. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L663-L668) |
+| 46 | Distillation agreement | 1/(1+distillation loss). | Transform: report temperature/mask/teacher-versioned KL and optional matched prediction agreement. Repair detached student logits first. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L669-L671) |
+| 47 | LoRA rank utilization | Fraction of singular values above 1% of each LoRA tensor maximum, averaged. | Preserve as thresholded adapter spectrum occupancy, not proof of implemented rank resizing. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L672-L685) |
+| 48 | Cross-layer information flow | Mean adjacent min/max activation-norm ratio, with different zero handling from #23. | Merge with #23 into one defined norm-balance proxy; genuine information flow needs a separate validated protocol. | [code](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L686-L701) |
+
+## All 41 BioMetrics fields, grouped by computation
+
+These fields are retained in the **Bio** namespace, with corrected meanings. They must not be silently treated as the human side of a validated AI/human equivalence, as Sage private affect, or as World observations.
+
+| Field(s) | Meaning / repair requirement |
+|---|---|
+| `step` | Simulation counter; establish one physical-time definition and dt. |
+| `synaptic_weight` | Mean positive weights in a first-n_exc block; replace assumed contiguous excitatory subset with actual E/I mask. |
+| `mastery` | Scaled firing-rate mean/standard deviation; a rate-uniformity proxy, not learned task mastery. |
+| `delta, dopamine` | Instantaneous firing-fraction versus target-rate difference and clipped function; consistency depends on correct timestep. Legacy dopamine scalar is not the same as the neuromodulator state dictionary. |
+| `sparsity, active_fraction` | Complements of cortical spike fraction; compute once and expose both named derivations. |
+| `dendritic_signal` | Grouped firing-rate summaries, not directly recorded dendritic voltages. |
+| `place_x, place_y, place_labels` | Randomly moving clustered 2D visualization points with fixed labels; not a place-cell representation learned from a world. |
+| `attention_focus, habit_strength` | Monotonic heuristic accumulators from rate error; not measured attention or habits. |
+| `homeostatic_norms` | Grouped weight-block norms; require correct excitatory masks/denominators. |
+| `attractor_variance` | Recent population spike-count variance; not by itself an attractor stability proof. |
+| `mean_firing_rate` | Rate EMA scaled by 1000; validate window/step units before reporting Hz. |
+| `certainty` | Clipped inverse firing-rate coefficient of variation; rate-uniformity proxy, not epistemic confidence. |
+| `plasticity` | Step-decaying heuristic scalar; actual STDP dynamics are a separate mechanism. |
+| `synapse_density` | Thresholded weights versus a differently sized denominator; correct masks and eligible edge count. |
+| `bypass_ratios` | Mean absolute weight transformed by x/(x+0.1); not causal circuit bypass. |
+| `cortical_stability` | Weight-vector cosine relative to initial weights; parameter stability proxy. |
+| `wm_profile` | Fixed primacy/recency curve after seven samples; not empirically estimated working memory. |
+| `pain_triggered, pain_rate` | Thresholded absolute rate-error and rolling frequency; simulated distress proxy only, not pain/welfare evidence. |
+| `memory_retention` | Old/new rate-pattern correlation; not retained episodic memories or general knowledge. |
+| `population_diversity` | Normalized firing-rate entropy across cortex. |
+| `noise_benefit` | Distance of input-current standard deviation from the hardcoded optimum 5; benefit is not tested. |
+| `column_differentiation` | Adjacent-column firing-rate profile dissimilarity. |
+| `specialisation, specialisation_entropy` | Normalized grouped activity and entropy; not demonstrated functional area specialization. |
+| `neuron_activities, spike_pairs` | Normalized rates and selected simultaneously firing connected pairs for rendering; identify sampling/truncation. |
+| `oscillation_bands, brain_state` | FFT proxy over firing history plus band-based label; fix short windows/frequency resolution and dt before interpretation. |
+| `thalamic_input` | Rhythmic drive summary; distinguish model input from observed sensory evidence. |
+| `neuromodulator_levels` | Simulated dopamine/acetylcholine/norepinephrine state; separate from Sage PAD/experience. |
+| `column_sync` | Cosines of column rate vectors, not phase synchrony/coherence. |
+| `apical_error` | Apical-minus-basal mean magnitude from L5 of the first column; identify scope. |
+| `consolidation_score` | EMA of delta-band proxy power; not demonstrated memory consolidation. |
+| `brain_positions, spike_arcs` | First-100-neuron positions and last-ten arcs for display, not the full rendered brain cloud. |
+
+**Source:** [C.bio](https://github.com/flrtemis/command-center/blob/5226291a356ea60116678ece9200b1dc186011a9/bio_model.py#L153-L1073) [N.bio](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/bio_model.py#L1) [N.metrics](https://github.com/flrtemis/neural-sim/blob/b51dda76eaee4347efce6156f98ddaed71ddf7d9/metrics.py#L1)
+
+## Engine correctness gates before scientific use
+
+- Use the Command Center fork’s import/order/array-shape repairs; the original Neural Sim constructor fails before simulation.
+- Correct inhibitory conductance sign/clamping: a negative inhibitory weight currently produces a positive increment which is clipped to zero. Bounded exact-method reproduction confirms this.
+- Correct E/I counting/masks: five inhibitory cells per 100-neuron column yield 50 cortical inhibitory cells, versus the declared 200. Do not slice the first 800 cells and call them all excitatory.
+- Repair delayed-event ownership and slot clearing: the source schedules target-index booleans for every post cell, then treats the delayed vector as presynaptic input via W.T; consumed slots are not cleared. Test individual known edges and delays before population runs.
+- Unify physical time: internal integration repeats roughly 1/dt times per simulate_step, while rhythm/trace/delay/firing-rate calculations assume differing step/dt units. Specify seconds/ms explicitly and test against analytic pulse timing.
+- Audit sign-constrained plasticity and STDP against known spike pairs; global weight clipping alone does not preserve excitatory/inhibitory edge semantics.
+- Validate oscillation bands with sufficiently long known-frequency signals, units and frequency resolution. A short firing history cannot establish the advertised low-frequency biological states.
+- Five finite steps of the repaired fork establish initialization/numerical smoke only, not stable, valid biological dynamics or learning.
+
+## Preserve scientifically distinct methods
+
+SAM, PCGrad, EWC, replay, distillation, meta-learning, layerwise LR decay, SGDR, noise/clipping and token weighting answer different optimization questions. Put them behind a single recipe schema and run them individually first; then test compatible combinations. Do not delete them because each looks like “learning”, and do not advertise every branch as a validated working recipe. Every study needs a matched baseline, fixed held-out task set, seed/config/model/data hashes, resource budget, quality/safety/retention criteria and reproducible run artifacts.

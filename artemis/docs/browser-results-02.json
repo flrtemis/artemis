@@ -1,0 +1,38 @@
+{
+  "scope": "Actual Chromium HTTP/UI/WebGL, native World integration and shared audio graph initialization. No physical microphone/device or real GPU validation.",
+  "records": [
+    {
+      "name": "Subsystem controls share one authenticated Operations view",
+      "result": "pass"
+    },
+    {
+      "name": "Ported source facility renders room/furniture/lights without independent legacy UI",
+      "result": "pass"
+    },
+    {
+      "name": "Recovered wrist projection exposes all nine actual source rooms and canonical data",
+      "result": "pass"
+    },
+    {
+      "name": "Wrist map navigation moves the same camera into source brain lab",
+      "result": "pass"
+    },
+    {
+      "name": "Native Godot episode, actual physics tick and operator projection work through gateway",
+      "result": "pass"
+    },
+    {
+      "name": "TalkingHead/HeadAudio initialize through host-owned shared audio context",
+      "result": "pass"
+    },
+    {
+      "name": "Mobile facility/wrist/nav render without horizontal overflow",
+      "result": "pass"
+    },
+    {
+      "name": "No uncaught browser exceptions across new subsystems",
+      "result": "pass"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,27 @@
+{
+  "milestone": "integration-02",
+  "source_repositories": 7,
+  "retained_original_files": 507,
+  "backend_tests": 52,
+  "backend_result": "pass",
+  "new_browser_checks": 8,
+  "browser_result": "pass",
+  "typescript": "pass",
+  "production_build": "pass",
+  "native_tests": [
+    "Bubblewrap namespace/filesystem/network isolation",
+    "Godot 4.4.1 physics/collision/partial sensors/replay",
+    "CPU Torch/HF/PEFT composite objectives/checkpoint/job",
+    "Piper PCM synthesis and faster-whisper transcription",
+    "Realtime WS PCM/cancellation with fixture LLM"
+  ],
+  "not_claimed": [
+    "Real CUDA/GPU/NF4 or user large-model execution",
+    "Physical microphone/speaker/lip-sync device timing",
+    "Actual original Qwen/Parakeet endpoint validation",
+    "Finished articulated humanoid/zero-copy World",
+    "Full 48-metric scientific correctness and advanced adaptive rank/controller repairs",
+    "Production security certification"
+  ],
+  "runtime_requirements": "All optional engines/models/hardware are explicit; no fake success or soft isolation fallback."
+}

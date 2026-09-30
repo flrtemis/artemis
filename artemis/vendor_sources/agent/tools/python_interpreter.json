@@ -1,0 +1,19 @@
+{
+  "type": "function",
+  "function": {
+    "name": "python_interpreter",
+    "description": "A Python interpreter to execute code. Use this tool to help with data analysis, complex calculations, statistics, creating charts, or processing files. The tool runs in a secure sandbox and returns the stdout, stderr, or any generated file variables.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "The pure Python code to execute. Do not include markdown code blocks or backticks inside the string."
+        }
+      },
+      "required": [
+        "code"
+      ]
+    }
+  }
+}

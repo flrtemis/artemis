@@ -1,0 +1,1258 @@
+{
+  "date": "2026-09-29",
+  "scope": "Bounded source audit. Not whole-system or model/GPU/browser certification.",
+  "smoke": [
+    {
+      "name": "Arena registry count",
+      "result": "observed",
+      "detail": {
+        "count": 21,
+        "tools": [
+          {
+            "name": "list_files",
+            "description": "List files and directories inside the workspace.",
+            "requires_approval": false,
+            "category": "files"
+          },
+          {
+            "name": "read_file",
+            "description": "Read a text or binary file inside the workspace. Binary content is returned as base64.",
+            "requires_approval": false,
+            "category": "files"
+          },
+          {
+            "name": "write_file",
+            "description": "Create or overwrite a file inside the workspace.",
+            "requires_approval": true,
+            "category": "files"
+          },
+          {
+            "name": "append_file",
+            "description": "Append text to a file inside the workspace.",
+            "requires_approval": true,
+            "category": "files"
+          },
+          {
+            "name": "edit_file",
+            "description": "Replace the first occurrence of old_text with new_text in a workspace file. Uses exact match first, then a whitespace-insensitive line match.",
+            "requires_approval": true,
+            "category": "files"
+          },
+          {
+            "name": "delete_file",
+            "description": "Delete a file or directory inside the workspace. Approval is strongly recommended.",
+            "requires_approval": true,
+            "category": "files"
+          },
+          {
+            "name": "move_file",
+            "description": "Move or rename a file/directory inside the workspace.",
+            "requires_approval": true,
+            "category": "files"
+          },
+          {
+            "name": "present_file",
+            "description": "Return a preview/download URL for a workspace file.",
+            "requires_approval": false,
+            "category": "files"
+          },
+          {
+            "name": "run_bash",
+            "description": "Run a Bash command in the workspace. Shell state does not persist across calls. Use for code execution, tests, project inspection, and debugging.",
+            "requires_approval": true,
+            "category": "execution"
+          },
+          {
+            "name": "fetch_page",
+            "description": "Fetch a web page or URL and return cleaned text, links, or base64 for binary content.",
+            "requires_approval": false,
+            "category": "web"
+          },
+          {
+            "name": "web_search",
+            "description": "Search the web. Uses SearXNG if configured, otherwise a best-effort DuckDuckGo HTML fallback.",
+            "requires_approval": false,
+            "category": "web"
+          },
+          {
+            "name": "image_search",
+            "description": "Search for images and save up to 5 images into the workspace. Requires SearXNG configured with image search.",
+            "requires_approval": true,
+            "category": "web"
+          },
+          {
+            "name": "generate_image",
+            "description": "Generate an image using a configured local image backend such as AUTOMATIC1111/Forge API or a command template. Saves output into the workspace.",
+            "requires_approval": true,
+            "category": "media"
+          },
+          {
+            "name": "generate_video",
+            "description": "Generate a video using a configured local command backend. Saves output into the workspace.",
+            "requires_approval": true,
+            "category": "media"
+          },
+          {
+            "name": "generate_speech",
+            "description": "Generate spoken audio from text using Piper or a configured command backend. Saves output into the workspace.",
+            "requires_approval": true,
+            "category": "media"
+          },
+          {
+            "name": "transcribe_audio",
+            "description": "Transcribe an audio file using a configured local command backend such as whisper.cpp.",
+            "requires_approval": true,
+            "category": "media"
+          },
+          {
+            "name": "create_docx",
+            "description": "Create a simple Microsoft Word .docx document using built-in OOXML generation.",
+            "requires_approval": true,
+            "category": "documents"
+          },
+          {
+            "name": "create_xlsx",
+            "description": "Create a simple Excel .xlsx workbook. sheets is a list of {name, rows}; rows is a 2D array.",
+            "requires_approval": true,
+            "category": "documents"
+          },
+          {
+            "name": "create_pptx",
+            "description": "Create a simple PowerPoint .pptx deck. slides is a list of {title, bullets}.",
+            "requires_approval": true,
+            "category": "documents"
+          },
+          {
+            "name": "create_pdf",
+            "description": "Create a simple text PDF document.",
+            "requires_approval": true,
+            "category": "documents"
+          },
+          {
+            "name": "create_csv",
+            "description": "Create a CSV file from rows.",
+            "requires_approval": true,
+            "category": "documents"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Arena write/fuzzy edit/read",
+      "result": "pass",
+      "detail": {
+        "write": {
+          "ok": true,
+          "path": "sample.txt",
+          "meta": {
+            "path": "sample.txt",
+            "name": "sample.txt",
+            "is_dir": false,
+            "size": 15,
+            "mime": "text/plain",
+            "preview_url": "/workspace/sample.txt"
+          }
+        },
+        "edit": {
+          "ok": true,
+          "path": "sample.txt",
+          "replacement_mode": "line-whitespace-insensitive",
+          "meta": {
+            "path": "sample.txt",
+            "name": "sample.txt",
+            "is_dir": false,
+            "size": 5,
+            "mime": "text/plain",
+            "preview_url": "/workspace/sample.txt"
+          }
+        },
+        "read": {
+          "ok": true,
+          "path": "sample.txt",
+          "text": "gamma",
+          "truncated": false,
+          "size": 5,
+          "meta": {
+            "path": "sample.txt",
+            "name": "sample.txt",
+            "is_dir": false,
+            "size": 5,
+            "mime": "text/plain",
+            "preview_url": "/workspace/sample.txt"
+          }
+        }
+      }
+    },
+    {
+      "name": "Arena traversal blocked: ../escape.txt",
+      "result": "pass",
+      "detail": {
+        "ok": false,
+        "error": "ValueError(\"Path escapes workspace: '../escape.txt'\")",
+        "tool": "write_file"
+      }
+    },
+    {
+      "name": "Arena traversal blocked: uploads/../../escape.txt",
+      "result": "pass",
+      "detail": {
+        "ok": false,
+        "error": "ValueError(\"Path escapes workspace: 'uploads/../../escape.txt'\")",
+        "tool": "write_file"
+      }
+    },
+    {
+      "name": "Arena symlink path blocked",
+      "result": "pass",
+      "detail": {
+        "ok": false,
+        "error": "ValueError(\"Path escapes workspace: 'escape-link/escape.txt'\")",
+        "tool": "write_file"
+      }
+    },
+    {
+      "name": "Arena upload basename/collision handling",
+      "result": "pass",
+      "detail": {
+        "first": "example.txt",
+        "second": "example-2.txt"
+      }
+    },
+    {
+      "name": "Arena create_docx container smoke",
+      "result": "pass",
+      "detail": {
+        "result": {
+          "ok": true,
+          "file": {
+            "path": "a.docx",
+            "name": "a.docx",
+            "is_dir": false,
+            "size": 1630,
+            "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "preview_url": "/workspace/a.docx"
+          }
+        },
+        "bytes": 1630,
+        "scope": "Container structural smoke, not Office rendering validation."
+      }
+    },
+    {
+      "name": "Arena create_xlsx container smoke",
+      "result": "pass",
+      "detail": {
+        "result": {
+          "ok": true,
+          "file": {
+            "path": "a.xlsx",
+            "name": "a.xlsx",
+            "is_dir": false,
+            "size": 1603,
+            "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "preview_url": "/workspace/a.xlsx"
+          }
+        },
+        "bytes": 1603,
+        "scope": "Container structural smoke, not Office rendering validation."
+      }
+    },
+    {
+      "name": "Arena create_pptx container smoke",
+      "result": "pass",
+      "detail": {
+        "result": {
+          "ok": true,
+          "file": {
+            "path": "a.pptx",
+            "name": "a.pptx",
+            "is_dir": false,
+            "size": 4394,
+            "mime": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "preview_url": "/workspace/a.pptx"
+          }
+        },
+        "bytes": 4394,
+        "scope": "Container structural smoke, not Office rendering validation."
+      }
+    },
+    {
+      "name": "Arena create_pdf container smoke",
+      "result": "pass",
+      "detail": {
+        "result": {
+          "ok": true,
+          "file": {
+            "path": "a.pdf",
+            "name": "a.pdf",
+            "is_dir": false,
+            "size": 616,
+            "mime": "application/pdf",
+            "preview_url": "/workspace/a.pdf"
+          }
+        },
+        "bytes": 616,
+        "scope": "Container structural smoke, not Office rendering validation."
+      }
+    },
+    {
+      "name": "Arena create_csv container smoke",
+      "result": "pass",
+      "detail": {
+        "result": {
+          "ok": true,
+          "file": {
+            "path": "a.csv",
+            "name": "a.csv",
+            "is_dir": false,
+            "size": 18,
+            "mime": "text/csv",
+            "preview_url": "/workspace/a.csv"
+          }
+        },
+        "bytes": 18,
+        "scope": "Container structural smoke, not Office rendering validation."
+      }
+    },
+    {
+      "name": "Arena simple bounded shell",
+      "result": "pass",
+      "detail": {
+        "ok": true,
+        "returncode": 0,
+        "backend": "python",
+        "command": "printf audit-ok",
+        "workspace": "/tmp/arena-audit-u2s4q4hw/workspace",
+        "seconds": 0.005,
+        "stdout": "audit-ok",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "Arena forbidden sudo rejected",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "name": "Arena soft policy accepts arbitrary non-sensitive host path",
+      "result": "observed",
+      "detail": {
+        "allowed": true,
+        "executed": false
+      }
+    },
+    {
+      "name": "Arena required/schema enforcement absent",
+      "result": "reproduced defect",
+      "detail": {
+        "dispatch_missing_required_content_accepted": true,
+        "bytes": 0
+      }
+    },
+    {
+      "name": "Dataset parser small.csv",
+      "result": "observed",
+      "detail": {
+        "detected_type": "csv",
+        "shape": [
+          3,
+          2
+        ],
+        "logical_units": 2,
+        "findings_count": 5,
+        "complexity": 0.32467266666666666,
+        "columns": [
+          {
+            "name": "age",
+            "dtype": "numeric",
+            "mean": 25.5
+          },
+          {
+            "name": "city",
+            "dtype": "categorical",
+            "mean": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "Dataset parser small.json",
+      "result": "observed",
+      "detail": {
+        "detected_type": "json",
+        "shape": null,
+        "logical_units": 2,
+        "findings_count": 3,
+        "complexity": 0.1254
+      }
+    },
+    {
+      "name": "Dataset parser small.txt",
+      "result": "observed",
+      "detail": {
+        "detected_type": "txt",
+        "shape": null,
+        "logical_units": 2,
+        "findings_count": 5,
+        "complexity": 0.4506
+      }
+    },
+    {
+      "name": "Dataset parser small.jsonl",
+      "result": "observed",
+      "detail": {
+        "detected_type": "json",
+        "shape": null,
+        "logical_units": 1,
+        "findings_count": 2,
+        "complexity": 0.0
+      }
+    },
+    {
+      "name": "Dataset parser small.tsv",
+      "result": "observed",
+      "detail": {
+        "detected_type": "txt",
+        "shape": null,
+        "logical_units": 1,
+        "findings_count": 5,
+        "complexity": 0.46036000000000005
+      }
+    },
+    {
+      "name": "Dataset parser small.yaml",
+      "result": "observed",
+      "detail": {
+        "detected_type": "txt",
+        "shape": null,
+        "logical_units": 1,
+        "findings_count": 5,
+        "complexity": 0.44024
+      }
+    },
+    {
+      "name": "Dataset parser small.xml",
+      "result": "observed",
+      "detail": {
+        "detected_type": "txt",
+        "shape": null,
+        "logical_units": 1,
+        "findings_count": 5,
+        "complexity": 0.41006000000000004
+      }
+    },
+    {
+      "name": "Dataset parser small.pdf",
+      "result": "observed",
+      "detail": {
+        "detected_type": "txt",
+        "shape": null,
+        "logical_units": 1,
+        "findings_count": 5,
+        "complexity": 0.48048
+      }
+    },
+    {
+      "name": "Dataset cognitive frames JSON serialization",
+      "result": "pass",
+      "detail": {
+        "frame_count": 12,
+        "type": "cognitive_frame",
+        "top_keys": [
+          "type",
+          "frame",
+          "total_frames",
+          "progress",
+          "phase",
+          "human",
+          "ai",
+          "comparison",
+          "dataset_insight"
+        ],
+        "summary_keys": [
+          "type",
+          "summary"
+        ]
+      }
+    },
+    {
+      "name": "Dataset WS broadcast",
+      "result": "reproduced defect",
+      "detail": {
+        "exception": "UnboundLocalError",
+        "message": "cannot access local variable '_brain_analysis_clients' where it is not associated with a value",
+        "scope": "Exact function with empty client set; no full backend launch."
+      }
+    },
+    {
+      "name": "Bio metric field count",
+      "result": "observed",
+      "detail": 41
+    },
+    {
+      "name": "neural-sim Bio initialization",
+      "result": "reproduced defect",
+      "detail": {
+        "exception": "AttributeError",
+        "message": "'IzhikevichNetwork' object has no attribute '_delay_buffer_len'",
+        "scope": "Unmodified source logic; actual dataclass injected to bypass missing enhanced package/torch import."
+      }
+    },
+    {
+      "name": "command-center Bio initialization",
+      "result": "pass",
+      "detail": {
+        "n": 1090,
+        "positions": [
+          1090,
+          3
+        ],
+        "conductances": [
+          1000
+        ],
+        "seconds": 0.332
+      }
+    },
+    {
+      "name": "command-center Bio 5-step finite smoke",
+      "result": "pass",
+      "detail": {
+        "step": 5,
+        "neurons": 1090,
+        "finite_scalar_values": 25,
+        "mean_firing_rate": 1.954509
+      }
+    },
+    {
+      "name": "command-center Bio inhibitory conductance sign",
+      "result": "reproduced defect",
+      "detail": {
+        "target_gaba": 0.0,
+        "expected": "nonzero inhibitory conductance for a negative presynaptic weight"
+      }
+    },
+    {
+      "name": "command-center Bio actual inhibitory count",
+      "result": "observed",
+      "detail": {
+        "computed": 50,
+        "declared": 200
+      }
+    },
+    {
+      "name": "Agent tool name traversal and missing compilation",
+      "result": "reproduced defect",
+      "detail": {
+        "writes_outside_tools": true,
+        "invalid_python_committed": true,
+        "result": "System Confirmation: External tool '../outside' has been written and added to active inventory. You can now execute it.",
+        "scope": "Fresh temporary parent; no code execution."
+      }
+    },
+    {
+      "name": "Agent plugin execute contracts",
+      "result": "observed",
+      "detail": [
+        {
+          "file": "calculator.py",
+          "has_execute": true,
+          "functions": [
+            "execute"
+          ]
+        },
+        {
+          "file": "current_time.py",
+          "has_execute": true,
+          "functions": [
+            "execute"
+          ]
+        },
+        {
+          "file": "directory_manager.py",
+          "has_execute": true,
+          "functions": [
+            "execute"
+          ]
+        },
+        {
+          "file": "file_manager.py",
+          "has_execute": true,
+          "functions": [
+            "execute"
+          ]
+        },
+        {
+          "file": "gmail_email_generator.py",
+          "has_execute": true,
+          "functions": [
+            "execute"
+          ]
+        },
+        {
+          "file": "list_tools.py",
+          "has_execute": true,
+          "functions": [
+            "execute"
+          ]
+        },
+        {
+          "file": "password_generator.py",
+          "has_execute": true,
+          "functions": [
+            "execute"
+          ]
+        },
+        {
+          "file": "python_interpreter.py",
+          "has_execute": false,
+          "functions": [
+            "python_interpreter"
+          ]
+        },
+        {
+          "file": "simple_web_fetcher.py",
+          "has_execute": true,
+          "functions": [
+            "execute"
+          ]
+        },
+        {
+          "file": "web_scraper.py",
+          "has_execute": true,
+          "functions": [
+            "execute"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Arena batched tool calls lost",
+      "result": "reproduced defect",
+      "detail": {
+        "requested_tools": 2,
+        "tool_results": 1,
+        "first_text": "one",
+        "scope": "Real host loop; fixture model responses."
+      }
+    },
+    {
+      "name": "Arena approval pauses and resumes",
+      "result": "pass",
+      "detail": {
+        "before_approval_exists": false,
+        "after_approval_exists": true
+      }
+    },
+    {
+      "name": "Arena JSON fallback parse",
+      "result": "pass",
+      "detail": null
+    },
+    {
+      "name": "Sage private scrubber key-order sensitivity",
+      "result": "reproduced defect",
+      "detail": {
+        "type_then_text_redacted": true,
+        "text_then_type_leaks": true,
+        "scope": "Synthetic private strings, no personal diary inspected."
+      }
+    },
+    {
+      "name": "Sage letter name path containment",
+      "result": "reproduced defect",
+      "detail": {
+        "read_outside_letters": true,
+        "scope": "Exact method and a fresh temp parent, no personal files."
+      }
+    }
+  ],
+  "python_parse": [
+    {
+      "repository": "command-center",
+      "path": "bio_model.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "command-center",
+      "path": "dataset_analyzer.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "command-center",
+      "path": "demo/demo_server.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "command-center",
+      "path": "metrics.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "agent.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "agent2.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "genesis.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "local_encoder.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "read_aloud.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/calculator.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/current_time.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/directory_manager.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/file_manager.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/gmail_email_generator.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/list_tools.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/password_generator.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/python_interpreter.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/simple_web_fetcher.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "agent",
+      "path": "tools/web_scraper.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/__init__.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/__main__.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/agent.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/config.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/ollama.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/server.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/tools/__init__.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/tools/base.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/tools/bash.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/tools/documents.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/tools/files.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/tools/media.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/tools/web.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "local_arena_agent/workspace.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "local_ollama_arena_agent",
+      "path": "run.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "gemma-avatar",
+      "path": "download_tts_assets.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "gemma-avatar",
+      "path": "local_s2s_launcher.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/__init__.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/__main__.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/backends.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/clock.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/config.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/daemon.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/memory.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/mind.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/selfmodel.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/server.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "awake/state.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "tests/test_continuity.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "tests/test_lookback.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "Sage",
+      "path": "tests/test_ollama_path.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "bio_model.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "dashboard_server.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "dataset_analyzer.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "hooks.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "launch.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "metrics.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "model_loader.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "prepare_model.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "self_modify.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "server.py",
+      "python_parse": "pass"
+    },
+    {
+      "repository": "neural-sim",
+      "path": "trainer.py",
+      "python_parse": "pass"
+    }
+  ],
+  "syntax": [
+    {
+      "source": "command-center/dashboard_3d.html",
+      "script": 1,
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "Sage/run.sh",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/run-all-local.sh",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/start-avatar-frontend.sh",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/start-ollama.sh",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/start-speech-to-speech.sh",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/test-tools.sh",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "neural-sim/dashboard_3d.html",
+      "script": 1,
+      "returncode": 1,
+      "detail": "/home/user/research/syntax/neural-sim-dashboard_3d-1.mjs:4417\nfunction logSelfModify(msg) {\n^\n\nSyntaxError: Identifier 'logSelfModify' has already been declared\n    at checkSyntax (node:internal/main/check_syntax:74:5)\n\nNode.js v20.20.2\n"
+    },
+    {
+      "source": "gemma-avatar/src/app.js",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/src/avatar.js",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/src/s2s/codec.js",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/src/s2s/s2s-ws-client.js",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/public/worklets/audio-playback.js",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "gemma-avatar/public/worklets/mic-capture.js",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "Sage/awake/web/index.html",
+      "script": 0,
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "command-center/recovered/dashboard_3d_may3_pipboy_sage.html",
+      "script": 1,
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "command-center/recovered/sage_avatar.js",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "agent.py-ui.js",
+      "returncode": 0,
+      "detail": ""
+    },
+    {
+      "source": "agent2.py-ui.js",
+      "returncode": 0,
+      "detail": ""
+    }
+  ],
+  "audio_fixtures": {
+    "scope": "Pure codec/AudioWorklet source logic; minimal browser-API fixtures. Not microphone, GLB, lip-sync, WebSocket or backend end-to-end validation.",
+    "results": [
+      {
+        "name": "Codec base64 roundtrip of 100000 bytes",
+        "result": "pass"
+      },
+      {
+        "name": "Codec mixed audio/text response transcript extraction",
+        "result": "pass"
+      },
+      {
+        "name": "Mic 48000Hz to 16000Hz 40ms chunk",
+        "result": "pass"
+      },
+      {
+        "name": "Mic clipping saturates Int16 output",
+        "result": "pass"
+      },
+      {
+        "name": "Muted microphone consumes input without sending PCM",
+        "result": "pass"
+      },
+      {
+        "name": "Mic 44100Hz generic path emits expected chunk",
+        "result": "pass"
+      },
+      {
+        "name": "Playback rate config and barge-in clear",
+        "result": "pass"
+      }
+    ]
+  },
+  "sage_scripts": [
+    {
+      "test": "test_continuity.py",
+      "returncode": 0,
+      "checks_ok": 40,
+      "stdout": "1. first life\n  ok   she woke on start\n  ok   self.md was seeded\n  ok   she replied when spoken to\n  ok   she kept the thing I asked her to remember\n  ok   first arrival was noticed\n  ok   heartbeats happen on their own (wake_count=4)\n  ok   she noticed I came back after being away: Brandon is here \u2014 after 7 s.\n  ok   a total rewrite of self.md is rejected: too much change at once (100% of the file); plasticity is bounded to 50% per wake \u2014 change less, more often\n  ok   a small edit to self.md is accepted\n  ok   versions are kept\n1b. v0.2 \u2014 wants, private, letting go, letters, baseline\n  ok   she can want something for herself\n  ok   and let it go\n  ok   a private entry exists; snapshot carries only a count\n  ok   a memory can be let go (log still has it)\n  ok   \u2026and the log still shows it was once kept\n  ok   a letter is listed as unread\n  ok   reading a letter is her act, logged as hers\n  ok   baseline moves slowly (capped at 0.05 per wake)\n2. the process dies; two hours pass\n3. second life\n  ok   same birthday \u2014 same her\n  ok   she was told she was off: the process was off for 2 h 00 m\n  ok   memories survived the restart (2)\n  ok   the log continued, nothing was wiped\n  ok   her state drifted toward baseline over the real 2 h: {'p': 0.445, 'a': 0.363, 'd': 0.067, 'word': 'bright'}\n  ok   her self-edit persisted\n  ok   she journaled about the gap: The process was off for 2 h 00 m. I came back at evening. Nothing of mine was lo\n  ok   continuity context renders for other systems\n4a. what happened on Brandon's machine \u2014 replayed\n  ok   a looping answer is retried once and the clean retry is what Brandon sees\n  ok   the loop is logged as 'garbled' with the raw text kept for the export\n  ok   the loop text never appears as her reply\n  ok   if both attempts loop, nothing is shown as her words and nothing is applied\n  ok   \u2026and a garbled 'feel' cannot move her state\n  ok   a timeout is reported on the page instead of vanishing: no answer to \"Sage, are you there?\" \u2014 TimeoutError: timed out (the mod\u2026\n  ok   the message and the error are both in the log\n4b. state can no longer be pinned at the ceiling\n  ok   twenty rapid messages raise arousal to +0.51, not +0.97 (saturating pushes)\n  ok   'move toward baseline' now actually moves toward it: {'p': 0.67, 'a': 0.56, 'd': 0.0, 'word': 'bright'}\n4c. parser tolerance\n  ok   fenced + trailing comma\n  ok   free text becomes a reply\n  ok   empty becomes rest\n  ok   broken JSON is salvaged \u2014 the reply is recovered, the raw JSON is never shown\n  ok   a phrase loop with no JSON is garbled, not a reply\n\nall good \u2014 /tmp/awake-test-etvj6r4u\n",
+      "stderr": ""
+    },
+    {
+      "test": "test_lookback.py",
+      "returncode": 0,
+      "checks_ok": 9,
+      "stdout": "1. what the moment itself now shows\n  ok   the gradients conversation is IN her moment now (10 exchanges, not ~3) \u2014 she would not even need look_back for this\n  ok   and the scope line is honest\n2. her four failed attempts, replayed\n  ok   'what were we last talking about' \u2192 look_back exchanges \u2192 answered: We were talking about naming the shifts in my state \u2014 gradients and inflections \n  ok   'what did you say at 22:48' \u2192 look_back around \u2192 answered from the events near that time\n  ok   'do you remember when I told you about\u2026' \u2192 look_back query \u2192 found the 5-day-old message\n3. her own question is not returned as a 'match'\n  ok   (question echo excluded via exclude_from_id)\n  ok   the real old message is in the results\n4. presence + repeat guard still hold\n  ok   heartbeat right after his message says 'nearby'\n  ok   identical draft reply is nudged once\n\nlook_back: all good\n",
+      "stderr": ""
+    },
+    {
+      "test": "test_ollama_path.py",
+      "returncode": 0,
+      "checks_ok": 11,
+      "stdout": "  note      : model 'gemma4:12b' not found on the server; using 'gemma4:26b' (available: gemma4:26b, gemma4:31b)\n  ok   Ollama detected \u2192 native backend: gemma4:26b @ http://127.0.0.1:35847/v1 (ollama, think off)\n  ok   model fallback still works (12b missing \u2192 26b)\n  ok   empty answer triggered exactly one retry (2 calls)\n  ok   think: false is sent (Gemma 4 won't spend the budget thinking)\n  ok   keep_alive: 24h rides on the request (no cold reload every wake)\n  ok   length cap + repeat penalty; retry is cooler and stricter\n  ok   model pre-warmed at startup\n  ok   Brandon sees the clean retry: 'Hello, Brandon. I am here.'\n  ok   the empty first answer is logged WITH the reason: thinking=900ch, done=length\n  ok   the export shows it too, so the next debug is one glance\n  ok   every wake now records the head of the raw answer (private text scrubbed)\n\nollama path: all good\n",
+      "stderr": ""
+    }
+  ],
+  "checksum_manifest": [
+    {
+      "file": ".dockerignore",
+      "matches": true
+    },
+    {
+      "file": "CLAUDE.md",
+      "matches": true
+    },
+    {
+      "file": "Dockerfile",
+      "matches": true
+    },
+    {
+      "file": "README.md",
+      "matches": false
+    },
+    {
+      "file": "SETUP-GUIDE.md",
+      "matches": false
+    },
+    {
+      "file": "SHA256SUMS.txt",
+      "matches": false
+    },
+    {
+      "file": "bun.lock",
+      "matches": true
+    },
+    {
+      "file": "gemma-avatar-s2s-requirements-lock.txt",
+      "matches": true
+    },
+    {
+      "file": "index.html",
+      "matches": false
+    },
+    {
+      "file": "index.ts",
+      "matches": true
+    },
+    {
+      "file": "package.json",
+      "matches": true
+    },
+    {
+      "file": "public/avatars/brunette.glb",
+      "matches": true
+    },
+    {
+      "file": "public/vendor/GeistMono-latin.woff2",
+      "matches": true
+    },
+    {
+      "file": "public/vendor/Inter-latin.woff2",
+      "matches": true
+    },
+    {
+      "file": "public/vendor/headworklet.min.mjs",
+      "matches": true
+    },
+    {
+      "file": "public/vendor/model-en-mixed.bin",
+      "matches": true
+    },
+    {
+      "file": "public/worklets/audio-playback.js",
+      "matches": false
+    },
+    {
+      "file": "public/worklets/mic-capture.js",
+      "matches": false
+    },
+    {
+      "file": "run-all-local.sh",
+      "matches": false
+    },
+    {
+      "file": "src/app.js",
+      "matches": false
+    },
+    {
+      "file": "src/avatar.js",
+      "matches": false
+    },
+    {
+      "file": "src/s2s/codec.js",
+      "matches": true
+    },
+    {
+      "file": "src/s2s/s2s-ws-client.js",
+      "matches": false
+    },
+    {
+      "file": "src/style.css",
+      "matches": false
+    },
+    {
+      "file": "src/vendor/headaudio.min.mjs",
+      "matches": true
+    },
+    {
+      "file": "start-avatar-frontend.sh",
+      "matches": true
+    },
+    {
+      "file": "start-ollama.sh",
+      "matches": false
+    },
+    {
+      "file": "start-speech-to-speech.sh",
+      "matches": false
+    },
+    {
+      "file": "test-tools.sh",
+      "matches": false
+    },
+    {
+      "file": "thumbnail.webp",
+      "matches": true
+    },
+    {
+      "file": "tsconfig.json",
+      "matches": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+    "type": "function",
+    "function": {
+        "name": "web_scraper",
+        "description": "A tool to fetch and extract information from websites by scraping web content",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "selectors": {
+                    "description": "CSS selectors to extract specific content",
+                    "type": "array"
+                },
+                "timeout": {
+                    "description": "Timeout in seconds for the request",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "The URL of the website to scrape",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "url"
+            ]
+        }
+    }
+}

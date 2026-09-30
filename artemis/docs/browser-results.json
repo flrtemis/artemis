@@ -1,0 +1,50 @@
+{
+  "scope": "Actual Chromium UI/HTTP/WebGL/asset tests. Synthetic QA artifacts; no actual LLM, microphone/device, TTS backend, GPU training or embodied-world integration claimed.",
+  "results": [
+    {
+      "name": "Authenticated UI loads with honest disconnected-model state",
+      "result": "pass"
+    },
+    {
+      "name": "New artifact creates one shared approval, not immediate mutation",
+      "result": "pass"
+    },
+    {
+      "name": "Approval executes real workspace write and updates artifact list",
+      "result": "pass"
+    },
+    {
+      "name": "Upload → shared artifact → real dataset job → correct numeric mean in browser",
+      "result": "pass"
+    },
+    {
+      "name": "Original Command Center geometry drives live artifact Atlas, without iframe",
+      "result": "pass"
+    },
+    {
+      "name": "Same approval flow persists actual Sage memory and continuity projection",
+      "result": "pass"
+    },
+    {
+      "name": "Original Gemma AvatarStage initializes its GLB/HeadAudio assets in actual Chromium",
+      "result": "pass"
+    },
+    {
+      "name": "Text, artifact and avatar paths request no microphone",
+      "result": "pass"
+    },
+    {
+      "name": "All seven origins tracked with partial/connected/specification status",
+      "result": "pass"
+    },
+    {
+      "name": "Mobile shell retains one navigation/composer without horizontal overflow",
+      "result": "pass"
+    },
+    {
+      "name": "No uncaught browser JavaScript exceptions",
+      "result": "pass"
+    }
+  ],
+  "errors": []
+}
