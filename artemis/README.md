@@ -1,8 +1,23 @@
-# ARTEMIS — integration milestone 02
+# ARTEMIS — integration milestone 03
 
-A runnable source-backed unification, **not seven apps behind a launcher**. One authenticated gateway, conversation/context owner, continuity database, capability registry, workspace, task history and approval flow now connect all seven origins.
+**A Reality That Enhances My Integrated Services**. One canonical gateway,
+conversation, continuity, jobs/approvals, workspace and capability registry.
+Substantial partial unification, **not** every source contribution connected.
 
-This milestone adds autonomous Sage wakes, real realtime-speech plumbing/workers, mandatory kernel/container isolation, the facility/mobile/wrist port, an actual HF/PEFT training lifecycle and a native authoritative Godot World. **Runtime implementation, hardware availability and scientific completeness are separate claims.**
+[Website / first-run guide](https://flrtemis.github.io/artemis/) (owner Pages setup
+pending; not verified live) · [Current twelve-source matrix](docs/CURRENT_CAPABILITIES.md) ·
+[Fresh milestone handoff](docs/MILESTONE_03.md) · [Local extensions/example](docs/EXTENSIONS.md)
+
+**New:** approved, versioned JSON-only hot tools in the same durable model
+loop; real isolated test before registration, separate invocation approval,
+rollback/export; audio yield distinct from job cancellation, safe same-job
+corrections and held busy-model inputs. No real Ollama/physical-PC/audio/GPU
+or Pages proof is implied by scripted-provider tests.
+
+The sections below continue the milestone-02 architecture. **Their old optional
+Godot, CPU training and installed voice-model results are explicitly historical**,
+not fresh checks in this session. Current exact commands/counts/skips are in
+[verification-03.json](docs/verification-03.json). Originals are preserved.
 
 ## Run locally in WSL2/Linux
 
@@ -11,16 +26,28 @@ cd artemis
 bash start.sh
 ```
 
-Open **http://localhost:8000** and use the **operator key printed by the launcher**. Core Python dependencies install into `.venv`. The built frontend is included; Node is only needed to rebuild it. Your original seven folders are not edited or replaced.
+Open **http://localhost:8000** and use the **operator key printed by the launcher**. Core Python dependencies install into `.venv`. The built frontend is included; Node is only needed to rebuild it. Your original projects are not edited or replaced. A model-free first task: Workspace → New artifact → review Activity → approve and open the actual file.
 
 Connect your existing Ollama origin and select an installed model in **Operations**. Or launch with:
 
 ```bash
 ARTEMIS_OLLAMA_URL=http://127.0.0.1:11434 \
-ARTEMIS_OLLAMA_MODEL=gemma4:latest bash start.sh
+ARTEMIS_OLLAMA_MODEL=YOUR_ACTUAL_INSTALLED_TAG bash start.sh
 ```
 
-Use your actual installed tag. No LLM weights are downloaded automatically. The hosted preview runs in this shared workspace, **not on your PC**, and cannot reach your PC’s localhost. The same project running locally can use your existing services, models and GPU.
+Use your actual installed tag and existing WSL Ollama origin/fixed IP. The shown loopback address is only an example; Windows environment does not configure WSL. No second server, replacement model, new hardware or 24 GB WSL setting is prescribed. No LLM weights are downloaded automatically. The hosted preview runs in this shared workspace, **not on your PC**, and cannot reach your PC’s localhost. The same project running locally can use your existing services, models and GPU.
+
+### Installed/cached offline run
+
+```bash
+bash start.sh --offline
+# First-time setup, without starting the server: bash start.sh --install-only
+```
+
+Offline mode never installs packages or resolves public/DNS model/audio endpoints.
+Configured private-literal WSL/LAN endpoints still require explicit context/audio
+consent. Optional engines themselves need local/cached configuration; this is
+not a host firewall or absolute privacy guarantee.
 
 ### Reuse an existing Python environment
 
@@ -81,18 +108,18 @@ The helper prints paths to enter in Operations. This optional baseline is not cl
 - Original Gemma realtime client, codec and worklets are reused behind a **same-origin, short-lived, single-use authenticated WebSocket grant**.
 - One host-owned AudioContext handles speech, MFCC lip-sync, avatar and recorded tours. Text/read-aloud do not require the microphone.
 - Actual STT feeds the canonical conversation/tool/approval loop; completed replies produce sentence-chunked real PCM playback.
-- Barge-in/cancel epochs discard stale model/transcription/synthesis work and clear the playback queue.
+- Barge-in/audio-yield epochs discard transient stale transcription/synthesis and clear playback, **not durable work**. Explicit job cancel is separate; corrections safely invalidate stale proposals in the same job. Busy follow-ups are held for reconciliation.
 - Typed/attachment replies in the same active thread can be read through that same audio owner.
 - Local energy/silence VAD is identified honestly as **energy VAD**, not Silero. STT operates on committed utterances; synthesis chunks start after a committed model reply, not fabricated token-by-token inference.
 
-**Verified here:** actual Piper → PCM → faster-whisper transcription, actual WebSocket PCM output through the same stored thread, cancellation epochs, and browser graph initialization. **Not verified here:** your physical microphone/speakers, original Qwen/Parakeet endpoints or live device-level viseme timing.
+**Historical milestone-02 verification:** actual Piper → PCM → faster-whisper transcription, actual WebSocket PCM output through the same stored thread, cancellation epochs, and browser graph initialization. **Not freshly verified in milestone 03:** your physical microphone/speakers, original Qwen/Parakeet endpoints or live device-level viseme timing.
 
 ## Isolated execution
 
 Install working Bubblewrap namespaces on WSL2/Linux:
 
 ```bash
-sudo apt-get install bubblewrap
+sudo apt-get install bubblewrap libseccomp2
 ```
 
 `run_bash`/`run_python` become available only when a real isolation probe succeeds. Otherwise they fail closed. Jobs have user/pid/mount/network/ipc isolation, a copied workspace, no host home/Sage private state, no host network, resource/output/time limits and reviewed output diffs.
@@ -140,7 +167,7 @@ The actual managed worker supports LoRA, CUDA/CPU selection, optional CUDA NF4 w
 
 A tiny random fixture is **clearly conformance-only**, cannot be promoted as your production agent, and does not pretend to be a trained Sage/GPU run. Promotion registers an evaluated adapter candidate; it does not secretly convert to GGUF or swap Ollama’s serving model.
 
-**Verified here:** real CPU Torch/HF/PEFT parameter updates, composite objective paths, managed jobs and checkpoints. **CUDA hardware was absent**, so no GPU/NF4 throughput or your large model’s correctness is claimed verified. Advanced adaptive-controller/rank surgery and full diagnostic science remain explicit continuation work.
+**Historical milestone-02 verification:** real CPU Torch/HF/PEFT parameter updates, composite objective paths, managed jobs and checkpoints. **CUDA hardware was absent in milestone 02 and here**, so no GPU/NF4 throughput or your large model’s correctness is claimed verified. Advanced adaptive-controller/rank surgery and full diagnostic science remain explicit continuation work.
 
 ## Native World
 
@@ -155,13 +182,13 @@ Install Godot 4 or explicitly download the pinned Linux x86_64 worker:
 
 Godot owns native capsule/floor/obstacle collisions at 60Hz. The browser is only a projection. Vision is bounded and ray/occlusion tested; immutable sensor frames exclude world seed/full scene truth. Participant tokens authorize **only sensors and bounded intents** and cannot access operator truth, files, continuity or tools. Model actor steps receive sensors/goal with `tools=[]`, not the operator’s scene state. Replay compares recorded sensor hashes for fixed seed/actions.
 
-**Verified here:** actual Godot dynamics/contacts/occlusion, stale-intent rejection, participant isolation and exact replay in the tested build. This is an authoritative **baseline World**, not a finished articulated humanoid, every biological sensor, zero-copy tensor bridge or a consciousness demonstration.
+**Historical milestone-02 verification:** actual Godot dynamics/contacts/occlusion, stale-intent rejection, participant isolation and exact replay in the tested build. This is an authoritative **baseline World**, not a finished articulated humanoid, every biological sensor, zero-copy tensor bridge or a consciousness demonstration.
 
-## Verification and remaining scope
+## Historical milestone-02 verification and remaining scope
 
 - **52 backend tests pass**, including real namespace execution, real Godot, real CPU training and actual CPU speech models where installed.
 - **8 new actual Chromium UI/HTTP/WebGL checks pass** across Operations, facility/wrist, native World, shared audio graph and mobile layout.
-- TypeScript checking/production build pass; **507 retained source/asset files remain byte-identical**.
+- TypeScript checking/production build pass; **507 retained source mappings verified** (505 byte-identical blobs plus 2 pinned LFS-pointer/runtime-payload mappings).
 - Language-model decisions use deterministic fixtures in tests; a real Ollama model was not available here. No physical audio device or CUDA validation is claimed.
 
 See `docs/MILESTONE_02.md`, test logs/XML, `SOURCE_MAP.json` and `docs/capability-plan.csv`. This is continued integration—not a security/science certification or a claim that every preserved research idea is complete.

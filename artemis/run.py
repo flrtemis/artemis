@@ -7,9 +7,11 @@ def main():
     p=argparse.ArgumentParser(description='ARTEMIS unified local workspace')
     p.add_argument('--host',default='127.0.0.1',help='Use 0.0.0.0 only for an authenticated remote/proxy setup')
     p.add_argument('--port',type=int,default=8000)
+    p.add_argument('--offline',action='store_true',help='No downloads or Internet/DNS model/audio endpoints; fixed private WSL/LAN IP still requires consent')
     p.add_argument('--data-dir',default=str(Path(__file__).parent/'.runtime'))
     p.add_argument('--import-sage',type=Path,help='Explicitly copy existing Sage/data before first launch; originals remain unchanged')
     args=p.parse_args();os.umask(0o077)
+    if args.offline:os.environ['ARTEMIS_OFFLINE']='1'
     data_root=Path(args.data_dir).resolve();data_root.mkdir(parents=True,exist_ok=True)
     # Linux/WSL launcher permits one owner for persistent state and file mutations.
     import fcntl
@@ -24,8 +26,8 @@ def main():
     from artemis_app.api import create_app
     import uvicorn
     app=create_app()
-    print('\nARTEMIS · integration milestone 02',flush=True)
-    print('One gateway · shared continuity, tools, files and approvals',flush=True)
+    print('\nARTEMIS · integration milestone 03',flush=True)
+    print('One gateway · hot tools, shared continuity, files and approvals',flush=True)
     print('Operator key: '+app.state.operator_key,flush=True)
     print(f'Open http://localhost:{args.port} and use this key. It changes on restart unless ARTEMIS_OPERATOR_KEY is set.',flush=True)
     print('Originals preserved. Autonomy is opt-in; kernel isolation, speech, training and native World have explicit runtime/model requirements.\n',flush=True)

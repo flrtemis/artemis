@@ -1,0 +1,35 @@
+{
+  "contract": "artemis.capability/v1",
+  "proposal": {
+    "name": "median_values",
+    "description": "Compute the median of a bounded list of numbers.",
+    "parameters": {
+      "values": {
+        "type": "array",
+        "items": {
+          "type": "number",
+          "minimum": -1000000.0,
+          "maximum": 1000000.0
+        },
+        "minItems": 1,
+        "maxItems": 128
+      }
+    },
+    "required_args": [
+      "values"
+    ],
+    "python_code": "def execute(**kwargs):\n    values = sorted(kwargs['values'])\n    n = len(values)\n    median = values[n // 2] if n % 2 else (values[n // 2 - 1] + values[n // 2]) / 2\n    return {'median': median, 'count': n}\n",
+    "test_arguments": {
+      "values": [
+        1,
+        7,
+        3
+      ]
+    },
+    "expected_result": {
+      "median": 3,
+      "count": 3
+    },
+    "license": "CC0-1.0"
+  }
+}
