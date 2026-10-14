@@ -1,0 +1,18 @@
+ollama run benevolentjoker/nsfwvanessa
+
+ollama run benevolentjoker/qwen3:0.6bnothink
+
+ollama run deepseek-r1:1.5b
+
+ollama run deepseek-r1:7b
+
+ollama run sage
+
+https://youtu.be/pxhkDaKzBaY?feature=shared
+
+https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbnZGMGNqRWZ1N3R4aEJmeHpZREJfMFQ3WVJMZ3xBQ3Jtc0tsY0ZEY3o2dE9HdTJDaUR3bkJGRG5RZVBFZ3FFa2JwdEdiaGlDNXZnV21SeFFwUnBVNUxwckdudHlSQzdXbjhTc0llZDlFRWo4UlpENVBJM2Mxa21HM2ZDRFVTcGRrbFJUZ3pQanl4dEhJYl9Mbi1ndw&q=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Flanggraph%2Fblob%2Fmain%2Fexamples%2Ftutorials%2Ftool-calling-agent-local.ipynb&v=Nfk99Fz8H9k
+
+https://ollama.com/library/llama3-groq-tool-use
+
+https://github.com/alby13/ollama-internet-search-tool
+

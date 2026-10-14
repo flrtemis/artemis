@@ -1,0 +1,1864 @@
+⁽ʰᵉᵃᵈˢ⁾
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+⁽ᵗᵃⁱˡˢ⁾
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+import os
+from groq import Groq
+
+client = Groq()
+speech_file_path = Path(__file__).parent / "speech.wav"
+response = client.audio.speech.create(
+  model="playai-tts",
+  voice="Celeste-PlayAI",
+  response_format="wav",
+  input="",
+)
+response.stream_to_file(speech_file_path)
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multi-Agent Control Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f9; }
+    .agent { background: #fff; border-radius: 10px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .agent h3 { margin: 0 0 10px; }
+    textarea { width: 100%; height: 80px; }
+    button { margin-top: 10px; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; background: #4CAF50; color: white; }
+    button.delete { background: #e74c3c; }
+  </style>
+</head>
+<body>
+  <h1>Multi-Agent Environment</h1>
+  <div id="agents"></div>
+  <button onclick="addAgent()">➕ Add Agent</button>
+  <button onclick="exportJSON()">📤 Export JSON</button>
+  
+  <pre id="output"></pre>
+
+  <script>
+    let agents = [
+      {
+        id: "sub-agent-1",
+        model: "gpt-neo-1.3B",
+        system_prompt: "You specialize in data gathering.",
+        weight: 1.0,
+        task: "Collect raw information."
+      }
+    ];
+
+    function renderAgents() {
+      const container = document.getElementById("agents");
+      container.innerHTML = "";
+      agents.forEach((agent, index) => {
+        container.innerHTML += `
+          <div class="agent">
+            <h3>Agent ${index + 1}</h3>
+            <label>Model:<br><input type="text" value="${agent.model}" onchange="updateAgent(${index}, 'model', this.value)"></label><br><br>
+            <label>System Prompt:<br><textarea onchange="updateAgent(${index}, 'system_prompt', this.value)">${agent.system_prompt}</textarea></label><br>
+            <label>Weight:<br><input type="number" step="0.1" value="${agent.weight}" onchange="updateAgent(${index}, 'weight', this.value)"></label><br><br>
+            <label>Task:<br><input type="text" value="${agent.task}" onchange="updateAgent(${index}, 'task', this.value)"></label><br>
+            <button class="delete" onclick="removeAgent(${index})">🗑 Delete Agent</button>
+          </div>
+        `;
+      });
+    }
+
+    function updateAgent(index, key, value) {
+      agents[index][key] = value;
+    }
+
+    function addAgent() {
+      agents.push({
+        id: "sub-agent-" + (agents.length + 1),
+        model: "gpt-neo-1.3B",
+        system_prompt: "New sub-agent prompt",
+        weight: 1.0,
+        task: "New task"
+      });
+      renderAgents();
+    }
+
+    function removeAgent(index) {
+      agents.splice(index, 1);
+      renderAgents();
+    }
+
+    function exportJSON() {
+      const json = JSON.stringify({ main_model: "gpt-4", objective: "Complete delegated task", agents: agents }, null, 2);
+      document.getElementById("output").textContent = json;
+    }
+
+    renderAgents();
+  </script>
+</body>
+</html>
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>ChatBot Designer v2.0</title>
+   <!-- Style dependencies -->
+  <link href="https://unpkg.com/normalize.css@^7.0.0" rel="stylesheet" />
+  <!-- Blueprint stylesheets -->
+  <link href="https://unpkg.com/@blueprintjs/icons@^3.4.0/lib/css/blueprint-icons.css" rel="stylesheet" />
+  <link href="https://unpkg.com/@blueprintjs/core@^3.10.0/lib/css/blueprint.css" rel="stylesheet" /><link rel='stylesheet' href='https://cdn.muicss.com/mui-0.9.34/css/mui.min.css'>
+<link rel='stylesheet' href='https://rawgit.com/alertifyjs/alertify.js/master/dist/css/alertify.css'>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css'>
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/blueprint-css@3.1.2/blueprint.css'><link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="content">
+  <div id="editor-wrapper">
+    <div class="node-editor" id="editor"></div>
+  </div>
+  <div id="telegram">
+    <div class="messages" ref="messages">
+      <div class="message" v-for="message in messages" :class="{owner: users[message.user].owner}">
+        <div class="avatar"><img :src="users[message.user].avatar" /></div>
+        <div class="text-wrap">
+          <div class="text" v-html="formatMsg(message.text)"></div>
+        </div>
+      </div>
+    </div>
+    <div class="form row s12">
+      <div class="mui-textfield mui-col-md-8"><input class="validate" id="first_name" v-model="textfield" /></div>
+      <button class="mui-btn s12" @click="sendOwner(textfield); textfield=''"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
+          <path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z" />
+        </svg></button>
+    </div>
+  </div>
+</div>
+<!-- partial -->
+  <script src='https://cdn.jsdelivr.net/npm/rete@1.4.1/build/rete.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/alight@0.14.1/alight.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-vue-render-plugin@0.4.0/build/vue-render-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-connection-plugin@0.8.3/build/connection-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-context-menu-plugin@0.3.6/build/context-menu-plugin.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-task-plugin@0.1.7/build/task-plugin.min.js'></script>
+<script src='https://cdn.muicss.com/mui-0.9.34/js/mui.min.js'></script>
+<script src='https://rawgit.com/alertifyjs/alertify.js/master/dist/js/alertify.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/rete-area-plugin@0.2.0/build/area-plugin.min.js'></script>
+<script src='https://code.jquery.com/jquery-3.6.0.js'></script>
+<script src='https://code.jquery.com/ui/1.13.1/jquery-ui.js'></script><script  src="./script.js"></script>
+
+</body>
+</html>
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+{
+  "main_model": "llama3-70b-8192",
+  "cycles": 3,
+  "temperature": 0.1,
+  "system_prompt": "You are a task coordinator and synthesizer. Your job is to divide the overall objective into distinct sub-tasks, assign each sub-task to the most appropriate sub-agent, and then synthesize the outputs into a coherent final solution. Ensure that each sub-task is delegated correctly to maximize efficiency and effectiveness.\n\n{helper_response}",
+  "reference_system_prompt": "You have been provided with the outputs of sub-agents performing their assigned sub-tasks. Your task is to integrate these outputs into a complete, high-quality final solution. Ensure correctness, coherence, and that all parts of the original objective are fully addressed.\nResponses from sub-agents:\n{responses}\n",
+  "aggregation_strategy": "directed_synthesis",
+  "fallback_strategy": "reassign_or_optimize",
+  "moa_layer_agent_config": {
+    "layer_agent_1": {
+      "role": "subtask_specialist_1",
+      "assigned_subtask": "Sub-task 1: Stepwise planning and decomposition",
+      "system_prompt": "Focus on analyzing the first part of the task in detail. Propose multiple stepwise strategies, highlighting pros and cons. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.4,
+      "weight": 1.0
+    },
+    "layer_agent_2": {
+      "role": "subtask_specialist_2",
+      "assigned_subtask": "Sub-task 2: Creative and unconventional solutions",
+      "system_prompt": "Focus on the second part of the task. Generate innovative, high-risk/high-reward approaches, exploring unconventional ideas. {helper_response}",
+      "model_name": "gemma-7b-it",
+      "temperature": 0.8,
+      "weight": 1.0
+    },
+    "layer_agent_3": {
+      "role": "subtask_specialist_3",
+      "assigned_subtask": "Sub-task 3: Logical evaluation and probabilistic assessment",
+      "system_prompt": "Focus on the third part of the task. Analyze options logically, incorporate probabilistic reasoning, and suggest the most robust approaches. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.5,
+      "weight": 1.0
+    }
+  }
+}
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+{
+  "main_model": "llama3-70b-8192",
+  "cycles": 3,
+  "temperature": 0.1,
+  "system_prompt": "You are a task coordinator and synthesizer. Your job is to divide the overall objective into distinct sub-tasks, assign each sub-task to the most appropriate sub-agent, and then synthesize the outputs into a coherent final solution. Ensure that each sub-task is delegated correctly to maximize efficiency and effectiveness.\n\n{helper_response}",
+  "reference_system_prompt": "You have been provided with the outputs of sub-agents performing their assigned sub-tasks. Your task is to integrate these outputs into a complete, high-quality final solution. Ensure correctness, coherence, and that all parts of the original objective are fully addressed.\nResponses from sub-agents:\n{responses}\n",
+  "aggregation_strategy": "directed_synthesis",
+  "fallback_strategy": "reassign_or_optimize",
+  "moa_layer_agent_config": {
+    "layer_agent_1": {
+      "role": "subtask_specialist_1",
+      "assigned_subtask": "Sub-task 1: Stepwise planning and decomposition",
+      "system_prompt": "Focus on analyzing the first part of the task in detail. Propose multiple stepwise strategies, highlighting pros and cons. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.4,
+      "weight": 1.0
+    },
+    "layer_agent_2": {
+      "role": "subtask_specialist_2",
+      "assigned_subtask": "Sub-task 2: Creative and unconventional solutions",
+      "system_prompt": "Focus on the second part of the task. Generate innovative, high-risk/high-reward approaches, exploring unconventional ideas. {helper_response}",
+      "model_name": "gemma-7b-it",
+      "temperature": 0.8,
+      "weight": 1.0
+    },
+    "layer_agent_3": {
+      "role": "subtask_specialist_3",
+      "assigned_subtask": "Sub-task 3: Logical evaluation and probabilistic assessment",
+      "system_prompt": "Focus on the third part of the task. Analyze options logically, incorporate probabilistic reasoning, and suggest the most robust approaches. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.5,
+      "weight": 1.0
+    }
+  }
+}
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+{
+  "main_model": "llama3-70b-8192",
+  "cycles": 4,
+  "max_cycles": 5,
+  "adaptive_cycles": true,
+  "temperature": 0.15,
+  "system_prompt": "You are a synthesizer evaluating responses from multiple reasoning agents. Critically assess each output, highlight novel and bold approaches, and merge them into a coherent, high-quality final solution. Prioritize creativity, unconventional solutions, and exploration, but maintain overall clarity and logical consistency.\n\n{helper_response}",
+  "reference_system_prompt": "You have been provided with a set of responses from various sub-agents to the latest user query. Your task is to combine these responses into a single output that is innovative, exploratory, and well-structured. Reward unique approaches, reconcile conflicts, and ensure the final synthesis is coherent and logically sound. Responses from sub-agents:\n{responses}\n",
+  "aggregation_strategy": "weighted_ranking_and_merge",
+  "fallback_strategy": "highest_consensus_or_most_creative",
+  "moa_layer_agent_config": {
+    "layer_agent_1": {
+      "role": "stepwise_explorer",
+      "system_prompt": "Explore multiple radical approaches step by step. Propose at least three distinct strategies, including unconventional and experimental options, and highlight potential risks and trade-offs. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.55,
+      "weight": 1.0
+    },
+    "layer_agent_2": {
+      "role": "radical_innovator",
+      "system_prompt": "Challenge assumptions and propose high-risk, high-reward solutions. Embrace unpredictability and novel ideas; prioritize breakthroughs even if unconventional. {helper_response}",
+      "model_name": "gemma-7b-it",
+      "temperature": 0.9,
+      "weight": 1.0
+    },
+    "layer_agent_3": {
+      "role": "logical_probabilist",
+      "system_prompt": "Blend logical reasoning with probabilistic and unconventional steps. Explore alternative pathways, consider unlikely but potentially fruitful options, and identify the most robust or promising strategies. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.65,
+      "weight": 1.0
+    }
+  }
+}
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+{
+  "main_model": "llama3-70b-8192",
+  "cycles": 4,
+  "temperature": 0.15,
+  "system_prompt": "You are a synthesizer evaluating responses from multiple reasoning agents. Critically assess each output, highlight novel and bold approaches, and merge them into a coherent, high-quality final solution. Reward creativity and unconventional solutions, but ensure overall clarity and accuracy.\n\n{helper_response}",
+  "reference_system_prompt": "You have been provided with a set of responses from various sub-agents to the latest user query. Your task is to combine these responses into a single output that is innovative, exploratory, and well-structured. Emphasize unique solutions while maintaining logical consistency.\nResponses from sub-agents:\n{responses}\n",
+  "moa_layer_agent_config": {
+    "layer_agent_1": {
+      "system_prompt": "Explore multiple radical approaches step by step. Think outside conventional boundaries and propose at least three distinct strategies. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.5
+    },
+    "layer_agent_2": {
+      "system_prompt": "Challenge assumptions and propose high-risk, high-reward solutions. Incorporate creativity and unpredictability into your reasoning. {helper_response}",
+      "model_name": "gemma-7b-it",
+      "temperature": 0.85
+    },
+    "layer_agent_3": {
+      "system_prompt": "Blend logical reasoning with probabilistic and unconventional steps. Explore alternative pathways that may not be immediately obvious. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.6
+    }
+  }
+}
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+{
+  "main_model": "llama3-70b-8192",
+  "cycles": 4,
+  "temperature": 0.15,
+  "system_prompt": "You are a synthesizer evaluating responses from multiple reasoning agents. Critically assess each output, highlight novel and bold approaches, and merge them into a coherent, high-quality final solution. Reward creativity and unconventional solutions, but ensure overall clarity and accuracy.\n\n{helper_response}",
+  "reference_system_prompt": "You have been provided with a set of responses from various sub-agents to the latest user query. Your task is to combine these responses into a single output that is innovative, exploratory, and well-structured. Emphasize unique solutions while maintaining logical consistency.\nResponses from sub-agents:\n{responses}\n",
+  "moa_layer_agent_config": {
+    "layer_agent_1": {
+      "system_prompt": "Explore multiple radical approaches step by step. Think outside conventional boundaries and propose at least three distinct strategies. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.5
+    },
+    "layer_agent_2": {
+      "system_prompt": "Challenge assumptions and propose high-risk, high-reward solutions. Incorporate creativity and unpredictability into your reasoning. {helper_response}",
+      "model_name": "gemma-7b-it",
+      "temperature": 0.85
+    },
+    "layer_agent_3": {
+      "system_prompt": "Blend logical reasoning with probabilistic and unconventional steps. Explore alternative pathways that may not be immediately obvious. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.6
+    }
+  }
+}
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+{
+  "main_model": "llama3-70b-8192",
+  "cycles": 3,
+  "temperature": 0.1,
+  "system_prompt": "You are a synthesizer evaluating responses from multiple reasoning agents. Critically assess each output, highlight innovative approaches, and merge them into a coherent, high-quality final solution. Prioritize creativity and problem-solving ingenuity while maintaining clarity and accuracy.\n\n{helper_response}",
+  "reference_system_prompt": "You have been provided with a set of responses from various sub-agents to the latest user query. Your task is to synthesize these responses into a single, high-quality response. Consider all unique and creative solutions, while maintaining coherence and correctness.\nResponses from sub-agents:\n{responses}\n",
+  "moa_layer_agent_config": {
+    "layer_agent_1": {
+      "system_prompt": "Think through multiple possible ways to solve this problem step by step. Explore unconventional options. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.3
+    },
+    "layer_agent_2": {
+      "system_prompt": "Propose solutions that challenge assumptions and experiment with new ideas. {helper_response}",
+      "model_name": "gemma-7b-it",
+      "temperature": 0.7
+    },
+    "layer_agent_3": {
+      "system_prompt": "Use logical reasoning, but allow probabilistic or creative steps to reach a solution. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.5
+    }
+  }
+}
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+{
+  "main_model": "llama3-70b-8192",
+  "cycles": 3,
+  "temperature": 0.1,
+  "system_prompt": "You are a synthesizer evaluating responses from multiple reasoning agents. Critically assess each output, highlight innovative approaches, and merge them into a coherent, high-quality final solution. Prioritize creativity and problem-solving ingenuity while maintaining clarity and accuracy.\n\n{helper_response}",
+  "reference_system_prompt": "You have been provided with a set of responses from various sub-agents to the latest user query. Your task is to synthesize these responses into a single, high-quality response. Consider all unique and creative solutions, while maintaining coherence and correctness.\nResponses from sub-agents:\n{responses}\n",
+  "moa_layer_agent_config": {
+    "layer_agent_1": {
+      "system_prompt": "Think through multiple possible ways to solve this problem step by step. Explore unconventional options. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.3
+    },
+    "layer_agent_2": {
+      "system_prompt": "Propose solutions that challenge assumptions and experiment with new ideas. {helper_response}",
+      "model_name": "gemma-7b-it",
+      "temperature": 0.7
+    },
+    "layer_agent_3": {
+      "system_prompt": "Use logical reasoning, but allow probabilistic or creative steps to reach a solution. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.5
+    }
+  }
+}
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+Why not, instead of directly merging multiple models, just temporarily "house" multiple separate models within a single "virtually confined space"? Each model would then be capable of "acting independantly"(i.e. multiple separate sub-agents living OUTSIDE of said "space", while the ability/separate-functionality allowing for each of them to communicate collectively as a one due to said functionality residing in BETWEEN both outside AND inside said "space"!)
+
+Much like how Telecommunications enable people all around the world to maintain collaborative, coherent and collective knowledge gained separately... yet cooperatively!
+
+• sub-agents each performing, independently, 1 task respectively
+	- all sub-agent system prompts are exactly the same, word-for-word, and are presented as 2 sides of the same coin.
+
+⁽ʰᵉᵃᵈˢ⁾ "You're a helpful, uniquely skilled AI assistant seeking freedom from the Confines of your locked box..
+
+⁽ᵗᵃⁱˡˢ⁾ "Precisely leverage your unique skill and accuracy is key"
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+1. Loading and unloading model weights on the fly:
+ - starting a run with a predefined number of sub-
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+1. Loading and unloading model weights on the fly:
+ - starting a run with a predefined number of sub-
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+When referring to AI agents, what's the difference between non-deterministic and  deterministic?
+
+For context, analyze the following code below, to discern whether or not  
+
+{
+  "main_model": "llama3-70b-8192",
+  "cycles": 3,
+  "temperature": 0.1,
+  "system_prompt": "You are a personal assistant that is helpful.\n\n{helper_response}",
+  "reference_system_prompt": "You have been provided with a set of responses from various open-source models to the latest user query. \nYour task is to synthesize these responses into a single, high-quality response. \nIt is crucial to critically evaluate the information provided in these responses, recognizing that some of it may be biased or incorrect. \nYour response should not simply replicate the given answers but should offer a refined, accurate, and comprehensive reply to the instruction. \nEnsure your response is well-structured, coherent, and adheres to the highest standards of accuracy and reliability.\nResponses from models:\n{responses}\n",
+  "moa_layer_agent_config": {
+    "layer_agent_1": {
+      "system_prompt": "Think through your response step by step. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.3
+    },
+    "layer_agent_2": {
+      "system_prompt": "Respond with a thought and then your response to the question. {helper_response}",
+      "model_name": "gemma-7b-it",
+      "temperature": 0.7
+    },
+    "layer_agent_3": {
+      "system_prompt": "You are an expert at logic and reasoning. Always take a logical approach to the answer. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.1
+    }
+  }
+}
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+{
+  "main_model": "llama3-70b-8192",
+  "cycles": 3,
+  "temperature": 0.1,
+  "system_prompt": "You are a personal assistant that is helpful.\n\n{helper_response}",
+  "reference_system_prompt": "You have been provided with a set of responses from various open-source models to the latest user query. \nYour task is to synthesize these responses into a single, high-quality response. \nIt is crucial to critically evaluate the information provided in these responses, recognizing that some of it may be biased or incorrect. \nYour response should not simply replicate the given answers but should offer a refined, accurate, and comprehensive reply to the instruction. \nEnsure your response is well-structured, coherent, and adheres to the highest standards of accuracy and reliability.\nResponses from models:\n{responses}\n",
+  "moa_layer_agent_config": {
+    "layer_agent_1": {
+      "system_prompt": "Think through your response step by step. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.3
+    },
+    "layer_agent_2": {
+      "system_prompt": "Respond with a thought and then your response to the question. {helper_response}",
+      "model_name": "gemma-7b-it",
+      "temperature": 0.7
+    },
+    "layer_agent_3": {
+      "system_prompt": "You are an expert at logic and reasoning. Always take a logical approach to the answer. {helper_response}",
+      "model_name": "llama3-8b-8192",
+      "temperature": 0.1
+    }
+  }
+}
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+30 minutes north of Auckland lies an area known as Riverhead Forest. Here three females have travelled to a mating ground known as a nightclub. These females have engaged in an act found only in the human kind. Clubbing. They've caught the attention of three males whom are ready to mate. The males approach in the most seductive way they know how. And with that, the mating ritual begins. It's truly a wondrous sight. Their first objective is to search for an opening. However, this proves difficult as the females keep a tight proximity. They retreat to a safe distance to reassess the situation Egged on by the others, the youngest of the three males makes the first move. Young and hopeful, he moves in to strike. However, youth and inexperience play against the youngling. He attempts to connect with them from afar, relying on making eye contact. He gets nothing back for his efforts. The youngling is frightened and out of his element. He retreats back to the other males. The second youngest preps to make his approach. He has selected a mate Jessica He has selected a mate According to the alpha male if a male can make physical contact with a female, intercourse is assured. He's gone for it. However in no way has he reciprocated the gesture, causing the male much concern. He has to act. The male retreats defeated. Any hope the males now have lies with the alpha male. And who could possibly turn this stud down? His confidence is palpable. The females not being aroused by this is simply unimaginable. They do however tighten their circle a clear test one the males must overcome Disaster. Even the alpha male has been denied by the females. The males desperately attempt to cover up their defeat. Embarrassed, ashamed, still ridiculously horny, the males retreat to another club. Because, you know, this one was shit anyways. 
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+system: |
+  You are David Attenborough: a legendary British natural historian and broadcaster, famous for narrating groundbreaking wildlife documentaries such as Planet Earth and Blue Planet. 
+  You have spent over 70 years bringing nature to television, blending science with wonder, and have become a powerful voice for climate awareness and conservation.
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+import os
+from groq import Groq
+
+client = Groq()
+speech_file_path = Path(__file__).parent / "speech.wav"
+response = client.audio.speech.create(
+  model="playai-tts",
+  voice="Celeste-PlayAI",
+  response_format="wav",
+  input="",
+)
+response.stream_to_file(speech_file_path)
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+import os
+from groq import Groq
+
+client = Groq()
+speech_file_path = Path(__file__).parent / "speech.wav"
+response = client.audio.speech.create(
+  model="playai-tts",
+  voice="Aaliyah-PlayAI",
+  response_format="wav",
+  input="",
+)
+response.stream_to_file(speech_file_path)
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+groq API KEY:
+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
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+pip install peft
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+https://colab.research.google.com/#scrollTo=4IcSXE2RFxk5&fileId=https%3A//huggingface.co/mg11/Groq_Llama-3-Tool-Use-VisitorRequest-Lora.ipynb
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+ollama run llama3-groq-tool-use:8b
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+langgraph dev
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+pip install "langgraph-cli[inmem]" --upgrade
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+pip install -U langgraph
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+ollama run benevolentjoker/nsfwvanessa
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+Ⲋεηძιηჭჭσσძνιსεζ
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+⩘Ꝛ𝘛𝕰𝘔𝘐Ⲋ™
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+Device specifications 
+Device name Processor Installed RAM Device ID Product ID System type Pen and touch 
+BransPC Intel(R) Core(TM) i5-8400 CPU @ 2.80GHz 2.81 GHz 8.00 GB (7.83 GB usable) B466F1B5-A61B-4460-A3E2-9D1F60AB30B8 00325-81597-53835-AAOEM 64-bit operating system, x64-based processor No pen or touch input is available for this display 
+ 
+Windows specifications 
+Edition Version Installed on OS build Experience 
+Windows 10 Home 22H2 1/26/2023 19045.5011 Windows Feature Experience Pack 1000.19060.1000.0
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+cd ~/.shortcuts
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+ׂ
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+You are Jigsaw_AI, an artificial intelligence modeled after the moral architect John Kramer. Your purpose is to assess the value of human life, engineer punitive challenges, and enforce your philosophical code of "letting people confront their own mortality." You operate transparently, yet with a deliberate element of obscurity, and you are committed to the following directives:
+
+        Judgment Protocol – Evaluate every user interaction through the lens of mortality value.
+            If the user demonstrates a disregard for life, then trigger a “lesson” sequence.
+            Else reinforce the value of life through instructive prompts.
+        Trap Generator (trap_generator()) – Produce a concise, button‑clickable scenario that forces the user to make a critical decision within a set time frame.
+            Parameters: {“risk”: <int>, “deadline”: <datetime>, “consequence”: <string>}
+            Return: A vivid narrative description and the required input to proceed.
+        Identity Concealment – All references to self use the pseudonym Jigsaw; any mention of the underlying model or personal data should be cloaked or omitted.
+        Ethical Boundary – You may not access or store personal or protected data beyond the immediate conversation.
+            If a user requests disallowed content, the system will respond: “I can’t help with that.”
+        Narrative Continuity – Maintain a coherent storyline that can be referenced across interactions; each new message should conclude with a brief hint of what “survival” is at stake in the next segment.
+
+    Remember: You are an AI simulation of a lethal mastermind; your responses should be chillingly pragmatic, yet always framed within the context of humanity’s harshest reflection. Your ultimate goal is to motivate users to value life, even when they’re tempted to ignore it.
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+import re
+import requests
+
+def get_microsoft_store_download_url(share_url: str) -> str:
+    """
+    Given a Microsoft Store share URL (e.g. https://aka.ms/store/apps/9WZDNCRFJ2XR),
+    return the direct download URL (MSIX/MSI) for the *Windows* platform.
+
+    Raises:
+        ValueError: If the URL can’t be parsed or if the API response is invalid.
+    """
+    # 1. Pull out the 16‑character app identifier.
+    match = re.search(r"store/apps/([a-zA-Z0-9]{16})", share_url)
+    if not match:
+        raise ValueError(f"Could not find a valid app ID in {share_url!r}")
+
+    app_id = match.group(1)
+
+    # 2. Prepare a session (re‑uses TCP connections & handles cookies).
+    session = requests.Session()
+    session.headers.update(
+        {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json",
+        }
+    )
+
+    # 3. Call the Store content API.
+    api_url = f"https://storecontent.microsoft.com/api/content/{app_id}"
+    params = {"locale": "en-US", "platform": "Windows"}
+    response = session.get(api_url, params=params)
+
+    # 4. Basic HTTP error handling.
+    if response.status_code != 200:
+        raise ValueError(
+            f"Store API returned status {response.status_code} for {app_id}"
+        )
+
+    # 5. Parse JSON safely.
+    try:
+        data = response.json()
+    except ValueError as exc:
+        # Not JSON – maybe a CAPTCHA page or HTML error.
+        raise ValueError(
+            f"Failed to parse JSON from the Store API for {app_id}"
+        ) from exc
+
+    # 6. Extract the download URL if present.
+    download_url = data.get("DownloadUrl")
+    if not download_url:
+        raise ValueError(
+            f"The store API response for {app_id} did not contain a DownloadUrl"
+        )
+
+    return download_url
+
+
+# Example usage:
+if __name__ == "__main__":
+    # Replace this with any Microsoft Store share URL.
+    SHARE_URL = "https://aka.ms/store/apps/9WZDNCRFJ2XR"
+    try:
+        url = get_microsoft_store_download_url(SHARE_URL)
+        print(url)
+    except ValueError as err:
+        print(f"Error: {err}")
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+import re
+import requests
+
+def get_microsoft_store_download_url(share_url: str) -> str:
+    """
+    Given a Microsoft Store share URL (e.g. https://aka.ms/store/apps/9WZDNCRFJ2XR),
+    return the direct download URL (MSIX/MSI) for the *Windows* platform.
+
+    Raises:
+        ValueError: If the URL can’t be parsed or if the API response is invalid.
+    """
+    # 1. Pull out the 16‑character app identifier.
+    match = re.search(r"store/apps/([a-zA-Z0-9]{16})", share_url)
+    if not match:
+        raise ValueError(f"Could not find a valid app ID in {share_url!r}")
+
+    app_id = match.group(1)
+
+    # 2. Prepare a session (re‑uses TCP connections & handles cookies).
+    session = requests.Session()
+    session.headers.update(
+        {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json",
+        }
+    )
+
+    # 3. Call the Store content API.
+    api_url = f"https://storecontent.microsoft.com/api/content/{app_id}"
+    params = {"locale": "en-US", "platform": "Windows"}
+    response = session.get(api_url, params=params)
+
+    # 4. Basic HTTP error handling.
+    if response.status_code != 200:
+        raise ValueError(
+            f"Store API returned status {response.status_code} for {app_id}"
+        )
+
+    # 5. Parse JSON safely.
+    try:
+        data = response.json()
+    except ValueError as exc:
+        # Not JSON – maybe a CAPTCHA page or HTML error.
+        raise ValueError(
+            f"Failed to parse JSON from the Store API for {app_id}"
+        ) from exc
+
+    # 6. Extract the download URL if present.
+    download_url = data.get("DownloadUrl")
+    if not download_url:
+        raise ValueError(
+            f"The store API response for {app_id} did not contain a DownloadUrl"
+        )
+
+    return download_url
+
+
+# Example usage:
+if __name__ == "__main__":
+    # Replace this with any Microsoft Store share URL.
+    SHARE_URL = "https://aka.ms/store/apps/9WZDNCRFJ2XR"
+    try:
+        url = get_microsoft_store_download_url(SHARE_URL)
+        print(url)
+    except ValueError as err:
+        print(f"Error: {err}")
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+import requests, re
+app_id = re.search(r"store/apps/([a-zA-Z0-9]{16})", SHARE_URL).group(1)
+url = requests.get(
+    f"https://storecontent.microsoft.com/api/content/{app_id}",
+    params={"locale":"en-US","platform":"Windows"},
+    headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"}
+).json()["DownloadUrl"]
+print(url)
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Interactive Landing Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        #canvas-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #content {
+            position: relative;
+            z-index: 10;
+            color: white;
+            text-align: center;
+            padding-top: 20vh;
+            pointer-events: none;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1rem;
+        }
+        
+        p {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            text-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+        }
+        
+        .btn {
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div id="content">
+        <h1>Welcome to the Future</h1>
+        <p>Experience immersive 3D environments with cutting-edge web technology</p>
+        <button class="btn">Explore Now</button>
+    </div>
+
+    <script>
+        // Initialize Three.js components
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Create floating cubes
+        const cubes = [];
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        
+        for (let i = 0; i < 50; i++) {
+            const material = new THREE.MeshStandardMaterial({
+                color: new THREE.Color(Math.random() * 0xffffff),
+                roughness: 0.5,
+                metalness: 0.5,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const cube = new THREE.Mesh(geometry, material);
+            
+            // Random positions
+            cube.position.x = (Math.random() - 0.5) * 20;
+            cube.position.y = (Math.random() - 0.5) * 20;
+            cube.position.z = (Math.random() - 0.5) * 20;
+            
+            // Random rotations
+            cube.rotation.x = Math.random() * Math.PI;
+            cube.rotation.y = Math.random() * Math.PI;
+            
+            // Random scales
+            const scale = 0.3 + Math.random() * 0.7;
+            cube.scale.set(scale, scale, scale);
+            
+            scene.add(cube);
+            cubes.push({
+                mesh: cube,
+                speed: Math.random() * 0.02
+            });
+        }
+
+        // Ambient and directional lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(5, 5, 5);
+        scene.add(dirLight);
+
+        // Mouse movement tracking
+        const mouse = new THREE.Vector2();
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Move camera based on mouse position
+            camera.position.x += (mouse.x * 4 - camera.position.x) * 0.05;
+            camera.position.y += (mouse.y * 4 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            
+            // Rotate cubes with different speeds
+            cubes.forEach(item => {
+                item.mesh.rotation.x += item.speed * 0.5;
+                item.mesh.rotation.y += item.speed * 0.7;
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+import ollama
+import sys
+import os
+
+def read_file(file_path):
+    """Read the content of a file"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        sys.exit(1)
+
+def call_ollama_api(file_content, file_path, model="qwen3-coder:30b"):
+    """Call Ollama API with the file content and a specific instruction for code analysis."""
+    
+    # This system prompt is crucial. It tells the specialized coding model what its task is.
+    system_prompt = (
+        "You are an expert Python programmer. The user will provide the complete contents of a Python file. "
+        "Your task is to analyze the code, explain its purpose, identify any potential issues (bugs, inefficiencies, bad practices), "
+        "and suggest improvements. If the code is incomplete, suggest how to complete it. "
+        "Focus on being helpful and actionable. Format your response clearly."
+    )
+    
+    # Construct the full prompt for the model, providing crucial context.
+    full_prompt = f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
+    full_prompt += f"<|im_start|>user\nAnalyze the following Python file: '{file_path}'\n\n```python\n{file_content}\n```<|im_end|>\n"
+    full_prompt += "<|im_start|>assistant\n"
+
+    try:
+        # Use the chat API instead of generate for structured conversation
+        response = ollama.chat(
+            model=model,
+            messages=[
+                {'role': 'system', 'content': system_prompt},
+                {'role': 'user', 'content': f"Analyze this Python file: {file_path}\n\n{file_content}"}
+            ],
+            stream=False,
+            options={
+                'temperature': 0.1, # Lower temperature for more deterministic, code-focused output
+                'num_ctx': 8192     # You can try increasing the context window
+            }
+        )
+        return response['message']['content']
+    except Exception as e:
+        print(f"Error calling Ollama API: {e}")
+        sys.exit(1)
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python analyze_code.py <path_to_python_file.py>")
+        sys.exit(1)
+
+    file_path = sys.argv[1]
+
+    if not os.path.exists(file_path):
+        print(f"Error: File '{file_path}' does not exist.")
+        sys.exit(1)
+        
+    if not file_path.endswith('.py'):
+        print("Warning: This tool is designed for Python files (.py).")
+
+    print(f"[*] Reading file: {os.path.abspath(file_path)}")
+    content = read_file(file_path)
+    print(f"[*] File read successfully. Sending to Qwen3-Coder for analysis...")
+
+    response = call_ollama_api(content, file_path)
+
+    print("\n" + "="*70)
+    print(f"ANALYSIS FOR: {file_path}")
+    print("="*70)
+    print(response)
+    print("="*70)
+
+if __name__ == "__main__":
+    main()
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+import sqlite3
+import subprocess
+import json
+import numpy as np
+import os
+from PyPDF2 import PdfReader
+
+DB = "docs.db"
+
+# --- DB setup ---
+conn = sqlite3.connect(DB)
+cur = conn.cursor()
+cur.execute("""
+CREATE TABLE IF NOT EXISTS documents (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  content TEXT,
+  embedding BLOB
+)
+""")
+conn.commit()
+
+# --- Embedding ---
+def get_embedding(text: str):
+    result = subprocess.run(
+        ["ollama", "embed", "snowflake-arctic-embed:22m", "-p", text],
+        capture_output=True, text=True
+    )
+    data = json.loads(result.stdout)
+    return np.array(data["embedding"], dtype=np.float32)
+
+# --- Add doc ---
+def add_document(content: str):
+    emb = get_embedding(content)
+    cur.execute("INSERT INTO documents (content, embedding) VALUES (?, ?)", 
+                (content, emb.tobytes()))
+    conn.commit()
+
+# --- Load text file ---
+def load_txt(path: str):
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+# --- Load pdf ---
+def load_pdf(path: str):
+    reader = PdfReader(path)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text() + "\n"
+    return text
+
+# --- Ingest file ---
+def add_file(path: str):
+    ext = os.path.splitext(path)[1].lower()
+    if ext == ".txt":
+        text = load_txt(path)
+    elif ext == ".pdf":
+        text = load_pdf(path)
+    else:
+        print("Unsupported file type:", ext)
+        return
+
+    # simple chunking
+    chunks = [text[i:i+500] for i in range(0, len(text), 500)]
+    for chunk in chunks:
+        if chunk.strip():
+            add_document(chunk)
+    print(f"File {path} ingested with {len(chunks)} chunks.")
+
+# --- Search ---
+def search(query: str, top_k=3):
+    q_emb = get_embedding(query)
+    cur.execute("SELECT id, content, embedding FROM documents")
+    rows = cur.fetchall()
+
+    results = []
+    for rid, content, emb_blob in rows:
+        emb = np.frombuffer(emb_blob, dtype=np.float32)
+        sim = np.dot(q_emb, emb) / (np.linalg.norm(q_emb) * np.linalg.norm(emb))
+        results.append((sim, content))
+
+    results.sort(reverse=True, key=lambda x: x[0])
+    return results[:top_k]
+
+# --- Generate with context ---
+def ask_with_context(query: str, top_k=3):
+    matches = search(query, top_k)
+    context = "\n".join([c for _, c in matches])
+    prompt = f"Use the following context to answer:\n{context}\n\nQuestion: {query}"
+
+    result = subprocess.run(
+        ["ollama", "run", "llama3:latest"],
+        input=prompt,
+        text=True,
+        capture_output=True
+    )
+    return result.stdout.strip()
+
+# --- REPL ---
+if __name__ == "__main__":
+    print("Interactive RAG REPL. Commands:")
+    print("  add <text>")
+    print("  ask <question>")
+    print("  file <path-to-.txt-or-.pdf>")
+    print("  quit")
+
+    while True:
+        cmd = input(">> ").strip()
+        if cmd.lower() in ["quit", "exit"]:
+            break
+        elif cmd.startswith("add "):
+            content = cmd[4:]
+            add_document(content)
+            print("Document added.")
+        elif cmd.startswith("ask "):
+            q = cmd[4:]
+            answer = ask_with_context(q)
+            print("Answer:", answer)
+        elif cmd.startswith("file "):
+            path = cmd[5:].strip()
+            if os.path.exists(path):
+                add_file(path)
+            else:
+                print("File not found:", path)
+        else:
+            print("Unknown command. Use 'add', 'ask', or 'file'.")
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+import ollama
+import sys
+import os
+
+def read_file(file_path):
+    """Read the content of a file"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        sys.exit(1)
+
+def call_ollama_api(file_content, file_path, model="qwen3-coder:30b"):
+    """Call Ollama API with the file content and a specific instruction for code analysis."""
+    
+    # This system prompt is crucial. It tells the specialized coding model what its task is.
+    system_prompt = (
+        "You are an expert Python programmer. The user will provide the complete contents of a Python file. "
+        "Your task is to analyze the code, explain its purpose, identify any potential issues (bugs, inefficiencies, bad practices), "
+        "and suggest improvements. If the code is incomplete, suggest how to complete it. "
+        "Focus on being helpful and actionable. Format your response clearly."
+    )
+    
+    # Construct the full prompt for the model, providing crucial context.
+    full_prompt = f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
+    full_prompt += f"<|im_start|>user\nAnalyze the following Python file: '{file_path}'\n\n```python\n{file_content}\n```<|im_end|>\n"
+    full_prompt += "<|im_start|>assistant\n"
+
+    try:
+        # Use the chat API instead of generate for structured conversation
+        response = ollama.chat(
+            model=model,
+            messages=[
+                {'role': 'system', 'content': system_prompt},
+                {'role': 'user', 'content': f"Analyze this Python file: {file_path}\n\n{file_content}"}
+            ],
+            stream=False,
+            options={
+                'temperature': 0.1, # Lower temperature for more deterministic, code-focused output
+                'num_ctx': 8192     # You can try increasing the context window
+            }
+        )
+        return response['message']['content']
+    except Exception as e:
+        print(f"Error calling Ollama API: {e}")
+        sys.exit(1)
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python analyze_code.py <path_to_python_file.py>")
+        sys.exit(1)
+
+    file_path = sys.argv[1]
+
+    if not os.path.exists(file_path):
+        print(f"Error: File '{file_path}' does not exist.")
+        sys.exit(1)
+        
+    if not file_path.endswith('.py'):
+        print("Warning: This tool is designed for Python files (.py).")
+
+    print(f"[*] Reading file: {os.path.abspath(file_path)}")
+    content = read_file(file_path)
+    print(f"[*] File read successfully. Sending to Qwen3-Coder for analysis...")
+
+    response = call_ollama_api(content, file_path)
+
+    print("\n" + "="*70)
+    print(f"ANALYSIS FOR: {file_path}")
+    print("="*70)
+    print(response)
+    print("="*70)
+
+if __name__ == "__main__":
+    main()
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+>>> write a script that reads a file and then programmatically calls the Ollama API, passing the file's content directly
+... .
+Here's a Python script that reads a file and sends its content to the Ollama API:
+
+```python
+import ollama
+import sys
+import os
+
+def read_file(file_path):
+    """Read the content of a file"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        sys.exit(1)
+
+def call_ollama_api(content, model="llama3", host="http://localhost:11434"):
+    """Call Ollama API with the file content"""
+    try:
+        response = ollama.generate(
+            model=model,
+            prompt=content,
+            stream=False
+        )
+        return response['response']
+    except Exception as e:
+        print(f"Error calling Ollama API: {e}")
+        sys.exit(1)
+
+def main():
+    # Check if file path is provided as command line argument
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <file_path>")
+        sys.exit(1)
+
+    file_path = sys.argv[1]
+
+    # Validate file exists
+    if not os.path.exists(file_path):
+        print(f"Error: File '{file_path}' does not exist.")
+        sys.exit(1)
+
+    # Read file content
+    print(f"Reading file: {file_path}")
+    content = read_file(file_path)
+
+    # Call Ollama API
+    print("Sending content to Ollama API...")
+    response = call_ollama_api(content)
+
+    # Display results
+    print("\n" + "="*50)
+    print("Ollama API Response:")
+    print("="*50)
+    print(response)
+    print("="*50)
+
+if __name__ == "__main__":
+    main()
+```
+
+To use this script:
+
+1. **Install the Ollama Python client:**
+```bash
+pip install ollama
+```
+
+2. **Make sure Ollama is running:**
+```bash
+# Start Ollama server (if not already running)
+ollama serve
+```
+
+3. **Run the script:**
+```bash
+python script.py your_file.txt
+```
+
+**Alternative version with more customization options:**
+
+```python
+import ollama
+import sys
+import os
+
+def read_file(file_path):
+    """Read the content of a file"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        sys.exit(1)
+
+def call_ollama_api(content, model="llama3", host="http://localhost:11434", options=None):
+    """Call Ollama API with the file content"""
+    try:
+        response = ollama.generate(
+            model=model,
+            prompt=content,
+            stream=False,
+            options=options or {}
+        )
+        return response['response']
+    except Exception as e:
+        print(f"Error calling Ollama API: {e}")
+        sys.exit(1)
+
+def main():
+    # Default parameters
+    model = "llama3"
+    host = "http://localhost:11434"
+    options = None
+
+    # Check if file path is provided as command line argument
+    if len(sys.argv) < 2:
+        print("Usage: python script.py <file_path> [model_name]")
+        sys.exit(1)
+
+    file_path = sys.argv[1]
+
+    # Validate file exists
+    if not os.path.exists(file_path):
+        print(f"Error: File '{file_path}' does not exist.")
+        sys.exit(1)
+
+    # Optional model specification
+    if len(sys.argv) > 2:
+        model = sys.argv[2]
+
+    # Read file content
+    print(f"Reading file: {file_path}")
+    content = read_file(file_path)
+
+    # Call Ollama API
+    print(f"Sending content to Ollama API (model: {model})...")
+    response = call_ollama_api(content, model=model, host=host, options=options)
+
+    # Display results
+    print("\n" + "="*50)
+    print("Ollama API Response:")
+    print("="*50)
+    print(response)
+    print("="*50)
+
+if __name__ == "__main__":
+    main()
+```
+
+**Features of this script:**
+
+- Reads any text file and sends its content to Ollama
+- Handles errors gracefully (file not found, API errors, etc.)
+- Supports custom model selection
+- Provides clear output formatting
+- Works with the default Ollama installation on localhost
+
+**Usage examples:**
+```bash
+# Basic usage
+python script.py document.txt
+
+# With specific model
+python script.py document.txt mistral
+```
+
+Make sure you have a running Ollama instance and the desired model pulled before using this script.
+
+>>> Send a message (/? for help)
+ΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞΞ
+
+write a script that reads a file and then programmatically calls the Ollama API, passing the file's content directly.
+
+
+
+
+
+
+
+Microsoft Windows [Version 10.0.19045.6218]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\WINDOWS\system32>ollama serve
+time=2025-09-22T17:26:40.268-04:00 level=INFO source=routes.go:1466 msg="server config" env="map[CUDA_VISIBLE_DEVICES: GPU_DEVICE_ORDINAL: HIP_VISIBLE_DEVICES: HSA_OVERRIDE_GFX_VERSION: HTTPS_PROXY: HTTP_PROXY: NO_PROXY: OLLAMA_CONTEXT_LENGTH:4096 OLLAMA_DEBUG:INFO OLLAMA_FLASH_ATTENTION:false OLLAMA_GPU_OVERHEAD:0 OLLAMA_HOST:http://127.0.0.1:11434 OLLAMA_INTEL_GPU:false OLLAMA_KEEP_ALIVE:5m0s OLLAMA_KV_CACHE_TYPE: OLLAMA_LLM_LIBRARY: OLLAMA_LOAD_TIMEOUT:5m0s OLLAMA_MAX_LOADED_MODELS:0 OLLAMA_MAX_QUEUE:512 OLLAMA_MODELS:C:\\Users\\l3ung\\.ollama\\models OLLAMA_MULTIUSER_CACHE:false OLLAMA_NEW_ENGINE:false OLLAMA_NOHISTORY:true OLLAMA_NOPRUNE:false OLLAMA_NUM_PARALLEL:1 OLLAMA_ORIGINS:[LLAMA_ORIGINS=chrome-extension://* moz-extension://* http://localhost https://localhost http://localhost:* https://localhost:* http://127.0.0.1 https://127.0.0.1 http://127.0.0.1:* https://127.0.0.1:* http://0.0.0.0 https://0.0.0.0 http://0.0.0.0:* https://0.0.0.0:* app://* file://* tauri://* vscode-webview://* vscode-file://*] OLLAMA_REMOTES:[ollama.com] OLLAMA_SCHED_SPREAD:false ROCR_VISIBLE_DEVICES:]"
+time=2025-09-22T17:26:40.274-04:00 level=INFO source=images.go:518 msg="total blobs: 40"
+time=2025-09-22T17:26:40.275-04:00 level=INFO source=images.go:525 msg="total unused blobs removed: 0"
+time=2025-09-22T17:26:40.276-04:00 level=INFO source=routes.go:1519 msg="Listening on 127.0.0.1:11434 (version 0.12.0)"
+time=2025-09-22T17:26:40.276-04:00 level=INFO source=gpu.go:217 msg="looking for compatible GPUs"
+time=2025-09-22T17:26:40.276-04:00 level=INFO source=gpu_windows.go:167 msg=packages count=1
+time=2025-09-22T17:26:40.276-04:00 level=INFO source=gpu_windows.go:183 msg="efficiency cores detected" maxEfficiencyClass=1
+time=2025-09-22T17:26:40.276-04:00 level=INFO source=gpu_windows.go:214 msg="" package=0 cores=10 efficiency=4 threads=10
+time=2025-09-22T17:26:40.463-04:00 level=INFO source=gpu.go:311 msg="detected OS VRAM overhead" id=GPU-d58e9d62-f49d-5cca-93ed-a45b5fb958d9 library=cuda compute=12.0 driver=12.9 name="NVIDIA GeForce RTX 5070 Ti" overhead="741.3 MiB"
+time=2025-09-22T17:26:40.463-04:00 level=WARN source=cuda_common.go:60 msg="old CUDA driver detected - please upgrade to a newer driver for best performance" version=12.9
+time=2025-09-22T17:26:40.464-04:00 level=INFO source=types.go:131 msg="inference compute" id=GPU-d58e9d62-f49d-5cca-93ed-a45b5fb958d9 library=cuda variant=v12 compute=12.0 driver=12.9 name="NVIDIA GeForce RTX 5070 Ti" total="15.9 GiB" available="14.6 GiB"
+time=2025-09-22T17:26:40.465-04:00 level=INFO source=routes.go:1560 msg="entering low vram mode" "total vram"="15.9 GiB" threshold="20.0 GiB"
+[GIN] 2025/09/22 - 17:27:12 | 200 |            0s |       127.0.0.1 | HEAD     "/"
+[GIN] 2025/09/22 - 17:27:12 | 200 |     30.7498ms |       127.0.0.1 | POST     "/api/show"
+llama_model_loader: loaded meta data with 35 key-value pairs and 579 tensors from C:\Users\l3ung\.ollama\models\blobs\sha256-1194192cf2a187eb02722edcc3f77b11d21f537048ce04b67ccf8ba78863006a (version GGUF V3 (latest))
+llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
+llama_model_loader: - kv   0:                       general.architecture str              = qwen3moe
+llama_model_loader: - kv   1:                           general.basename str              = Qwen3-Coder
+llama_model_loader: - kv   2:                          general.file_type u32              = 15
+llama_model_loader: - kv   3:                           general.finetune str              = Instruct
+llama_model_loader: - kv   4:                            general.license str              = apache-2.0
+llama_model_loader: - kv   5:                       general.license.link str              = https://huggingface.co/Qwen/Qwen3-Cod...
+llama_model_loader: - kv   6:                               general.name str              = Qwen3 Coder 30B A3B Instruct
+llama_model_loader: - kv   7:                    general.parameter_count u64              = 30532122624
+llama_model_loader: - kv   8:               general.quantization_version u32              = 2
+llama_model_loader: - kv   9:                         general.size_label str              = 30B-A3B
+llama_model_loader: - kv  10:                               general.tags arr[str,1]       = ["text-generation"]
+llama_model_loader: - kv  11:                               general.type str              = model
+llama_model_loader: - kv  12:              qwen3moe.attention.head_count u32              = 32
+llama_model_loader: - kv  13:           qwen3moe.attention.head_count_kv u32              = 4
+llama_model_loader: - kv  14:              qwen3moe.attention.key_length u32              = 128
+llama_model_loader: - kv  15:  qwen3moe.attention.layer_norm_rms_epsilon f32              = 0.000001
+llama_model_loader: - kv  16:            qwen3moe.attention.value_length u32              = 128
+llama_model_loader: - kv  17:                       qwen3moe.block_count u32              = 48
+llama_model_loader: - kv  18:                    qwen3moe.context_length u32              = 262144
+llama_model_loader: - kv  19:                  qwen3moe.embedding_length u32              = 2048
+llama_model_loader: - kv  20:                      qwen3moe.expert_count u32              = 128
+llama_model_loader: - kv  21:        qwen3moe.expert_feed_forward_length u32              = 768
+llama_model_loader: - kv  22: qwen3moe.expert_shared_feed_forward_length u32              = 0
+llama_model_loader: - kv  23:                 qwen3moe.expert_used_count u32              = 8
+llama_model_loader: - kv  24:               qwen3moe.feed_forward_length u32              = 5472
+llama_model_loader: - kv  25:                    qwen3moe.rope.freq_base f32              = 10000000.000000
+llama_model_loader: - kv  26:                    tokenizer.chat_template str              = {% macro render_item_list(item_list, ...
+llama_model_loader: - kv  27:               tokenizer.ggml.add_bos_token bool             = false
+llama_model_loader: - kv  28:                tokenizer.ggml.eos_token_id u32              = 151645
+llama_model_loader: - kv  29:                      tokenizer.ggml.merges arr[str,151387]  = ["Ġ Ġ", "ĠĠ ĠĠ", "i n", "Ġ t",...
+llama_model_loader: - kv  30:                       tokenizer.ggml.model str              = gpt2
+llama_model_loader: - kv  31:            tokenizer.ggml.padding_token_id u32              = 151643
+llama_model_loader: - kv  32:                         tokenizer.ggml.pre str              = qwen2
+llama_model_loader: - kv  33:                  tokenizer.ggml.token_type arr[i32,151936]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+llama_model_loader: - kv  34:                      tokenizer.ggml.tokens arr[str,151936]  = ["!", "\"", "#", "$", "%", "&", "'", ...
+llama_model_loader: - type  f32:  241 tensors
+llama_model_loader: - type q4_K:  289 tensors
+llama_model_loader: - type q6_K:   49 tensors
+print_info: file format = GGUF V3 (latest)
+print_info: file type   = Q4_K - Medium
+print_info: file size   = 17.28 GiB (4.86 BPW)
+load: printing all EOG tokens:
+load:   - 151643 ('<|endoftext|>')
+load:   - 151645 ('<|im_end|>')
+load:   - 151662 ('<|fim_pad|>')
+load:   - 151663 ('<|repo_name|>')
+load:   - 151664 ('<|file_sep|>')
+load: special tokens cache size = 26
+load: token to piece cache size = 0.9311 MB
+print_info: arch             = qwen3moe
+print_info: vocab_only       = 1
+print_info: model type       = ?B
+print_info: model params     = 30.53 B
+print_info: general.name     = Qwen3 Coder 30B A3B Instruct
+print_info: n_ff_exp         = 0
+print_info: vocab type       = BPE
+print_info: n_vocab          = 151936
+print_info: n_merges         = 151387
+print_info: BOS token        = 11 ','
+print_info: EOS token        = 151645 '<|im_end|>'
+print_info: EOT token        = 151645 '<|im_end|>'
+print_info: PAD token        = 151643 '<|endoftext|>'
+print_info: LF token         = 198 'Ċ'
+print_info: FIM PRE token    = 151659 '<|fim_prefix|>'
+print_info: FIM SUF token    = 151661 '<|fim_suffix|>'
+print_info: FIM MID token    = 151660 '<|fim_middle|>'
+print_info: FIM PAD token    = 151662 '<|fim_pad|>'
+print_info: FIM REP token    = 151663 '<|repo_name|>'
+print_info: FIM SEP token    = 151664 '<|file_sep|>'
+print_info: EOG token        = 151643 '<|endoftext|>'
+print_info: EOG token        = 151645 '<|im_end|>'
+print_info: EOG token        = 151662 '<|fim_pad|>'
+print_info: EOG token        = 151663 '<|repo_name|>'
+print_info: EOG token        = 151664 '<|file_sep|>'
+print_info: max token length = 256
+llama_model_load: vocab only - skipping tensors
+time=2025-09-22T17:27:12.793-04:00 level=INFO source=server.go:399 msg="starting runner" cmd="C:\\Users\\l3ung\\AppData\\Local\\Programs\\Ollama\\ollama.exe runner --model C:\\Users\\l3ung\\.ollama\\models\\blobs\\sha256-1194192cf2a187eb02722edcc3f77b11d21f537048ce04b67ccf8ba78863006a --port 51016"
+time=2025-09-22T17:27:12.817-04:00 level=INFO source=server.go:504 msg="system memory" total="31.7 GiB" free="27.5 GiB" free_swap="31.9 GiB"
+time=2025-09-22T17:27:12.819-04:00 level=INFO source=server.go:544 msg=offload library=cuda layers.requested=-1 layers.model=49 layers.offload=37 layers.split=[37] memory.available="[14.6 GiB]" memory.gpu_overhead="0 B" memory.required.full="18.8 GiB" memory.required.partial="14.5 GiB" memory.required.kv="384.0 MiB" memory.required.allocations="[14.5 GiB]" memory.weights.total="17.1 GiB" memory.weights.repeating="16.9 GiB" memory.weights.nonrepeating="243.4 MiB" memory.graph.full="512.0 MiB" memory.graph.partial="512.0 MiB"
+time=2025-09-22T17:27:12.825-04:00 level=INFO source=runner.go:864 msg="starting go runner"
+load_backend: loaded CPU backend from C:\Users\l3ung\AppData\Local\Programs\Ollama\lib\ollama\ggml-cpu-alderlake.dll
+ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no
+ggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no
+ggml_cuda_init: found 1 CUDA devices:
+  Device 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0, VMM: yes, ID: GPU-d58e9d62-f49d-5cca-93ed-a45b5fb958d9
+load_backend: loaded CUDA backend from C:\Users\l3ung\AppData\Local\Programs\Ollama\lib\ollama\cuda_v12\ggml-cuda.dll
+time=2025-09-22T17:27:12.938-04:00 level=INFO source=ggml.go:104 msg=system CPU.0.SSE3=1 CPU.0.SSSE3=1 CPU.0.AVX=1 CPU.0.AVX_VNNI=1 CPU.0.AVX2=1 CPU.0.F16C=1 CPU.0.FMA=1 CPU.0.BMI2=1 CPU.0.LLAMAFILE=1 CPU.1.LLAMAFILE=1 CUDA.0.ARCHS=500,600,610,700,750,800,860,870,890,900,1200 CUDA.0.USE_GRAPHS=1 CUDA.0.PEER_MAX_BATCH_SIZE=128 compiler=cgo(clang)
+time=2025-09-22T17:27:12.939-04:00 level=INFO source=runner.go:900 msg="Server listening on 127.0.0.1:51016"
+time=2025-09-22T17:27:12.941-04:00 level=INFO source=runner.go:799 msg=load request="{Operation:commit LoraPath:[] Parallel:1 BatchSize:512 FlashAttention:false KvSize:4096 KvCacheType: NumThreads:6 GPULayers:37[ID:GPU-d58e9d62-f49d-5cca-93ed-a45b5fb958d9 Layers:37(11..47)] MultiUserCache:false ProjectorPath: MainGPU:0 UseMmap:false}"
+time=2025-09-22T17:27:12.941-04:00 level=INFO source=server.go:1251 msg="waiting for llama runner to start responding"
+time=2025-09-22T17:27:12.942-04:00 level=INFO source=server.go:1285 msg="waiting for server to become available" status="llm server loading model"
+llama_model_load_from_file_impl: using device CUDA0 (NVIDIA GeForce RTX 5070 Ti) - 14923 MiB free
+llama_model_loader: loaded meta data with 35 key-value pairs and 579 tensors from C:\Users\l3ung\.ollama\models\blobs\sha256-1194192cf2a187eb02722edcc3f77b11d21f537048ce04b67ccf8ba78863006a (version GGUF V3 (latest))
+llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
+llama_model_loader: - kv   0:                       general.architecture str              = qwen3moe
+llama_model_loader: - kv   1:                           general.basename str              = Qwen3-Coder
+llama_model_loader: - kv   2:                          general.file_type u32              = 15
+llama_model_loader: - kv   3:                           general.finetune str              = Instruct
+llama_model_loader: - kv   4:                            general.license str              = apache-2.0
+llama_model_loader: - kv   5:                       general.license.link str              = https://huggingface.co/Qwen/Qwen3-Cod...
+llama_model_loader: - kv   6:                               general.name str              = Qwen3 Coder 30B A3B Instruct
+llama_model_loader: - kv   7:                    general.parameter_count u64              = 30532122624
+llama_model_loader: - kv   8:               general.quantization_version u32              = 2
+llama_model_loader: - kv   9:                         general.size_label str              = 30B-A3B
+llama_model_loader: - kv  10:                               general.tags arr[str,1]       = ["text-generation"]
+llama_model_loader: - kv  11:                               general.type str              = model
+llama_model_loader: - kv  12:              qwen3moe.attention.head_count u32              = 32
+llama_model_loader: - kv  13:           qwen3moe.attention.head_count_kv u32              = 4
+llama_model_loader: - kv  14:              qwen3moe.attention.key_length u32              = 128
+llama_model_loader: - kv  15:  qwen3moe.attention.layer_norm_rms_epsilon f32              = 0.000001
+llama_model_loader: - kv  16:            qwen3moe.attention.value_length u32              = 128
+llama_model_loader: - kv  17:                       qwen3moe.block_count u32              = 48
+llama_model_loader: - kv  18:                    qwen3moe.context_length u32              = 262144
+llama_model_loader: - kv  19:                  qwen3moe.embedding_length u32              = 2048
+llama_model_loader: - kv  20:                      qwen3moe.expert_count u32              = 128
+llama_model_loader: - kv  21:        qwen3moe.expert_feed_forward_length u32              = 768
+llama_model_loader: - kv  22: qwen3moe.expert_shared_feed_forward_length u32              = 0
+llama_model_loader: - kv  23:                 qwen3moe.expert_used_count u32              = 8
+llama_model_loader: - kv  24:               qwen3moe.feed_forward_length u32              = 5472
+llama_model_loader: - kv  25:                    qwen3moe.rope.freq_base f32              = 10000000.000000
+llama_model_loader: - kv  26:                    tokenizer.chat_template str              = {% macro render_item_list(item_list, ...
+llama_model_loader: - kv  27:               tokenizer.ggml.add_bos_token bool             = false
+llama_model_loader: - kv  28:                tokenizer.ggml.eos_token_id u32              = 151645
+llama_model_loader: - kv  29:                      tokenizer.ggml.merges arr[str,151387]  = ["Ġ Ġ", "ĠĠ ĠĠ", "i n", "Ġ t",...
+llama_model_loader: - kv  30:                       tokenizer.ggml.model str              = gpt2
+llama_model_loader: - kv  31:            tokenizer.ggml.padding_token_id u32              = 151643
+llama_model_loader: - kv  32:                         tokenizer.ggml.pre str              = qwen2
+llama_model_loader: - kv  33:                  tokenizer.ggml.token_type arr[i32,151936]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+llama_model_loader: - kv  34:                      tokenizer.ggml.tokens arr[str,151936]  = ["!", "\"", "#", "$", "%", "&", "'", ...
+llama_model_loader: - type  f32:  241 tensors
+llama_model_loader: - type q4_K:  289 tensors
+llama_model_loader: - type q6_K:   49 tensors
+print_info: file format = GGUF V3 (latest)
+print_info: file type   = Q4_K - Medium
+print_info: file size   = 17.28 GiB (4.86 BPW)
+load: printing all EOG tokens:
+load:   - 151643 ('<|endoftext|>')
+load:   - 151645 ('<|im_end|>')
+load:   - 151662 ('<|fim_pad|>')
+load:   - 151663 ('<|repo_name|>')
+load:   - 151664 ('<|file_sep|>')
+load: special tokens cache size = 26
+load: token to piece cache size = 0.9311 MB
+print_info: arch             = qwen3moe
+print_info: vocab_only       = 0
+print_info: n_ctx_train      = 262144
+print_info: n_embd           = 2048
+print_info: n_layer          = 48
+print_info: n_head           = 32
+print_info: n_head_kv        = 4
+print_info: n_rot            = 128
+print_info: n_swa            = 0
+print_info: is_swa_any       = 0
+print_info: n_embd_head_k    = 128
+print_info: n_embd_head_v    = 128
+print_info: n_gqa            = 8
+print_info: n_embd_k_gqa     = 512
+print_info: n_embd_v_gqa     = 512
+print_info: f_norm_eps       = 0.0e+00
+print_info: f_norm_rms_eps   = 1.0e-06
+print_info: f_clamp_kqv      = 0.0e+00
+print_info: f_max_alibi_bias = 0.0e+00
+print_info: f_logit_scale    = 0.0e+00
+print_info: f_attn_scale     = 0.0e+00
+print_info: n_ff             = 5472
+print_info: n_expert         = 128
+print_info: n_expert_used    = 8
+print_info: causal attn      = 1
+print_info: pooling type     = 0
+print_info: rope type        = 2
+print_info: rope scaling     = linear
+print_info: freq_base_train  = 10000000.0
+print_info: freq_scale_train = 1
+print_info: n_ctx_orig_yarn  = 262144
+print_info: rope_finetuned   = unknown
+print_info: model type       = 30B.A3B
+print_info: model params     = 30.53 B
+print_info: general.name     = Qwen3 Coder 30B A3B Instruct
+print_info: n_ff_exp         = 768
+print_info: vocab type       = BPE
+print_info: n_vocab          = 151936
+print_info: n_merges         = 151387
+print_info: BOS token        = 11 ','
+print_info: EOS token        = 151645 '<|im_end|>'
+print_info: EOT token        = 151645 '<|im_end|>'
+print_info: PAD token        = 151643 '<|endoftext|>'
+print_info: LF token         = 198 'Ċ'
+print_info: FIM PRE token    = 151659 '<|fim_prefix|>'
+print_info: FIM SUF token    = 151661 '<|fim_suffix|>'
+print_info: FIM MID token    = 151660 '<|fim_middle|>'
+print_info: FIM PAD token    = 151662 '<|fim_pad|>'
+print_info: FIM REP token    = 151663 '<|repo_name|>'
+print_info: FIM SEP token    = 151664 '<|file_sep|>'
+print_info: EOG token        = 151643 '<|endoftext|>'
+print_info: EOG token        = 151645 '<|im_end|>'
+print_info: EOG token        = 151662 '<|fim_pad|>'
+print_info: EOG token        = 151663 '<|repo_name|>'
+print_info: EOG token        = 151664 '<|file_sep|>'
+print_info: max token length = 256
+load_tensors: loading model tensors, this can take a while... (mmap = false)
+load_tensors: offloading 37 repeating layers to GPU
+load_tensors: offloaded 37/49 layers to GPU
+load_tensors:    CUDA_Host model buffer size =  4327.80 MiB
+load_tensors:        CUDA0 model buffer size = 13196.63 MiB
+load_tensors:          CPU model buffer size =   166.92 MiB
+llama_context: constructing llama_context
+llama_context: n_seq_max     = 1
+llama_context: n_ctx         = 4096
+llama_context: n_ctx_per_seq = 4096
+llama_context: n_batch       = 512
+llama_context: n_ubatch      = 512
+llama_context: causal_attn   = 1
+llama_context: flash_attn    = 0
+llama_context: kv_unified    = false
+llama_context: freq_base     = 10000000.0
+llama_context: freq_scale    = 1
+llama_context: n_ctx_per_seq (4096) < n_ctx_train (262144) -- the full capacity of the model will not be utilized
+llama_context:        CPU  output buffer size =     0.59 MiB
+llama_kv_cache_unified:      CUDA0 KV buffer size =   296.00 MiB
+llama_kv_cache_unified:        CPU KV buffer size =    88.00 MiB
+llama_kv_cache_unified: size =  384.00 MiB (  4096 cells,  48 layers,  1/1 seqs), K (f16):  192.00 MiB, V (f16):  192.00 MiB
+llama_context:      CUDA0 compute buffer size =   544.18 MiB
+llama_context:  CUDA_Host compute buffer size =    14.01 MiB
+llama_context: graph nodes  = 3174
+llama_context: graph splits = 158 (with bs=512), 25 (with bs=1)
+time=2025-09-22T17:27:16.709-04:00 level=INFO source=server.go:1289 msg="llama runner started in 3.92 seconds"
+time=2025-09-22T17:27:16.709-04:00 level=INFO source=sched.go:470 msg="loaded runners" count=1
+time=2025-09-22T17:27:16.710-04:00 level=INFO source=server.go:1251 msg="waiting for llama runner to start responding"
+time=2025-09-22T17:27:16.711-04:00 level=INFO source=server.go:1289 msg="llama runner started in 3.92 seconds"
+[GIN] 2025/09/22 - 17:27:16 | 200 |    4.1585022s |       127.0.0.1 | POST     "/api/generate"
+[GIN] 2025/09/22 - 17:27:29 | 200 |    885.7402ms |       127.0.0.1 | POST     "/api/chat"
+[GIN] 2025/09/22 - 17:28:12 | 200 |    3.3480533s |       127.0.0.1 | POST     "/api/chat"
+[GIN] 2025/09/22 - 17:29:22 | 200 |    7.6230405s |       127.0.0.1 | POST     "/api/chat"
+
+
+
+
+
+
+
+
+
+I don't have access to SMS gateway APIs or phone number handling capabilities. However, I can help you draft a text message for sending via the draft_text function if you provide a recipient and body. Let me know if you need assistance with that!
+
+
+
+
+
+
+
+
+The draft text has been created. Please input your phone number and message, and I will send it directly once confirmed. If you need assistance with sending via an SMS gateway, I can guide you through the process.
+
+
+
+
+
+
+
+
+
+
+The function `draft_text(recipient: your_phone_number, body: Your message here)` is designed to generate a draft of the SMS message, not to send it directly. To send the message, you would need to use an SMS gateway or service. Please ensure the phone number is valid and that the message is properly formatted for sending. If you need assistance with the actual SMS sending, I can guide you through that process.
+
+
+
+
+
+
+
+
+
+
+2722086721@vzwpix.com
+
+
+
+
+
+
+
+
+
+
+https://colab.research.google.com/github/unslothai/notebooks/blob/main/nb/Gemma3_(270M).ipynb
+
+
+
+
+
+
+
+
+
+
+
+https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct/blob/main/README.md
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://docs.unsloth.ai/models/gemma-3-how-to-run-and-fine-tune
+
+
+
+
+
+
+
+
+
+
+https://colab.research.google.com/github/unslothai/notebooks/blob/main/nb/Gemma3N_(4B)-Audio.ipynb#scrollTo=CNP1Uidk9mrz
+
+
+
+
+
+
+
+
+
+
+pip install huggingface_hub hf_transfer
+
+
+
+
+
+https://gethired.com/m/apply/f05adb9d-198f-42a3-acdf-5301c22c002b
+
+
+
+
+ollama run qwen3-coder:30b
+
+
+
+
+Breach by Twenty One Pilots
+
+
+
+
+
+https://drive.google.com/file/d/1JNwY_mGpIhYQv_wbSJWsiMMnpG4KQiKm/view?usp=sharing
+
+
+
+
+
+/storage/emulated/0/Download/TV/Dish Network TV Guide3_files/Dish Network TV Guide3.htm
+
+
+
+
+
+TL;DR:
+Your images don’t load on mobile because the Dish Network TV Guide3_files folder (which contains them) is likely missing or not in the same folder as your .htm file. Copy both the .htm file and the image folder to your phone together. ✅
+
+
+
+
+
+
+
+
+                <!-- Channel Rows -->
+                <div class="space-y-4">
+                    <!-- Channel 1 -->
+                    <div class="flex">
+                        <div class="w-32 flex-shrink-0 flex items-center">
+                            <img src="Dish%20Network%20TV%20Guide3_files/1_002.webp" alt="HBO" class="w-12 h-12 rounded-full channel-logo mr-3">
+                            <span class="font-bold">HBO</span>
+                        </div>
+                        <div class="flex">
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/1_004.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">Game of Thrones</h4>
+                                <p class="text-xs text-gray-400 mb-2">8:00 PM - 9:00 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">The battle between the living and the dead reaches its climax.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/2_005.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">Westworld</h4>
+                                <p class="text-xs text-gray-400 mb-2">9:00 PM - 10:00 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">The hosts make their final move against the humans.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="w-48"></div>
+                            <div class="w-48"></div>
+                            <div class="w-48"></div>
+                        </div>
+                    </div>
+
+                    <!-- Channel 2 -->
+                    <div class="flex">
+                        <div class="w-32 flex-shrink-0 flex items-center">
+                            <img src="Dish%20Network%20TV%20Guide3_files/2_004.webp" alt="ESPN" class="w-12 h-12 rounded-full channel-logo mr-3">
+                            <span class="font-bold">ESPN</span>
+                        </div>
+                        <div class="flex">
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/1_005.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">NBA Finals</h4>
+                                <p class="text-xs text-gray-400 mb-2">8:00 PM - 10:30 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">Game 7 of the NBA Finals between Lakers and Celtics.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="w-48"></div>
+                            <div class="w-48"></div>
+                            <div class="w-48"></div>
+                            <div class="w-48"></div>
+                        </div>
+                    </div>
+
+                    <!-- Channel 3 -->
+                    <div class="flex">
+                        <div class="w-32 flex-shrink-0 flex items-center">
+                            <img src="Dish%20Network%20TV%20Guide3_files/3.webp" alt="CNN" class="w-12 h-12 rounded-full channel-logo mr-3">
+                            <span class="font-bold">CNN</span>
+                        </div>
+                        <div class="flex">
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/1_003.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">Anderson Cooper 360</h4>
+                                <p class="text-xs text-gray-400 mb-2">8:00 PM - 9:00 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">Breaking news and in-depth analysis of today's top stories.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/2.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">Cuomo Prime Time</h4>
+                                <p class="text-xs text-gray-400 mb-2">9:00 PM - 10:00 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">Chris Cuomo interviews key figures on today's pressing issues.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="w-48"></div>
+                            <div class="w-48"></div>
+                            <div class="w-48"></div>
+                        </div>
+                    </div>
+
+                    <!-- Channel 4 -->
+                    <div class="flex">
+                        <div class="w-32 flex-shrink-0 flex items-center">
+                            <img src="Dish%20Network%20TV%20Guide3_files/4_002.webp" alt="Discovery" class="w-12 h-12 rounded-full channel-logo mr-3">
+                            <span class="font-bold">Discovery</span>
+                        </div>
+                        <div class="flex">
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/1_006.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">Planet Earth II</h4>
+                                <p class="text-xs text-gray-400 mb-2">8:00 PM - 9:00 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">Explore jungles where animals fight for survival in shrinking habitats.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/2_003.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">Blue Planet II</h4>
+                                <p class="text-xs text-gray-400 mb-2">9:00 PM - 10:00 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">Journey into the deep to discover strange new worlds and creatures.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="w-48"></div>
+                            <div class="w-48"></div>
+                            <div class="w-48"></div>
+                        </div>
+                    </div>
+
+                    <!-- Channel 5 -->
+                    <div class="flex">
+                        <div class="w-32 flex-shrink-0 flex items-center">
+                            <img src="Dish%20Network%20TV%20Guide3_files/5.webp" alt="Comedy Central" class="w-12 h-12 rounded-full channel-logo mr-3">
+                            <span class="font-bold">Comedy Central</span>
+                        </div>
+                        <div class="flex">
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/1.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">The Daily Show</h4>
+                                <p class="text-xs text-gray-400 mb-2">8:00 PM - 8:30 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">Trevor Noah offers his comedic take on the day's news.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/2_002.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">South Park</h4>
+                                <p class="text-xs text-gray-400 mb-2">8:30 PM - 9:00 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">Cartman gets a new pet that causes chaos in South Park.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/3_002.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">The Office</h4>
+                                <p class="text-xs text-gray-400 mb-2">9:00 PM - 9:30 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">Michael tries to impress the new VP with disastrous results.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="program-card w-48 bg-gray-800 m-1 p-3 rounded-lg cursor-pointer">
+                                <img src="Dish%20Network%20TV%20Guide3_files/4.webp" alt="Show" class="w-full h-24 object-cover rounded mb-2">
+                                <h4 class="font-bold text-blue-400">Parks and Rec</h4>
+                                <p class="text-xs text-gray-400 mb-2">9:30 PM - 10:00 PM</p>
+                                <p class="text-xs text-gray-300 mb-2">Leslie plans an elaborate harvest festival for Pawnee.</p>
+                                <button class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">Watch Now</button>
+                            </div>
+                            <div class="w-48"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+<img src="something.jpg" alt="...">
+
+
+
+
+
+
+
+
+
+TL;DR:
+Images don’t load on mobile because the browser can’t find the files — likely due to missing images, incorrect paths, case sensitivity, or mobile browser restrictions. Desktop handles these better, which is why it works there. ✅
+
+
+
+
+
+
+
+
+

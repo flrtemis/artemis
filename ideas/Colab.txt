@@ -1,0 +1,10 @@
+=======================================
+(     )
+https://colab.research.google.com/#fileId=https%3A//huggingface.co/QuixiAI/WizardLM-7B-Uncensored.ipynb&scrollTo=hpwSd0xeo1Wp
+=======================================
+(     )
+https://colab.research.google.com/github/unslothai/notebooks/blob/main/nb/Gemma3N_(4B)-Audio.ipynb#scrollTo=CNP1Uidk9mrz
+=======================================
+Gemma3 Chess
+https://colab.research.google.com/github/unslothai/notebooks/blob/main/nb/Gemma3_(270M).ipynb
+=======================================

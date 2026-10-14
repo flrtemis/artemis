@@ -1,0 +1,24 @@
+()
+https://www.site24x7.com/tools/
+()
+https://pythononline.io/
+()
+https://nottri.com/ide/python
+()
+https://online-python-compiler.com/
+()
+https://bfotool.com/
+()
+https://toolbox.googleapps.com/apps/har_analyzer/
+()
+https://www.freeconvert.com/txt-to-pdf/download
+()
+https://webtopdf.com/download
+(gif/mp4 to lottie animations converter)
+https://lottiefyr.com/
+(a viewer for neural network, deep learning and machine learning models)
+https://netron.app/
+(simplify/optimize/fixed, already merged, onnx files)
+https://onnxsim.github.io/onnxsim/
+(supertonic/personaplexTTS)
+https://huggingface.co/spaces/Supertone/supertonic-3

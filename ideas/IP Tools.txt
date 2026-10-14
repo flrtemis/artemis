@@ -1,0 +1,9 @@
+https://www.whatismyip.com
+
+https://www.netadmintools.com
+
+https://www.ip2location.com/web-service
+
+https://api.ipify.org(IP lookup via URL)
+
+curl https://api.ip2location.io/?ip=8.8.8.8(IP lookup Termux Command)

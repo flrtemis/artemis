@@ -1,0 +1,13 @@
+=======================================
+https://code.visualstudio.com/docs/?dv=win64user
+=======================================
+https://visualstudio.microsoft.com/visual-cpp-build-tools/
+=======================================
+https://marketplace.visualstudio.com/items?itemName=ms-python.python
+=======================================
+https://marketplace.visualstudio.com/items?itemName=GitHub.copilot
+=======================================
+https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools
+=======================================
+https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack
+=======================================
