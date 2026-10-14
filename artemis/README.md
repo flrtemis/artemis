@@ -14,7 +14,7 @@ corrections and held busy-model inputs. No real Ollama/physical-PC/audio/GPU
 proof is implied by scripted-provider tests. The existing Pages deployment is verified separately; no new preview deployment is claimed.
 
 **Additive Sage helper:** available across main views, projecting the same
-thread, registry, approvals, files and audio owner. [Current slice/tests](docs/SAGE_HELPER_01.md), [research](docs/SAGE_HELPER_RESEARCH.md), and [cumulative plan](docs/ONGOING_WORK.md). The owner-only `ideas/` inbox remains read-only/branch-only and is never a runtime or website input.
+thread, registry, approvals, files and audio owner. [Current answer-reading slice/tests](docs/SAGE_HELPER_02.md) · [original surface](docs/SAGE_HELPER_01.md), [research](docs/SAGE_HELPER_RESEARCH.md), and [cumulative plan](docs/ONGOING_WORK.md). The owner-only `ideas/` inbox remains read-only/branch-only and is never a runtime or website input.
 
 The sections below continue the milestone-02 architecture. **Their old optional
 Godot, CPU training and installed voice-model results are explicitly historical**,

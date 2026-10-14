@@ -9,7 +9,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.AR
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
 await context.addInitScript(()=>{
  const synth=new EventTarget();window.__sageSpeech={spoken:[],cancelled:0};
- synth.getVoices=()=>[{name:'Fixture remote voice',localService:false,lang:'en-US'},{name:'Fixture local voice',localService:true,lang:'en-US'}];
+ synth.getVoices=()=>[{voiceURI:'fixture-remote',name:'Fixture remote voice',localService:false,lang:'en-US'},{voiceURI:'fixture-local',name:'Fixture local voice',localService:true,lang:'en-US'}];
  synth.speak=u=>{window.__sageSpeech.spoken.push({text:u.text,localService:u.voice?.localService});u.onstart?.();u.onend?.();};synth.cancel=()=>window.__sageSpeech.cancelled++;
  Object.defineProperty(window,'speechSynthesis',{value:synth,configurable:true});window.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
 });
@@ -38,7 +38,7 @@ try{
  await dialog().getByRole('button',{name:'Close Sage helper',exact:true}).click();
  pass('Download generates only the labelled synthetic browser file, never a backend or private artifact request');
  await page.getByRole('button',{name:'Read introduction',exact:true}).click();const speech=await page.evaluate(()=>window.__sageSpeech);
- if(speech.spoken.length!==1||!speech.spoken[0].localService)throw Error('Undisclosed remote voice');
+ if(!speech.spoken.length||!speech.spoken.every(u=>u.localService))throw Error('Undisclosed remote voice');
  await page.getByRole('button',{name:'Stop narration only',exact:true}).click();
  pass('Optional narration requires gesture, selects device-reported local voice and has explicit stop; fixture is NOT physical audio proof');
  const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();await fs.writeFile(path.join(output,'axe-page.json'),JSON.stringify(axe.violations,null,2));

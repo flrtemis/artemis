@@ -16,8 +16,11 @@ The new helper is an additive projection of the existing conversation, live
 capability registry, approvals, work and files. Open **Sage** from any main view;
 no second assistant history/model/audio owner is introduced. Configured answer
 audio stays explicit; stopping speech and cancelling a job remain different.
+Voice & reading options now offers a deliberately selected device-local-reported
+voice, speed and fenced-code speech policy, without silently replacing configured TTS.
 
-[Current Sage slice and exact checks](artemis/docs/SAGE_HELPER_01.md) ·
+[Current answer-reading slice and exact checks](artemis/docs/SAGE_HELPER_02.md) ·
+[Original helper surface](artemis/docs/SAGE_HELPER_01.md) ·
 [Perchance/inbox research](artemis/docs/SAGE_HELPER_RESEARCH.md) ·
 [Cumulative work — new ideas do not replace earlier goals](artemis/docs/ONGOING_WORK.md)
 

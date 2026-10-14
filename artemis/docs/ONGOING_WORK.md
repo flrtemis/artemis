@@ -33,7 +33,7 @@ A separate originally supplied file named `handoff.md` is not present in the cur
 | CORE-03 | Existing artifacts, data analysis, Sage continuity, spatial/lab/world integrations | Continue partial foundation; do not replace the existing workspace with a launcher | Private Sage data, source identity/licenses, honest scientific/native-engine boundaries |
 | WEB-01 | Consumer site with local ownership, real evidence, costs and contribution path | Feature guide prepared/tested in milestone 03. Owner reports Pages live; October 14 read-only check confirms deployment from **main, `/`**, currently rendering the older README | Static site is not the local runtime. Owner controls publication. No automatic localhost bridge, credential field, CDN or remote model |
 | SAGE-01 | Perchance-inspired helper always accessible throughout ARTEMIS | First additive helper surface: existing canonical state/commands, Ask/Capabilities/Work/Files, explicit context, same approvals and audio owner | Not a second chat system; no hosted Muse dependency; no fabricated model success |
-| SAGE-02 | Accessibility-first read-aloud with stop, replay, settings and a readable interface | Reuse configured ARTEMIS TTS/read-saved-message path; no-microphone read-replies gesture. Rich rate/voice/streaming presentation and physical validation remain pending | Speak final answer, not raw thought/tool logs; stable message IDs, complete final tail, no silent remote/browser fallback; stopping audio does not kill work |
+| SAGE-02 | Accessibility-first read-aloud with stop, replay, settings and a readable interface | Reuse configured ARTEMIS TTS/read-saved-message path; no-microphone read-replies gesture. Helper 02 adds explicit device-reported-local voice/rate/fenced-code presentation via the one audio coordinator; configured-engine rate/voice bridging, streaming engines and physical validation remain pending | Speak final answer, not raw thought/tool logs; stable message IDs, complete final tail, no silent remote/browser fallback; stopping audio does not kill work |
 | SAGE-03 | Creation/testing feedback and downloadable artifacts like the helper capture | Existing file tools/workspace/downloads and isolated code path remain canonical. First helper browses actual files and stored results | A readout, download, test or checkpoint must reflect real stored artifacts; no arbitrary JS in privileged UI; rollback is not a universal undo |
 | SAGE-04 | Pages as a shared visual testing ground | Prepare a separately labelled static Sage preview under `/docs`, additive to the existing guide. Deploy only by owner's source selection | A static interaction prototype is not AI inference or the local backend. Keep `ideas/` outside the served folder |
 | VOICE-01 | Original Parakeet/Qwen/S2S engine contribution | Next engine-only bridges in `speech.py` / `speech_worker.py` and actual selected WSL setup/profile | No second large resident model, speculative hardware prescriptions, replacement tag, or Windows-shell Ollama instructions |
@@ -76,3 +76,18 @@ The updated inbox README requests direct source visits. Seven priority public
 references have visit results in the research report; remaining safe public
 links are queued, and personal/signed/account links are excluded from replay.
 Continue this research incrementally alongside the existing work, not instead of it.
+
+### Continued accessibility slice — Sage helper 02 (October 14)
+
+[Current handoff](SAGE_HELPER_02.md) and `verification-sage-02.json` record the
+explicit device voice path, speed/code presentation, complete final tails,
+message/run deduplication, old-epoch fencing and no durable cancellation on
+audio stop. Configured ARTEMIS TTS stays a separate explicit choice; no
+silent fallback or new model/voice asset download is introduced.
+
+Configured transport setup now has ownership generations; delayed old
+connections cannot take over after a source switch. A reproduced backend
+reconnect/admission cleanup race is fixed and has three deterministic tests.
+The original engine/vision/phone/privacy/native-worker tasks remain active;
+this UI/device presentation does not establish physical audio or model parity.
+The 58-file inbox was compared again: no additions or changed blobs found.

@@ -6,7 +6,8 @@
   "scripts": {
     "build": "vite build",
     "typecheck": "tsc --noEmit",
-    "build:sage-preview": "vite build --config vite.sage-preview.config.ts"
+    "build:sage-preview": "vite build --config vite.sage-preview.config.ts",
+    "test:reader": "node --test tests/device-reader.test.mjs tests/shared-audio.test.mjs"
   },
   "dependencies": {
     "@met4citizen/talkinghead": "1.7.0",

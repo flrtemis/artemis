@@ -2,6 +2,8 @@ import {useEffect, useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {ArrowRight, BookOpen, Check, FileText, Layers, ShieldCheck, Wrench} from 'lucide-react';
 import {SageHelper} from './SageHelper';
+import {DeviceReplyReader, deviceVoices, type DeviceVoice, type ReaderSnapshot} from './device-reader';
+import type {ReadingPreferences} from './SageReadingControls';
 import type {Approval, Capability, Message, Snapshot} from './client';
 import './sage-preview.css';
 
@@ -21,14 +23,23 @@ function Preview() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [proposal, setProposal] = useState<string | null>(null);
   const [notice, setNotice] = useState('');
-  const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const [voices, setVoices] = useState<DeviceVoice[]>([]);
+  const [reading, setReading] = useState<ReadingPreferences>({source: 'configured', device: {voiceURI: '', rate: 1, skipCode: true}});
+  const [readerState, setReaderState] = useState<ReaderSnapshot>({enabled: false, automatic: false, held: false, queued: 0, status: 'off', detail: 'Device reading is off.'});
+  const [reader] = useState(() => new DeviceReplyReader(setReaderState));
   const [narration, setNarration] = useState('Optional device narration is off.');
   useEffect(() => {
-    if (!('speechSynthesis' in window)) {setNarration('This browser has no speech synthesis. The preview stays readable.'); return;}
-    const update = () => {setVoice(window.speechSynthesis.getVoices().find(v => v.localService) || null);};
-    update(); window.speechSynthesis.addEventListener('voiceschanged', update);
-    return () => {window.speechSynthesis.removeEventListener('voiceschanged', update); window.speechSynthesis.cancel();};
-  }, []);
+    const update = () => setVoices(deviceVoices()); update();
+    window.speechSynthesis?.addEventListener('voiceschanged', update);
+    return () => {window.speechSynthesis?.removeEventListener('voiceschanged', update); reader.disable();};
+  }, [reader]);
+  useEffect(() => {reader.observe('static-design-thread', messages);}, [reader, messages]);
+  const canRead = reading.source === 'device' && voices.some(v => v.voiceURI === reading.device.voiceURI && v.localService);
+  const changeReading = (next: ReadingPreferences) => {
+    if (next.source !== reading.source || next.device.voiceURI !== reading.device.voiceURI) reader.disable();
+    else if (readerState.enabled) {try {reader.configure(next.device);} catch (e) {setNotice(String(e)); return;}}
+    setReading(next);
+  };
   const snapshot: Snapshot = {
     threads: [{id: 'static-design-thread', title: 'Synthetic design conversation', created: 0}],
     runs: [], approvals: [], continuity: {name: 'Sage'},
@@ -39,9 +50,10 @@ function Preview() {
   const send = () => {
     if (!draft.trim()) return;
     const text = draft.trim();
+    const run = 'design-run-' + messages.length; reader.beginTurn('static-design-thread'); reader.expectReply(run);
     setMessages(old => [...old,
       {id: 'design-user-' + old.length, role: 'user', content: text, meta: {}, ts: Date.now() / 1000},
-      {id: 'design-reply-' + old.length, role: 'assistant', content: 'Design example—not an AI answer. In the local app, this same drawer sends your request to the selected model through the canonical ARTEMIS thread. Here, nothing was sent or executed. Explore Capabilities, Work & decisions, or Files to review the interaction.', meta: {design_only: true}, ts: Date.now() / 1000},
+      {id: 'design-reply-' + old.length, role: 'assistant', content: 'Design example—not an AI answer. In the local app, this same drawer sends your request to the selected model through the canonical ARTEMIS thread. Here, nothing was sent or executed. Explore Capabilities, Work & decisions, or Files to review the interaction.', meta: {design_only: true, run_id: run}, ts: Date.now() / 1000},
     ]);
     setDraft('');
   };
@@ -52,14 +64,14 @@ function Preview() {
     setNotice('Downloaded a synthetic example generated in this tab—not a server artifact.');
   };
   const readIntroduction = () => {
+    const voice = voices.find(v => v.voiceURI === reading.device.voiceURI) || voices[0];
     if (!voice) {setNarration('No device-reported local voice is available. No remote voice was substituted.'); return;}
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance('Welcome to the Sage interaction lab. This is a static design preview, not the AI assistant. Sage is being added to the existing ARTEMIS workspace, with one conversation, explicit approvals, and controllable answer audio.');
-    u.voice = voice;
-    u.onstart = () => setNarration('Browser reports narration started. This does not verify that a speaker is audible.');
-    u.onend = () => setNarration('Browser reports narration ended. Device voice: ' + voice.name + '.');
-    u.onerror = () => setNarration('Narration did not complete. Check browser audio permissions; text remains available.');
-    window.speechSynthesis.speak(u);
+    const options = {...reading.device, voiceURI: voice.voiceURI};
+    setReading({source: 'device', device: options});
+    try {
+      reader.readText('Welcome to the Sage interaction lab. This is a static design preview, not the AI assistant. Sage is being added to the existing ARTEMIS workspace, with one conversation, explicit approvals, and controllable answer audio.', options);
+      setNarration('Introduction requested using device-reported local voice: ' + voice.name + '. Audible output is not verified by this page.');
+    } catch (e) {setNarration(String(e));}
   };
   return <>
     <a className="lab-skip" href="#lab-main">Skip to preview</a>
@@ -71,20 +83,23 @@ function Preview() {
       </section>
       <section className="lab-workspace" aria-labelledby="lab-workspace-title"><div className="lab-workspace-bar"><span><FileText size={15}/>SYNTHETIC WORKSPACE</span><span>Design exploration only</span></div><div className="lab-workspace-content"><div><span className="lab-eyebrow">KEEP YOUR PLACE</span><h2 id="lab-workspace-title">Your notebook stays here.</h2><p>Open Sage in the corner, explore the four sections, write a sample request, close and reopen it. Your draft stays while you move around this preview.</p><p>No live tools run here. Capability buttons let you inspect an example action; file download generates a small synthetic file in your browser.</p><button onClick={() => setOpen(true)}>Open the helper <ArrowRight size={14}/></button></div><pre aria-label="Synthetic notebook contents">{exampleText}</pre></div></section>
       {proposal && <section className="lab-proposal" aria-label="Design-only capability proposal"><span className="lab-eyebrow">DESIGN EXAMPLE — NOTHING EXECUTED</span><h2>{proposal.replaceAll('_', ' ')}</h2><p>In the real app this opens the existing scoped capability form and, for mutations, an exact approval. This preview does not write a file, keep a memory, run code, or create a real approval.</p><button onClick={() => {setProposal(null); setNotice('Example dismissed. No actual effect or durable task was created.');}}>Dismiss example <Check size={14}/></button></section>}
-      <section className="lab-narration" aria-labelledby="lab-narration-title"><div><h2 id="lab-narration-title">Listen to the introduction</h2><p>Optional browser narration, explicitly started by you. Only a voice the device reports as local is eligible. This is separate from—and not proof of—the configured ARTEMIS speech pipeline or lip-sync.</p><p className="lab-audio-status" role="status">{narration}{!voice && ' No local voice detected yet.'}</p></div><div><button onClick={readIntroduction}>Read introduction</button><button onClick={() => {window.speechSynthesis?.cancel(); setNarration('Narration stopped. No work was cancelled.');}}>Stop narration only</button></div></section>
+      <section className="lab-narration" aria-labelledby="lab-narration-title"><div><h2 id="lab-narration-title">Listen to the introduction</h2><p>Optional browser narration, explicitly started by you. Only a voice the device reports as local is eligible. This is separate from—and not proof of—the configured ARTEMIS speech pipeline or lip-sync.</p><p className="lab-audio-status" role="status">{narration}{!voices.length && ' No local voice detected yet.'}</p></div><div><button onClick={readIntroduction}>Read introduction</button><button onClick={() => {reader.stopSpeech(); setNarration('Narration stopped. No work was cancelled.');}}>Stop narration only</button></div></section>
       <p className="lab-current-limits">Still in scope: real selected-model validation, original speech/vision/phone integration, native workers, accessibility testing on physical devices, and scoped private state. This design does not claim feature or model parity with Perchance/Muse Spark.</p>
       {notice && <p className="lab-notice" role="status">{notice}</p>}
     </main>
     <footer className="lab-footer"><span className="lab-footer-brand"><img src="assets/wordmark.svg" width="158" height="28" alt="⩘Ꝛ𝘛𝕰𝘔𝘐Ⲋ™ — ARTEMIS"/><span>A Reality That Enhances My Integrated Services</span></span><a href="index.html#start">Run the actual local application <ArrowRight size={14}/></a></footer>
     <SageHelper mode="preview" open={open} onOpen={() => setOpen(true)} onClose={() => setOpen(false)} snapshot={snapshot}
-      messages={messages} thread="static-design-thread" viewName="a synthetic notebook" draft={draft} onDraft={setDraft} onSend={send}
+      messages={messages} thread="static-design-thread" viewName="a synthetic notebook" draft={draft} onDraft={value => {if (!draft && value.trim()) reader.hold(); setDraft(value);}} onSend={send}
       canChat working={false} attachments={[]} onAttach={() => {setOpen(false); setNotice('File uploads belong in the authenticated local application. Nothing is uploaded from this preview.');}}
       onRemoveAttachment={() => {}} onAttachSelected={() => {}} onSelectThread={() => {}}
       onOpenConversation={() => {setOpen(false); setNotice('Use the local app for the full canonical conversation. This is only a synthetic design example.');}}
       onCapability={name => {setOpen(false); setProposal(name);}} onOpenFile={() => {setOpen(false); setNotice('The synthetic notebook is displayed on this page; no real workspace was read.');}}
       onDownload={downloadExample} onSettings={() => {setOpen(false); setNotice('Model, speech, and capability connections are configured in the actual local ARTEMIS app, never in this static page.');}}
-      onCancel={() => {}} renderApproval={(_a: Approval) => null} speechReady={false} voiceStatus="off" onReadReply={() => {}}
-      onEnableReading={() => {}} onStopSpeech={() => {}} onStopReading={() => {}} onResumeAudio={() => {}}/>
+      onCancel={() => {}} renderApproval={(_a: Approval) => null} speechReady={canRead} voiceStatus={readerState.status} onReadReply={id => {const message = messages.find(m => m.id === id); if (message) {try {reader.readSaved('static-design-thread', message, reading.device);} catch(e) {setNotice(String(e));}}}}
+      onEnableReading={() => {}} onStopSpeech={() => reader.stopSpeech()} onStopReading={() => reader.disable()} onResumeAudio={() => reader.resume()}
+      readingControls={{mode:'preview', preferences:reading, voices, configuredReady:false, reader:readerState, voiceStatus:readerState.status, working:false, onPreferences:changeReading,
+        onEnable:()=>{try {reader.enable('static-design-thread',messages,reading.device);} catch(e) {setNotice(String(e));}},
+        onStop:()=>reader.stopSpeech(),onOff:()=>reader.disable(),onResume:()=>reader.resume()}}/>
   </>;
 }
 function MessageMark() {return <Layers size={20}/>;}

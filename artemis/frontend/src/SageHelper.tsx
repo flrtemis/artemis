@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState, type ReactNode} from 'react';
 import {ArrowDownToLine, ArrowRight, ArrowUp, AudioLines, BookOpen, FileText, Layers, MessageSquare, Paperclip, Search, ShieldCheck, Square, Wrench, X} from 'lucide-react';
 import {active, bytes, when, type Approval, type Capability, type FileEntry, type Message, type Run, type Snapshot} from './client';
+import {SageReadingControls, type ReadingControlProps} from './SageReadingControls';
 import './sage-helper.css';
 
 type Tab = 'ask' | 'capabilities' | 'work' | 'files';
@@ -21,7 +22,7 @@ type Props = {
   onCancel: (id: string) => void; renderApproval: (approval: Approval) => ReactNode;
   speechReady: boolean; voiceStatus: string; onReadReply: (id: string) => void;
   onEnableReading: () => void; onStopSpeech: () => void; onStopReading: () => void;
-  onResumeAudio: () => void;
+  onResumeAudio: () => void; readingControls?: ReadingControlProps;
 };
 
 /** A projection of the existing App state. No second history, model, run owner or audio engine. */
@@ -61,9 +62,11 @@ export function SageHelper(p: Props) {
         event.preventDefault(); first.focus();
       }
     };
-    panel.addEventListener('keydown', keydown);
+    // A send can disable the focused button and move focus to body. Keep the
+    // modal's Escape/Tab contract even during that transient state.
+    document.addEventListener('keydown', keydown);
     return () => {
-      panel.removeEventListener('keydown', keydown);
+      document.removeEventListener('keydown', keydown);
       // The launcher is hidden before effects run, so activeElement may already be body.
       // Restore after React makes it visible; do not focus the unfocusable body.
       requestAnimationFrame(() => {if (launcher.current) launcher.current.focus(); else if (before?.isConnected && before !== document.body) before.focus();});
@@ -191,12 +194,14 @@ export function SageHelper(p: Props) {
           </div>}
         </div>
         <footer className="sage-footer">
+          {p.readingControls ? <SageReadingControls {...p.readingControls}/> : <>
           <div className="sage-speech-controls"><AudioLines size={17}/><span>Answer audio</span>
             <button onClick={p.onEnableReading} disabled={!p.speechReady || p.working || p.voiceStatus !== 'off'} title={p.speechReady ? 'Enable configured answer audio without opening the microphone' : 'An actual configured TTS engine is required'}>Read replies</button>
             <button onClick={p.onStopSpeech} disabled={p.voiceStatus === 'off'}>Stop speech only</button>
           </div>
           {p.voiceStatus !== 'off' && <div className="sage-audio-state"><span>{p.voiceStatus.replaceAll('-', ' ')}</span>{['audio-held', 'job-active'].includes(p.voiceStatus) && <button onClick={p.onResumeAudio}>Resume audio</button>}<button onClick={p.onStopReading}>Turn audio off</button></div>}
           {!p.speechReady && <p className="sage-small">Speech is not configured. No browser or hosted voice is silently substituted.</p>}
+          </>}
           <div className="sage-footer-links"><button onClick={p.onOpenConversation}><MessageSquare size={14}/>Open full conversation</button><button onClick={p.onSettings}>Connections & settings <ArrowRight size={13}/></button></div>
           <p className="sage-boundary"><ShieldCheck size={12}/>One identity · one history · host-enforced permissions</p>
         </footer>

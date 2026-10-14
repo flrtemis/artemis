@@ -69,4 +69,4 @@ examples only. The application build remains `npm run build`.
 Attribution and licensing: [ATTRIBUTION.md](ATTRIBUTION.md).
 Research/cumulative scope: `artemis/docs/SAGE_HELPER_RESEARCH.md` and
 `artemis/docs/ONGOING_WORK.md`. Complete current trial/verification:
-`artemis/docs/SAGE_HELPER_01.md`.
+`artemis/docs/SAGE_HELPER_02.md` (original surface: `SAGE_HELPER_01.md`).

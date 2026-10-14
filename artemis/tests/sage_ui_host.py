@@ -26,7 +26,7 @@ class SageUIProvider(FixtureProvider):
         # A real mutating file operation stays pending until the operator decides.
         last = messages[-1]
         if last['role'] == 'tool':
-            return {'content': 'Scripted UI test answer. The canonical tool result was received in this same job and conversation; this is not real model inference.'}
+            return {'content': 'Scripted UI test answer. The canonical tool result was received in this same job and conversation; this is not real model inference.\n\n**Important: approval is still your decision.**\n' + ('This is saved user-facing test text, not hidden thinking or an extra model response. ' * 8) + '\n```python\nprint(\"CODE_NOT_FOR_SPEECH\")\n```\nLast short answer tail.'}
         return {'tool_calls': [call('write_file', {'path': 'sage-scripted-ui-note.md', 'content': '# Synthetic UI test\n\nExact operator approval required.\n'})]}
 
 

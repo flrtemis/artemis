@@ -71,9 +71,17 @@ class Speech:
         # One audio owner for a thread, not two microphones/speakers fighting.
         thread=grant['thread_id']
         if thread in self.sessions:await ws.close(code=1008);return
-        await ws.accept();session=RealtimeSession(self,ws,thread);self.sessions[thread]=session
-        try:await session.serve()
-        finally:await session.close();self.sessions.pop(thread,None)
+        # Reserve before the first await: two simultaneous handshakes cannot both own a thread.
+        session=RealtimeSession(self,ws,thread);self.sessions[thread]=session
+        try:
+            await ws.accept()
+            await session.serve()
+        finally:
+            # Release synchronously before cancellable cleanup. A disconnected socket's
+            # cleanup may be interrupted or slow, but must never strand ownership or
+            # later remove a newly admitted session for the same canonical thread.
+            if self.sessions.get(thread) is session:self.sessions.pop(thread,None)
+            await session.close()
     async def stop_worker(self):
         if self.worker and self.worker.returncode is None:self.worker.terminate();await self.worker.wait()
         self.worker=None
