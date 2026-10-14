@@ -1,0 +1,57 @@
+(Audio Seperation via AI Agents)
+https://huggingface.co/spaces/TheStinger/UVR5_UI
+
+https://huggingface.co/webml-community?sort_spaces=likes#spaces
+
+(3D modeling)
+https://huggingface.co/spaces/stabilityai/stable-fast-3d
+
+(image to video)
+https://huggingface.co/spaces/multimodalart/wan2-1-fast
+
+https://huggingface.co/spaces/Nephele/Audio_Denoiser
+
+https://huggingface.co/spaces/DecodeITyourself/Audio_Denoiser
+
+https://huggingface.co/QuixiAI/WizardLM-7B-Uncensored
+
+(image to video)
+https://huggingface.co/spaces/Lightricks/ltx-video-distilled
+
+https://huggingface.co/spaces/TencentARC/InstantMesh
+
+https://hitem3d.ai
+
+https://huggingface.co/spaces/ilcve21/Sparc3D
+
+(AI that makes any web application)
+https://enzostvs-deepsite.hf.space/projects/new
+
+https://huggingface.co/spaces/igorvkarpov/myspace
+
+https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/kristin/medium
+
+https://huggingface.co/ValueFX9507/Tifa-DeepsexV2-7b-MGRPO-GGUF-F16
+
+https://huggingface.co/spaces/multimodalart/MoDA-fast-talking-head
+
+https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct/blob/main/README.md
+
+https://huggingface.co/spaces/Heartsync/qwen-multiangles-3d
+
+https://huggingface.co/spaces/ftrtemis/tencent-HunyuanVideo
+
+https://huggingface.co/spaces/Heartsync/NSFW-Uncensored-video2/tree/main?not-for-all-audiences=true
+
+https://huggingface.co/Kijai/WanVideo_comfy/tree/main
+
+https://huggingface.co/spaces/Heartsync/NSFW-Uncensored-video2/blob/main/app.py
+
+https://huggingface.co/spaces/ftrtemis/music-separation
+
+https://huggingface.co/spaces/svjack/music-separation
+
+https://huggingface.co/spaces/Nymbo/github-repo-to-spaces
+
+https://huggingface.co/spaces/multimodalart/repo2txt
+

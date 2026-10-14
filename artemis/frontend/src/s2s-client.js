@@ -626,6 +626,24 @@ export class S2sWsRealtimeClient extends EventTarget {
     }
 
     switch (type) {
+      case "artemis.audio.yielded":
+      case "artemis.job.active":
+        // ARTEMIS work survives audio yield. Never auto-replay queued creates.
+        this._playbackNode?.port.postMessage({ kind: "clear" });
+        this._createQueue = [];
+        this._openResponses = 0;
+        this._createInFlight = false;
+        this._aiSpeaking = false;
+        this._setStatus(type === "artemis.job.active" ? "job-active" : "audio-held");
+        this.dispatchEvent(new CustomEvent("artemis", { detail: event }));
+        break;
+      case "artemis.audio.resumed":
+      case "artemis.job.corrected":
+      case "artemis.job.cancelled":
+      case "artemis.approval":
+        this.dispatchEvent(new CustomEvent("artemis", { detail: event }));
+        if (type === "artemis.audio.resumed") this._setStatus("connected");
+        break;
       case "session.created":
         // Server-side defaults for the s2s pipeline are already what we
         // want (server_vad, whisper-1 transcription, PCM16 16k in / 24k
@@ -1072,7 +1090,11 @@ export class S2sWsRealtimeClient extends EventTarget {
   }
 
   bindOutput(node) { if(this._playbackNode) {this._playbackNode.disconnect();this._playbackNode.connect(node);} }
+  // Legacy caller name retained: this is AUDIO YIELD, not job cancellation.
   cancelUnifiedTurn() {this._createQueue=[];this._playbackNode?.port.postMessage({kind:'clear'});this._send({type:'response.cancel'});this._aiSpeaking=false;}
+  resumeAudio() {this._send({type:'artemis.audio.resume'});}
+  correctJob(id,text) {this._send({type:'artemis.job.correct',run_id:id,text});}
+  cancelJob(id) {this._send({type:'artemis.job.cancel',run_id:id});}
   speakMessage(id) {this._send({type:'artemis.speak',message_id:id});}
 
   /**

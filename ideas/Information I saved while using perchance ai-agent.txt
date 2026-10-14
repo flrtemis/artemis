@@ -1,0 +1,279 @@
+[https://a257cd3ebbfff8e014d264b056e5727d.perchance.org/welcome?__initWithDataFromParentWindow=1#edit](https://a257cd3ebbfff8e014d264b056e5727d.perchance.org/welcome?__initWithDataFromParentWindow=1#edit)
+
+
+
+[https://ai-agent-worker.perchance.org/](https://ai-agent-worker.perchance.org/)
+
+
+
+[https://upload.perchance.org/embed#{}](https://upload.perchance.org/embed#{})
+
+
+
+[https://perchance.org/lib/saveCheckpoints.js?v=mv5bqgy4-febbec08c5ced89a5045b675d4cd5d501c0c7cfa54831ff168e26ff897b24055](https://perchance.org/lib/saveCheckpoints.js?v=mv5bqgy4-febbec08c5ced89a5045b675d4cd5d501c0c7cfa54831ff168e26ff897b24055)
+
+
+
+[https://perchance.org/lib/srcFiles.js?v=mv5bqgy4-febbec08c5ced89a5045b675d4cd5d501c0c7cfa54831ff168e26ff897b24055](https://perchance.org/lib/srcFiles.js?v=mv5bqgy4-febbec08c5ced89a5045b675d4cd5d501c0c7cfa54831ff168e26ff897b24055)
+
+
+
+[https://perchance.org/lib/purify-3.4.12.min.js](https://perchance.org/lib/purify-3.4.12.min.js)
+
+
+
+[https://perchance.org/lib/marked-18.0.6.min.js](https://perchance.org/lib/marked-18.0.6.min.js)
+
+
+
+[https://perchance.org/lib/appExtras.js?v=75181c6fed0d78a036b5b847-9aed6d42ef397cdc-mv5bqgy4-febbec08c5ced89a5045b675d4cd5d501c0c7cfa54831ff168e26ff897b24055](https://perchance.org/lib/appExtras.js?v=75181c6fed0d78a036b5b847-9aed6d42ef397cdc-mv5bqgy4-febbec08c5ced89a5045b675d4cd5d501c0c7cfa54831ff168e26ff897b24055)
+
+
+
+[https://perchance.org/lib/aiAgentClient.js?v=mv5bqgy4-febbec08c5ced89a5045b675d4cd5d501c0c7cfa54831ff168e26ff897b24055](https://perchance.org/lib/aiAgentClient.js?v=mv5bqgy4-febbec08c5ced89a5045b675d4cd5d501c0c7cfa54831ff168e26ff897b24055)
+
+
+
+POST [https://ai-agent.perchance.org/api/aiAgent/reserve?k=2.cnU5qwI5BJnj85lM](https://ai-agent.perchance.org/api/aiAgent/reserve?k=2.cnU5qwI5BJnj85lM) 200
+
+Request Data
+
+{"sessionId":"f15297600e85fe206c0201be","tabId":"te2f18b017f0cd6b4c1d07cbe","tabLockV1":true,"pageId":"0385746770ead750135870c934b497fd","attemptID":"498d65d32a5ae226d63a1a065ba9951f","purpose":"send"}
+
+Request Headers
+
+Content-Type: application/json
+
+User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0
+
+Referer: [https://perchance.org/welcome#edit](https://perchance.org/welcome#edit)
+
+Response Headers
+
+content-type: application/json
+
+x-agent-routing-key: 2.cnU5qwI5BJnj85lM
+
+{"ok":true,"state":"reserved","token":"7a2d191ceb2d320f574625f3978137d05f109ef2900a8a96","expiresAt":1791953545962,"nativeAttachmentUpload":{"maxBytes":524288},"routingKey":"2.cnU5qwI5BJnj85lM"}
+
+
+curl '[https://ai-agent.perchance.org/api/aiAgent/reserve?k=2.cnU5qwI5BJnj85lM](https://ai-agent.perchance.org/api/aiAgent/reserve?k=2.cnU5qwI5BJnj85lM)' \\
+
+  -H 'Content-Type: application/json' \\
+
+  -H 'User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0' \\
+
+  -H 'Referer: [https://perchance.org/welcome#edit](https://perchance.org/welcome#edit)' \\
+
+  --data-raw '{"sessionId":"f15297600e85fe206c0201be","tabId":"te2f18b017f0cd6b4c1d07cbe","tabLockV1":true,"pageId":"0385746770ead750135870c934b497fd","attemptID":"498d65d32a5ae226d63a1a065ba9951f","purpose":"send"}' \\
+
+  --compressed
+
+
+
+```
+POST [https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM](https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM) 200
+
+Request Data
+
+{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.3","result":{"modelText":"$meta\n  title = Create a Random Generator\n\npride = {import:pride-plugin}    \n\n// Yep, even the Perchance homepage is technically a \"generator\", but all the content is in the HTML code in the lower-right editor.","outputTemplate":"<h1 style=\"position:fixed; top:-1000px;\">Create a Random Generator</h1>\n<h2 id=\"header\" style=\"font-size:200%; margin-top:1em;\">[pride()] Welcome to Perchance! [pride()]</h2>\n<main> \n\t  \n\t<p>Perchance is a platform for creating and sharing random generators. To create a random generator you simply create lists which reference other lists:</p>\n\n\t<div style=\"position:relative;\">\n<pre>output\n  Your \\[pack\\] contains \\[item\\], \\[item\\] and \\[item\\].\n\nitem\n  a few coins\n  an old \\{silver|bronze\\} ring\n  a handkerchief\n  a shard of bone\n  some lint\n  a tin of tea leaves\n\npack\n  purse\n  backpack\n  bag\n  pack\n  knapsack\n  rucksack\n</pre>\n\t<a href=\"/rg4m14ri#edit\"><div style=\"position:absolute;bottom:1em;right:1em;background: #14b914; background:light-dark(#14b914, #038003); color:white;padding: 0.5em;width:max-content;border-radius: 2px; box-shadow: 0px 2px 2px #0000005c;\">try this example</div></a>\n\t</div>\n\t<p>So, for example, whenever you write <code>\\[pack\\]</code>, a random item from the \"pack\" list will be put in its place — as shown in <a href=\"https://user.uploads.dev/file/bc63c883358b59575af1b8a142b90834.mp4\" target=\"_blank\">this animation</a> by <a href=\"https://perchance.org/vionet20-gens\" target=\"_blank\">Vionet20</a>.</p>\n  <p><a href=\"/rg4m14ri#edit\">Here's a link</a> to a minimal perchance generator based on the above code. You can edit it, save your own version, and share it.</p>\n  <p>You can change the odds of items like so:</p>\n<pre>\npack\n  purse\n  backpack ^2\n  bag\n\t...\n</pre>\n\t<p>That makes \"backpack\" twice as likely as the others to be chosen when we write <code>\\[pack\\]</code>. You can import other peoples' generators like this:</p>\n<pre>\nsentence\n\tI need a new \\{import:noun\\}.\n\tQuickly, \\{import:verb\\}!\n</pre>\n\t<p>You can also alter the capitalisation, pluralisation, tense, and other properties of your word lists. Here's how to play around with capitalisation, for example:</p>\n<pre>\nsentence\n\t\\[name.titleCase\\], can you hear me?\n\tHELLO, \\[name.upperCase\\]!\n\nname\n  patricia\n\tkhalid\n\tanaya\n\t...\n</pre>\n\t<p>There are a bunch of different shorthand notations to make common tasks easier:</p>\n<pre>\nsentence\n\t\\{She|He\\} was about \\{15-20\\}0cm tall and was carrying \\{1-3\\} \\{import:concrete-noun\\}\\{s\\}.\n</pre>\n  <p>If you prefer to learn via video, here's a great unofficial introduction video by YouTuber <a href=\"https://www.youtube.com/@Chaoclypse\" target=\"_blank\">Chaoclypse</a> who is using Perchance to create RPG generators:</p>\n  <!-- <p style=\"text-align:center; margin-bottom:0.1rem;\"><iframe width=\"560\" height=\"315\" style=\"max-width:100%;\" src=\"https://www.youtube-nocookie.com/embed/2DRSuHDPU6I?si=_Ih0m9pR5qt-2b0h&autoplay=0&rel=0\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" allowfullscreen></iframe></p> -->\n  <p style=\"text-align:center; margin-bottom:0.1rem;\"><iframe width=\"560\" height=\"315\" style=\"max-width:100%;\" src=\"https://www.youtube-nocookie.com/embed/2DRSuHDPU6I?si=yEhDtGRFh5ne-eo2&autoplay=0\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></p>\n  <p style=\"text-align:center; margin-top:0.1rem; font-size:70%;\">(btw, feel free to share your own Perchance video tutorials on <a href=\"https://lemmy.world/c/perchance\" target=\"_blank\">the community forum</a> - you might get featured here!)</p>\n\t<p>The above examples only show the <b>absolute basics</b> of Perchance! If you'd like to learn more, check out the <a href=\"/tutorial\">tutorial</a>, and start playing around with a <a href=\"/minimal#edit\">minimal example</a> (or the <a href=\"/basic-template#edit\">basic template</a>). Check out the <a href=\"/examples\">examples</a> page and this <a href=\"/aqr03wn1#edit\">somewhat complexified version</a> of the previous backpack example for some demonstration of advanced features.</p>\n\t\n\t<div id=\"next-step-buttons-ctn\" style=\"display:flex; justify-content:center;\">\n\t\t<a href=\"/generators\" style=\"display:inline-block; text-decoration:none; color:white; background: #ea8616; background:light-dark(#ea8616, #cd730f); border:0; outline:none; padding:0.5em 1em; border-radius:3px; font-size:120%; margin:1em; box-shadow: 0px 2px 2px #00000029;\">View Creations 🔧</a>\n\t\t<a href=\"/minimal#edit\" style=\"display:inline-block; text-decoration:none; color:white; background: #00a3ce; background:light-dark(#ea8616, #0084a7); border:0; outline:none; padding:0.5em 1em; border-radius:3px; font-size:120%; margin:1em; box-shadow: 0px 2px 2px #00000029;\">Start Creating ⚄</a>\n\t\t<a href=\"/tutorial\" style=\"display:inline-block; text-decoration:none; color:white; background: #4abe4a; background:light-dark(#4abe4a, #0f8e0f); border:0; outline:none; padding:0.5em 1em; border-radius:3px; font-size:120%; margin:1em; box-shadow: 0px 2px 2px #00000029;\">Keep Learning 📚</a>\n\t</div>\n\t<style>\n\t@media screen and (max-width: 800px) {\n\t\t#next-step-buttons-ctn {\n\t\t\t flex-direction:column;\n\t\t}\n\t}\n\t</style>\n\t\t\n\t<p>Once you've created a generator, you can <b>share it</b> with others by simply sharing the URL. You can change the URL in the \"settings\" menu. You can also <b>download it</b> as a single HTML file so that you can run it offline, or even turn it into a <a href=\"https://perchance.org/create-a-twitter-bot\" target=\"_blank\" style=\"font-weight:bold;\">Twitter bot</a> or a <a href=\"https://perchance.org/create-a-tumblr-bot\" target=\"_blank\" style=\"font-weight:bold;\">Tumblr bot</a>. It's also easy to <b>embed it</b> in your own website:</p>\n<pre>\n&lt;iframe src=\"https://null.perchance.org/my-generator-name\" style=\"width:100%; height:600px; border:none;\"&gt;&lt;/iframe&gt;\n</pre>\n\t<p>And a note to coders: It's also possible to <a href=\"/diy-perchance-api\">set up an API server</a> for your generator, even though Perchance doesn't have an \"official\" API at this point. It's also possible to <a href=\"/perchance-discord-bot\" target=\"_blank\" style=\"font-weight:bold;\">set up a Discord bot</a> which will respond to messages with the output of a generator that you choose.</p>\n\t\n\t<p>We have a <a href=\"https://lemmy.world/c/perchance\">Lemmy community</a> which you might like to join. Feel free to share your creations there or ask questions if you need some help building a generator. Also check out the work-in-progress <a href=\"/useful-generators\">useful generators</a> list which might have some generators that you'd find useful for importing into your own generator.</p>\n\t<p>If you're looking for a simple random generator maker that just randomly selects one of several different items that you specify, then you can still use Perchance, but it might be a bit excessive for such a simple task. That said, the advantage of using Perchance for something like this is that it makes it really easy to add different weights/chances to each item and to extend it with some additional complexity later if needed. Perchance is designed to allow you to create random generators that have a lot of complexity, without requiring any existing coding knowledge, and with a fairly simple interface.</p>\n  <p>Perchance is based on <a href=\"https://www.khanacademy.org/computing/computer-programming/html-css\" target=\"_blank\">HTML/CSS</a>, and <a href=\"https://www.khanacademy.org/computing/computer-programming/programming\" target=\"_blank\">JavaScript</a>, and my secret mission with Perchance is to get people interested in coding with a smooth, fun learning-curve. If you enjoy using Perchance and want to take your coding skills to the next level, you might like to learn to code on <a href=\"https://www.khanacademy.org/computing/computer-programming\" target=\"_blank\">Khan Academy</a>, or <a href=\"https://scratch.mit.edu/\" target=\"_blank\">Scratch</a>.</p>\n\t<p>Finally, Perchance's structure is based on other awesome random text languages like <a href=\"http://orteil.dashnet.org/randomgen\">randomgen</a> by Orteil and <a href=\"https://github.com/rant-lang/rant\">Rant</a> by TheBerkin. Many thanks to these and other <a href=\"https://en.wikipedia.org/wiki/Domain-specific_language\">DSL</a> creators which inspired Perchance's syntax and functionality. You might also like to check out <a href=\"https://chartopia.d12dev.com/\">Chartopia</a> - another website which allows you to make random generators. If you like the HTML/JS coding aspect of Perchance, and don't really need the generator stuff, then <a href=\"https://neocities.org/\">neocities.org</a> may also be interesting to you.</p>\n  <p>Thanks to the contributors behind these open source software projects:</p>\n\t<ul style=\"text-align:left;\">\n\t\t<li><a href=\"https://github.com/nlp-compromise/compromise\">Compromise</a>: A JavaScript natural language library that powers <code>pastTense</code> and <code>pluralForm</code> and the like.</li>\n\t\t<li><a href=\"https://nathancahill.github.io/Split.js/\">Split.js</a>: A library that allows you to easily split the screen up into resizable quadrants.</li>\n\t\t<li><a href=\"https://mongodb.com\">MongoDB</a>: A great document/NoSQL database. I use it for everything.</li>\n\t\t<li><a href=\"https://expressjs.com\">Express.js</a>: Helps serve you this webpage and power the internal APIs of Perchance.</li>\n\t</ul>\n\t<p>Thanks for checking out Perchance! •ᴗ•</p>\n</main>\n<p style=\"text-align:center; font-size:200%; opacity:0.2; margin-top:0.5em;\"><span>⚄&#xFE0E;</span></p>\n<p style=\"margin-bottom:2rem; font-size:80%; color:grey; text-align:center;\"><a style=\"color:inherit; text-decoration:none;\" href=\"/privacy-policy\" target=\"_blank\">Privacy Policy</a> - <a style=\"color:inherit; text-decoration:none;\" href=\"/terms-of-service\" target=\"_blank\">Terms of Service</a></p>\n<br/>\n\n<style>\n\tul li {\n\t\tmargin-top:0.5em;\t\n\t}\n\tmain {\n\t\tmax-width:900px;\n\t\tmargin:0 auto;\n\t\tbackground: #fff;\n\t\tbackground: light-dark(#fff, #101010);\n\t\tpadding:1em;\n\t\tborder-radius:3px;\n\t\tbox-shadow: 0 0.5px 0 0 #ffffff inset, 0 1px 2px 0 #B3B3B3;\n\t\tbox-shadow: 0 0.5px 0 0 light-dark(#fff, #060606) inset, 0 1px 2px 0 light-dark(#B3B3B3, #2c2c2c);\n\t}\n  main p:first-child {\n    margin-top:0;\n  }\n\tp { text-align:left; line-height: 1.4em; }\n\tbody {\n\t\tbackground-color:#f6f6f6;\t\n\t\tbackground-color: light-dark(#f6f6f6, #000);\n    color: black;\n    color: light-dark(black, #d6d6d6);\n\t}\n\tpre {\n\t\ttext-align:left;\n\t\tbackground: #333;\n    background: light-dark(#333, #212121);\n    color: #e2e2e2;\n    padding: 1em;\n    border-radius: 2px;\n\t\ttab-size: 2;\n\t\t-moz-tab-size: 2;\n\t\t-o-tab-size: 2;\n\t\t-webkit-tab-size: 2;\n\t}\n\tcode {\n\t\tbackground: #eff0f1;\n    background:  light-dark(#eff0f1, #272727);\n    padding: 1px 5px;\t\n\t\twhite-space: nowrap;\n\t}\n\th2 {\n\t\tmargin-top: 1.5em;\t\n\t}\n\t@media screen and (max-width: 600px) {\n\t\t#header {\n\t\t\tfont-size:1.6rem !important;\n\t\t} \n\t}\n  html { color-scheme: dark light }\n</style>\n"}}
+
+Request Headers
+
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0
+Referer: https://perchance.org/welcome#edit
+
+Response Headers
+
+content-length: 45
+content-type: application/json
+x-agent-routing-key: 2.cnU5qwI5BJnj85lM
+
+{"ok":true,"routingKey":"2.cnU5qwI5BJnj85lM"}
+```
+
+
+
+```
+curl 'https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM' \\
+  -H 'Content-Type: application/json' \\
+  -H 'User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0' \\
+  -H 'Referer: https://perchance.org/welcome#edit' \\
+  --data-raw $'{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.3","result":{"modelText":"$meta\\n  title = Create a Random Generator\\n\\npride = {import:pride-plugin}    \\n\\n// Yep, even the Perchance homepage is technically a \\"generator\\", but all the content is in the HTML code in the lower-right editor.","outputTemplate":"<h1 style=\\"position:fixed; top:-1000px;\\">Create a Random Generator</h1>\\n<h2 id=\\"header\\" style=\\"font-size:200%; margin-top:1em;\\">[pride()] Welcome to Perchance\\u0021 [pride()]</h2>\\n<main> \\n\\t  \\n\\t<p>Perchance is a platform for creating and sharing random generators. To create a random generator you simply create lists which reference other lists:</p>\\n\\n\\t<div style=\\"position:relative;\\">\\n<pre>output\\n  Your \\\\[pack\\\\] contains \\\\[item\\\\], \\\\[item\\\\] and \\\\[item\\\\].\\n\\nitem\\n  a few coins\\n  an old \\\\{silver|bronze\\\\} ring\\n  a handkerchief\\n  a shard of bone\\n  some lint\\n  a tin of tea leaves\\n\\npack\\n  purse\\n  backpack\\n  bag\\n  pack\\n  knapsack\\n  rucksack\\n</pre>\\n\\t<a href=\\"/rg4m14ri#edit\\"><div style=\\"position:absolute;bottom:1em;right:1em;background: #14b914; background:light-dark(#14b914, #038003); color:white;padding: 0.5em;width:max-content;border-radius: 2px; box-shadow: 0px 2px 2px #0000005c;\\">try this example</div></a>\\n\\t</div>\\n\\t<p>So, for example, whenever you write <code>\\\\[pack\\\\]</code>, a random item from the \\"pack\\" list will be put in its place — as shown in <a href=\\"https://user.uploads.dev/file/bc63c883358b59575af1b8a142b90834.mp4\\" target=\\"_blank\\">this animation</a> by <a href=\\"https://perchance.org/vionet20-gens\\" target=\\"_blank\\">Vionet20</a>.</p>\\n  <p><a href=\\"/rg4m14ri#edit\\">Here's a link</a> to a minimal perchance generator based on the above code. You can edit it, save your own version, and share it.</p>\\n  <p>You can change the odds of items like so:</p>\\n<pre>\\npack\\n  purse\\n  backpack ^2\\n  bag\\n\\t...\\n</pre>\\n\\t<p>That makes \\"backpack\\" twice as likely as the others to be chosen when we write <code>\\\\[pack\\\\]</code>. You can import other peoples' generators like this:</p>\\n<pre>\\nsentence\\n\\tI need a new \\\\{import:noun\\\\}.\\n\\tQuickly, \\\\{import:verb\\\\}\\u0021\\n</pre>\\n\\t<p>You can also alter the capitalisation, pluralisation, tense, and other properties of your word lists. Here's how to play around with capitalisation, for example:</p>\\n<pre>\\nsentence\\n\\t\\\\[name.titleCase\\\\], can you hear me?\\n\\tHELLO, \\\\[name.upperCase\\\\]\\u0021\\n\\nname\\n  patricia\\n\\tkhalid\\n\\tanaya\\n\\t...\\n</pre>\\n\\t<p>There are a bunch of different shorthand notations to make common tasks easier:</p>\\n<pre>\\nsentence\\n\\t\\\\{She|He\\\\} was about \\\\{15-20\\\\}0cm tall and was carrying \\\\{1-3\\\\} \\\\{import:concrete-noun\\\\}\\\\{s\\\\}.\\n</pre>\\n  <p>If you prefer to learn via video, here's a great unofficial introduction video by YouTuber <a href=\\"https://www.youtube.com/@Chaoclypse\\" target=\\"_blank\\">Chaoclypse</a> who is using Perchance to create RPG generators:</p>\\n  <!-- <p style=\\"text-align:center; margin-bottom:0.1rem;\\"><iframe width=\\"560\\" height=\\"315\\" style=\\"max-width:100%;\\" src=\\"https://www.youtube-nocookie.com/embed/2DRSuHDPU6I?si=_Ih0m9pR5qt-2b0h&autoplay=0&rel=0\\" title=\\"YouTube video player\\" frameborder=\\"0\\" allow=\\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\\" allowfullscreen></iframe></p> -->\\n  <p style=\\"text-align:center; margin-bottom:0.1rem;\\"><iframe width=\\"560\\" height=\\"315\\" style=\\"max-width:100%;\\" src=\\"https://www.youtube-nocookie.com/embed/2DRSuHDPU6I?si=yEhDtGRFh5ne-eo2&autoplay=0\\" title=\\"YouTube video player\\" frameborder=\\"0\\" allow=\\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\\" referrerpolicy=\\"strict-origin-when-cross-origin\\" allowfullscreen></iframe></p>\\n  <p style=\\"text-align:center; margin-top:0.1rem; font-size:70%;\\">(btw, feel free to share your own Perchance video tutorials on <a href=\\"https://lemmy.world/c/perchance\\" target=\\"_blank\\">the community forum</a> - you might get featured here\\u0021)</p>\\n\\t<p>The above examples only show the <b>absolute basics</b> of Perchance\\u0021 If you'd like to learn more, check out the <a href=\\"/tutorial\\">tutorial</a>, and start playing around with a <a href=\\"/minimal#edit\\">minimal example</a> (or the <a href=\\"/basic-template#edit\\">basic template</a>). Check out the <a href=\\"/examples\\">examples</a> page and this <a href=\\"/aqr03wn1#edit\\">somewhat complexified version</a> of the previous backpack example for some demonstration of advanced features.</p>\\n\\t\\n\\t<div id=\\"next-step-buttons-ctn\\" style=\\"display:flex; justify-content:center;\\">\\n\\t\\t<a href=\\"/generators\\" style=\\"display:inline-block; text-decoration:none; color:white; background: #ea8616; background:light-dark(#ea8616, #cd730f); border:0; outline:none; padding:0.5em 1em; border-radius:3px; font-size:120%; margin:1em; box-shadow: 0px 2px 2px #00000029;\\">View Creations 🔧</a>\\n\\t\\t<a href=\\"/minimal#edit\\" style=\\"display:inline-block; text-decoration:none; color:white; background: #00a3ce; background:light-dark(#ea8616, #0084a7); border:0; outline:none; padding:0.5em 1em; border-radius:3px; font-size:120%; margin:1em; box-shadow: 0px 2px 2px #00000029;\\">Start Creating ⚄</a>\\n\\t\\t<a href=\\"/tutorial\\" style=\\"display:inline-block; text-decoration:none; color:white; background: #4abe4a; background:light-dark(#4abe4a, #0f8e0f); border:0; outline:none; padding:0.5em 1em; border-radius:3px; font-size:120%; margin:1em; box-shadow: 0px 2px 2px #00000029;\\">Keep Learning 📚</a>\\n\\t</div>\\n\\t<style>\\n\\t@media screen and (max-width: 800px) {\\n\\t\\t#next-step-buttons-ctn {\\n\\t\\t\\t flex-direction:column;\\n\\t\\t}\\n\\t}\\n\\t</style>\\n\\t\\t\\n\\t<p>Once you've created a generator, you can <b>share it</b> with others by simply sharing the URL. You can change the URL in the \\"settings\\" menu. You can also <b>download it</b> as a single HTML file so that you can run it offline, or even turn it into a <a href=\\"https://perchance.org/create-a-twitter-bot\\" target=\\"_blank\\" style=\\"font-weight:bold;\\">Twitter bot</a> or a <a href=\\"https://perchance.org/create-a-tumblr-bot\\" target=\\"_blank\\" style=\\"font-weight:bold;\\">Tumblr bot</a>. It's also easy to <b>embed it</b> in your own website:</p>\\n<pre>\\n&lt;iframe src=\\"https://null.perchance.org/my-generator-name\\" style=\\"width:100%; height:600px; border:none;\\"&gt;&lt;/iframe&gt;\\n</pre>\\n\\t<p>And a note to coders: It's also possible to <a href=\\"/diy-perchance-api\\">set up an API server</a> for your generator, even though Perchance doesn't have an \\"official\\" API at this point. It's also possible to <a href=\\"/perchance-discord-bot\\" target=\\"_blank\\" style=\\"font-weight:bold;\\">set up a Discord bot</a> which will respond to messages with the output of a generator that you choose.</p>\\n\\t\\n\\t<p>We have a <a href=\\"https://lemmy.world/c/perchance\\">Lemmy community</a> which you might like to join. Feel free to share your creations there or ask questions if you need some help building a generator. Also check out the work-in-progress <a href=\\"/useful-generators\\">useful generators</a> list which might have some generators that you'd find useful for importing into your own generator.</p>\\n\\t<p>If you're looking for a simple random generator maker that just randomly selects one of several different items that you specify, then you can still use Perchance, but it might be a bit excessive for such a simple task. That said, the advantage of using Perchance for something like this is that it makes it really easy to add different weights/chances to each item and to extend it with some additional complexity later if needed. Perchance is designed to allow you to create random generators that have a lot of complexity, without requiring any existing coding knowledge, and with a fairly simple interface.</p>\\n  <p>Perchance is based on <a href=\\"https://www.khanacademy.org/computing/computer-programming/html-css\\" target=\\"_blank\\">HTML/CSS</a>, and <a href=\\"https://www.khanacademy.org/computing/computer-programming/programming\\" target=\\"_blank\\">JavaScript</a>, and my secret mission with Perchance is to get people interested in coding with a smooth, fun learning-curve. If you enjoy using Perchance and want to take your coding skills to the next level, you might like to learn to code on <a href=\\"https://www.khanacademy.org/computing/computer-programming\\" target=\\"_blank\\">Khan Academy</a>, or <a href=\\"https://scratch.mit.edu/\\" target=\\"_blank\\">Scratch</a>.</p>\\n\\t<p>Finally, Perchance's structure is based on other awesome random text languages like <a href=\\"http://orteil.dashnet.org/randomgen\\">randomgen</a> by Orteil and <a href=\\"https://github.com/rant-lang/rant\\">Rant</a> by TheBerkin. Many thanks to these and other <a href=\\"https://en.wikipedia.org/wiki/Domain-specific_language\\">DSL</a> creators which inspired Perchance's syntax and functionality. You might also like to check out <a href=\\"https://chartopia.d12dev.com/\\">Chartopia</a> - another website which allows you to make random generators. If you like the HTML/JS coding aspect of Perchance, and don't really need the generator stuff, then <a href=\\"https://neocities.org/\\">neocities.org</a> may also be interesting to you.</p>\\n  <p>Thanks to the contributors behind these open source software projects:</p>\\n\\t<ul style=\\"text-align:left;\\">\\n\\t\\t<li><a href=\\"https://github.com/nlp-compromise/compromise\\">Compromise</a>: A JavaScript natural language library that powers <code>pastTense</code> and <code>pluralForm</code> and the like.</li>\\n\\t\\t<li><a href=\\"https://nathancahill.github.io/Split.js/\\">Split.js</a>: A library that allows you to easily split the screen up into resizable quadrants.</li>\\n\\t\\t<li><a href=\\"https://mongodb.com\\">MongoDB</a>: A great document/NoSQL database. I use it for everything.</li>\\n\\t\\t<li><a href=\\"https://expressjs.com\\">Express.js</a>: Helps serve you this webpage and power the internal APIs of Perchance.</li>\\n\\t</ul>\\n\\t<p>Thanks for checking out Perchance\\u0021 •ᴗ•</p>\\n</main>\\n<p style=\\"text-align:center; font-size:200%; opacity:0.2; margin-top:0.5em;\\"><span>⚄&#xFE0E;</span></p>\\n<p style=\\"margin-bottom:2rem; font-size:80%; color:grey; text-align:center;\\"><a style=\\"color:inherit; text-decoration:none;\\" href=\\"/privacy-policy\\" target=\\"_blank\\">Privacy Policy</a> - <a style=\\"color:inherit; text-decoration:none;\\" href=\\"/terms-of-service\\" target=\\"_blank\\">Terms of Service</a></p>\\n<br/>\\n\\n<style>\\n\\tul li {\\n\\t\\tmargin-top:0.5em;\\t\\n\\t}\\n\\tmain {\\n\\t\\tmax-width:900px;\\n\\t\\tmargin:0 auto;\\n\\t\\tbackground: #fff;\\n\\t\\tbackground: light-dark(#fff, #101010);\\n\\t\\tpadding:1em;\\n\\t\\tborder-radius:3px;\\n\\t\\tbox-shadow: 0 0.5px 0 0 #ffffff inset, 0 1px 2px 0 #B3B3B3;\\n\\t\\tbox-shadow: 0 0.5px 0 0 light-dark(#fff, #060606) inset, 0 1px 2px 0 light-dark(#B3B3B3, #2c2c2c);\\n\\t}\\n  main p:first-child {\\n    margin-top:0;\\n  }\\n\\tp { text-align:left; line-height: 1.4em; }\\n\\tbody {\\n\\t\\tbackground-color:#f6f6f6;\\t\\n\\t\\tbackground-color: light-dark(#f6f6f6, #000);\\n    color: black;\\n    color: light-dark(black, #d6d6d6);\\n\\t}\\n\\tpre {\\n\\t\\ttext-align:left;\\n\\t\\tbackground: #333;\\n    background: light-dark(#333, #212121);\\n    color: #e2e2e2;\\n    padding: 1em;\\n    border-radius: 2px;\\n\\t\\ttab-size: 2;\\n\\t\\t-moz-tab-size: 2;\\n\\t\\t-o-tab-size: 2;\\n\\t\\t-webkit-tab-size: 2;\\n\\t}\\n\\tcode {\\n\\t\\tbackground: #eff0f1;\\n    background:  light-dark(#eff0f1, #272727);\\n    padding: 1px 5px;\\t\\n\\t\\twhite-space: nowrap;\\n\\t}\\n\\th2 {\\n\\t\\tmargin-top: 1.5em;\\t\\n\\t}\\n\\t@media screen and (max-width: 600px) {\\n\\t\\t#header {\\n\\t\\t\\tfont-size:1.6rem \\u0021important;\\n\\t\\t} \\n\\t}\\n  html { color-scheme: dark light }\\n</style>\\n"}}' \\
+  --compressed
+```
+
+
+
+POST [https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM](https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM) 200
+
+Request Data
+
+{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.1","result":{"ok":true,"name":"perchance-ai-tts.user.js","bytes":8465,"path":"scratch/perchance-ai-tts.user.js","stored":true,"note":"attached — the user can download it from the chat (kept on their device up to 30 days)"}}
+
+Request Headers
+
+Content-Type: application/json
+
+User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0
+
+Referer: [https://perchance.org/welcome#edit](https://perchance.org/welcome#edit)
+
+Response Headers
+
+content-length: 45
+
+content-type: application/json
+
+x-agent-routing-key: 2.cnU5qwI5BJnj85lM
+
+{"ok":true,"routingKey":"2.cnU5qwI5BJnj85lM"}
+
+
+
+curl '[https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM](https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM)' \\
+
+  -H 'Content-Type: application/json' \\
+
+  -H 'User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0' \\
+
+  -H 'Referer: [https://perchance.org/welcome#edit](https://perchance.org/welcome#edit)' \\
+
+  --data-raw '{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.1","result":{"ok":true,"name":"perchance-ai-tts.user.js","bytes":8465,"path":"scratch/perchance-ai-tts.user.js","stored":true,"note":"attached — the user can download it from the chat (kept on their device up to 30 days)"}}' \\
+
+  --compressed
+
+
+
+POST [https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM](https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM) 200
+
+Request Data
+
+{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.2","result":{"ok":true,"result":{"ok":true}}}
+
+Request Headers
+
+Content-Type: application/json
+
+User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0
+
+Referer: [https://perchance.org/welcome#edit](https://perchance.org/welcome#edit)
+
+Response Headers
+
+content-length: 45
+
+content-type: application/json
+
+x-agent-routing-key: 2.cnU5qwI5BJnj85lM
+
+{"ok":true,"routingKey":"2.cnU5qwI5BJnj85lM"}
+
+
+
+curl '[https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM](https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM)' \\
+  -H 'Content-Type: application/json' \\
+  -H 'User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0' \\
+  -H 'Referer: [https://perchance.org/welcome#edit](https://perchance.org/welcome#edit)' \\
+  --data-raw '{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.2","result":{"ok":true,"result":{"ok":true}}}' \\
+  --compressed
+
+
+```
+curl 'https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM' \\
+  -H 'Content-Type: application/json' \\
+  -H 'User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0' \\
+  -H 'Referer: https://perchance.org/welcome#edit' \\
+  --data-raw '{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.2","result":{"ok":true,"result":{"ok":true}}}' \\
+  --compressed
+
+POST https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM 200
+
+Request Data
+
+{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.2","result":{"ok":true,"result":{"ok":true}}}
+
+Request Headers
+
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0
+Referer: https://perchance.org/welcome#edit
+
+Response Headers
+
+content-length: 45
+content-type: application/json
+x-agent-routing-key: 2.cnU5qwI5BJnj85lM
+
+{"ok":true,"routingKey":"2.cnU5qwI5BJnj85lM"}
+
+
+
+
+
+
+
+curl 'https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM' \\
+  -H 'Content-Type: application/json' \\
+  -H 'User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0' \\
+  -H 'Referer: https://perchance.org/welcome#edit' \\
+  --data-raw '{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.1","result":{"ok":true,"name":"perchance-ai-tts.user.js","bytes":8465,"path":"scratch/perchance-ai-tts.user.js","stored":true,"note":"attached — the user can download it from the chat (kept on their device up to 30 days)"}}' \\
+  --compressed
+
+POST https://ai-agent.perchance.org/api/aiAgent/toolResult?k=2.cnU5qwI5BJnj85lM 200
+
+Request Data
+
+{"sessionId":"f15297600e85fe206c0201be","id":"t9db74e3ac1571b15.1","result":{"ok":true,"name":"perchance-ai-tts.user.js","bytes":8465,"path":"scratch/perchance-ai-tts.user.js","stored":true,"note":"attached — the user can download it from the chat (kept on their device up to 30 days)"}}
+
+Request Headers
+
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0
+Referer: https://perchance.org/welcome#edit
+
+Response Headers
+
+content-length: 45
+content-type: application/json
+x-agent-routing-key: 2.cnU5qwI5BJnj85lM
+
+{"ok":true,"routingKey":"2.cnU5qwI5BJnj85lM"}
+
+
+
+
+
+
+
+
+
+
+
+curl 'https://ai-agent.perchance.org/api/aiAgent/reserve?k=2.cnU5qwI5BJnj85lM' \\
+  -H 'Content-Type: application/json' \\
+  -H 'User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0' \\
+  -H 'Referer: https://perchance.org/welcome#edit' \\
+  --data-raw '{"sessionId":"f15297600e85fe206c0201be","tabId":"te2f18b017f0cd6b4c1d07cbe","tabLockV1":true,"pageId":"0385746770ead750135870c934b497fd","attemptID":"498d65d32a5ae226d63a1a065ba9951f","purpose":"send"}' \\
+  --compressed
+
+POST https://ai-agent.perchance.org/api/aiAgent/reserve?k=2.cnU5qwI5BJnj85lM 200
+
+Request Data
+
+{"sessionId":"f15297600e85fe206c0201be","tabId":"te2f18b017f0cd6b4c1d07cbe","tabLockV1":true,"pageId":"0385746770ead750135870c934b497fd","attemptID":"498d65d32a5ae226d63a1a065ba9951f","purpose":"send"}
+
+Request Headers
+
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:136.0) Gecko/136.0 Firefox/136.0
+Referer: https://perchance.org/welcome#edit
+
+Response Headers
+
+content-type: application/json
+x-agent-routing-key: 2.cnU5qwI5BJnj85lM
+
+{"ok":true,"state":"reserved","token":"7a2d191ceb2d320f574625f3978137d05f109ef2900a8a96","expiresAt":1791953545962,"nativeAttachmentUpload":{"maxBytes":524288},"routingKey":"2.cnU5qwI5BJnj85lM"}
+```

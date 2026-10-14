@@ -1,0 +1,569 @@
+{
+  "version": 1,
+  "audited_at": "2026-10-13",
+  "target_base": "b39062b589b4a953e826b2e6042397198df967ef",
+  "implementation_branch": "arena/b4094b40-artemis",
+  "scope": "All 12 public repositories returned by gh repo list flrtemis; every remote branch, up to five recent commits per head, all PRs. Census predates publication of this feature branch. Original September ledger remains historical.",
+  "repositories": [
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "speech-to-speech",
+      "nameWithOwner": "flrtemis/speech-to-speech",
+      "pushedAt": "2026-10-07T14:26:18Z",
+      "url": "https://github.com/flrtemis/speech-to-speech",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "arena/50fd7e85-speech-to-speech",
+          "sha": "9aa12ba43193b9da19bfdbfe0eefe53d4806fc76",
+          "recent_commits": [
+            {
+              "sha": "9aa12ba43193b9da19bfdbfe0eefe53d4806fc76",
+              "message": "Reduce Ollama voice response latency\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-07T14:26:16Z"
+            },
+            {
+              "sha": "ab8a264c8b4c450a6933568bf72fbdebdf6e1dc7",
+              "message": "Avoid Ollama cold-load startup timeout\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-07T14:03:04Z"
+            },
+            {
+              "sha": "bbfe1e12d525cd6588de8bd73cd7bd705b4a97a6",
+              "message": "Add live Ollama model selection\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-07T13:41:37Z"
+            },
+            {
+              "sha": "6db2f5c5d0486e7326980754c3191a966b6555cb",
+              "message": "Launch offline UI and speech backend together\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-07T12:49:19Z"
+            },
+            {
+              "sha": "3a915b3d685b592433f5e23577e1bd3d4458e63a",
+              "message": "Resolve offline Qwen TTS model IDs to local snapshots\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-07T12:21:29Z"
+            }
+          ],
+          "tree_entries": 301,
+          "tree_note": "Recursive Git tree inventoried"
+        },
+        {
+          "branch": "main",
+          "sha": "502763f5357117ddfe0c76a77897168d40bed782",
+          "recent_commits": [
+            {
+              "sha": "502763f5357117ddfe0c76a77897168d40bed782",
+              "message": "First-time complete directory backup of artemis",
+              "date": "2026-10-06T08:32:28Z"
+            }
+          ],
+          "tree_entries": 292,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "phone",
+      "nameWithOwner": "flrtemis/phone",
+      "pushedAt": "2026-10-05T19:04:54Z",
+      "url": "https://github.com/flrtemis/phone",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "arena/01a10cfa-phone",
+          "sha": "9dfe38af61e3a9694b883b2b9ce3dc00da82a2a6",
+          "recent_commits": [
+            {
+              "sha": "9dfe38af61e3a9694b883b2b9ce3dc00da82a2a6",
+              "message": "Reach the agent from anywhere, and answer the app question honestly\n\nAn app cannot put your carrier number on the agent, and no amount of\nKotlin changes that: inbound calls to a mobile number are delivered by the\ncarrier's IMS to the SIM that owns it, authenticated with keys inside the\nSIM. No application can register for that. So there are two paths, and\nboth now exist:\n\n  * data (free, no telephone company): your phone opens a socket to the\n    agent. This is `phone voice web` plus the Android client in android/.\n  * PSTN (a rented DID, ~$1-3/mo): your carrier number genuinely rings, the\n    carrier bridges into your Asterisk, and the agent answers - the block\n    to add is written out in voice/trunk.conf.example.\n\n`phone voice web` serves a self-contained browser client (no CDN, no\nframework - a client that phones home would defeat the point), an RFC 6455\nWebSocket audio bridge implemented in the standard library, and a small\nJSON API: ring my phone, leave a note, ask a question, read the last\ntranscript. It reuses the phone line's CallSession, so the VAD, whisper,\nOllama, barge-in and transcripts are the same code, and the browser gets\nlive turn events over the same socket.\n\nThe Android client speaks that protocol with the pieces a browser cannot\nprovide: VOICE_COMMUNICATION capture (the platform echo canceller, without\nwhich the agent hears itself), a foreground service so a call survives the\nscreen going off, and ws:// inside a VPN - a browser refuses the microphone\nover plain HTTP, an app does not. It is not built here (no Android SDK in\nthis environment) and android/README.md says so plainly.\n\nAlso in this commit:\n\n  * [web] config section, refuse-by-default: a non-loopback bind needs\n    allow_remote *and* a token, because this carries live audio and a\n    dialling API. docs/REMOTE.md is the deployment story.\n  * `phone voice note` and /api/note, so a remote client can brief the\n    agent for the next call (\"I am driving, keep it short\").\n  * /api/call-me validates through validate_dial_request exactly like the\n    model's intent path: 911 and any non-owner number are refused before a\n    dialler is reached, and a test asserts the request body cannot choose\n    the number.\n  * `phone status` probes ports instead of grepping for a process, because\n    pgrep -f matches the caller's own command line (it reported a server\n    that was not running), and `py -c` in the launcher never worked - the\n    helper runs modules.\n\nBugs found while building the remote path:\n\n  * a hangup discarded the audio already queued in front of it, so the last\n    thing a caller said was thrown away - the normal shape of a call ending;\n  * transcripts were silently skipped when their directory did not exist,\n    which is exactly the first call a user wants to read.\n\n435 assertions pass (308 pytest + 60 SIP + 45 firewall + 22 e2e).\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-05T19:04:51Z"
+            },
+            {
+              "sha": "d3751ade6388af303c0a5a652094eccfe8edebf3",
+              "message": "Put a local Ollama model on the phone line\n\nAdds the voice agent: a local model that can answer a call and dial out,\nbridged from Asterisk over AudioSocket. Standard library only for the\nprotocol, the audio maths, the Asterisk config generator, and the Ollama\nclient; whisper, Ollama, and Piper are optional adapters that fail with a\nsentence rather than a traceback.\n\nThe dialling rule is the part that matters. Speech is untrusted input, so\nthe model is never shown the owner's number, may only propose\n[[dial:owner]], and validate_dial_request() allows exactly the configured\ndestination. Emergency and service numbers are refused before that\ncomparison (the previous regex never matched 911 - the call was only\nrefused by coincidence), the config loader refuses to accept one as the\nowner, and the generated dialplan contains the number literally with no\npattern that reaches the PSTN. `phone voice dial-test` proves it.\n\nBugs found and fixed while building this:\n\n* the streaming resampler dropped the last sample of every chunk, so\n  chunked audio was not the same signal as one-shot audio (clicks at every\n  boundary and roughly twice the perceived energy);\n* playback was unpaced, so a reply was flushed into the socket faster than\n  real time and Asterisk queued it - latency that grows every turn;\n* a peer closing the TCP connection was invisible: a dropped call waited\n  out the whole silence timeout on a dead line;\n* a lone tone registered as a DTMF digit (the detector needed both the row\n  and column tones, and its threshold was off by orders of magnitude);\n* pcm16_from_float mapped -1.0 to -32767 instead of -32768;\n* recv_audio returned \"no audio\" when it had actually received a keypress,\n  and the offline WAV driver wrote its stand-in into ~/voice whether or\n  not that directory existed;\n* the Asterisk generator pointed at certificate filenames the rest of the\n  project never generates, used an identify section matching 0.0.0.0/0\n  (that identifies the whole internet as your handset), and put two allow=\n  lines where one comma-separated line was meant.\n\nAlso: `phone voice` is now the agent (the pjsua launcher keeps `phone sip`),\n`phone doctor`/`phone status` report it, both installers copy voice/, and\ndocs/VOICE.md answers the VoLTE question directly: a server cannot hold\nVoLTE, so a real mobile number means a rented DID and an ordinary bridged\ncall - the model half is free, the PSTN half is not.\n\n386 assertions pass (259 pytest + 60 SIP + 45 firewall + 22 e2e).\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-05T18:35:15Z"
+            },
+            {
+              "sha": "f8928c17d0dcd09523e2cd2f24fc13e43688bcf1",
+              "message": "Tie the three legs together, and fix the bugs that joining them exposed\n\nNothing here can buy a DID, reach into a LAN, or receive a provider's webhook;\nthat is stated plainly in the README rather than implied. What this adds is the\ntooling that makes each leg verifiable one at a time, plus the fixes that only\nshowed up once the legs were wired together.\n\nNew:\n  sip/test-tls.sh     DNS, TCP, TLS handshake, certificate verification, subject\n                      and SANs, then an unauthenticated SIP OPTIONS probe - so a\n                      registration failure can be attributed to the network, the\n                      certificate, or the credentials instead of guessed at. It\n                      also recognises a TLS-inspecting middlebox, which is the\n                      failure mode that looks most like \"wrong password\".\n  sip/provision.sh    writes the account block from a provider template,\n                      expanding @HOME@, preferring the user's CA bundle,\n                      generating a client certificate if absent, and quoting any\n                      value containing '#' so pjsua's parser cannot truncate it.\n  sip/providers/      telnyx, flowroute, twilio (marked unverified) and asterisk\n                      blocks, each with the provider-side checklist.\n  sip/phone.sh doctor audio hardware, group membership, ALSA devices, and\n                      pjsua's own device indexes; runs before the config checks\n                      so it answers \"can this box hear me?\" on a bare machine.\n  sms/cli.py test     self-test of the whole local text path (real HTTP -> spool\n                      -> read) that then prints the exact webhook URL, header\n                      format and tunnel recipe for the provider.\n\nParser bugs found by reading pjsua's read_config_file(), each now regression\ntested. All of these produced configs that looked right and would have failed\nagainst a real provider:\n  - \"\\;transport=tls\" in URIs. pjsua does no backslash unescaping, so the\n    backslash reached the URI parser and the transport parameter was misparsed.\n    My own first template shipped this.\n  - '#' ends a line anywhere, so a password containing it is silently\n    truncated; unquoted '#' is now refused and provisioning quotes such values.\n  - config lines are read into a 200-byte buffer; over-long lines are now\n    rejected instead of silently truncated.\n\nIntegration bugs found by exercising the whole command path:\n  - `phone sip doctor` (bare word, as documented) was treated as a call target\n    and executed pjsua: a diagnostic that would place a call.\n  - `phone sip provision --provider X` died in the option loop before reaching\n    the delegate.\n  - `phone sms test --spool-dir X` failed: global flags only parsed before the\n    subcommand.\n  - provision pointed at a client certificate it never generated.\n  - `phone sip test-tls` reported \"negotiated TLSv1.2\" on a failed handshake,\n    because openssl prints the protocol it attempted.\n  - a bad spool path produced a Python traceback instead of a sentence.\n\nTests: 265 assertions (138 python, 60 sip, 45 firewall, 22 e2e), still needing\nno root, no provider and no network. Voice remains the one leg that cannot be\nverified from here - no sound card, no pjsua, and an egress proxy that\nterminates TLS - which sip/test-tls.sh reports as exactly that.\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-05T17:14:25Z"
+            },
+            {
+              "sha": "e9353ee9cfeeb51c947992f68808cefba01eea02",
+              "message": "Add terminal-native voice + text stack with a default-deny firewall\n\nThree components, one command line, no GUI, no mobile OS, no telemetry.\n\nvoice (sip/)\n  pjsua.conf.example  TLS-only signalling, mandatory SRTP, explicit CA file,\n                      DTLS-SRTP preferred, log level pinned so SDP (and thus\n                      SDES key material) is never written to disk.\n  phone.sh            verifies before it execs: pjsua must be built with TLS\n                      and SRTP, the config and private key must be mode 0600,\n                      placeholders filled, --use-tls/--no-udp/--no-tcp/\n                      --use-srtp 2/--tls-ca-file/--tls-verify-server present,\n                      log level <= 3, and srtp-secure=2 only with sips: URIs.\n  gen-certs.sh        client certificate plus an explicit CA bundle, because\n                      PJLIB's OpenSSL backend ignores the system trust store.\n\ntext (sms/)\n  spool.py    one message per plain text file: atomic writes, 0600/0700,\n              sanitised sender slug plus content-addressed filename, SHA256\n              digest, metadata-only journal, arrival timestamp, size caps.\n  daemon.py   stdlib HTTP webhook receiver: token auth (constant time), body\n              cap, rate limit, content-type allowlist, replay suppression,\n              loopback-only unless the operator explicitly opts in with\n              token + TLS.\n  poll.py     puller for gateways that cannot push, with a crash-safe cursor\n              and retry-after-failure semantics.\n  cli.py      list/read/tail/grep/stats/verify/export/purge. `tail --follow`\n              watches filenames, which `tail -f ~/sms/incoming/*.txt` cannot.\n\nfirewall (lockdown.sh)\n  Default deny in/out/forward. Every peer is pinned by resolved address; IPv6\n  is dropped (a v4-only ruleset on a live v6 stack is a leak); DNS goes only to\n  the named resolver; the SRTP window matches pjsua's real default (4000-4010).\n  Rules are validated with nft --check and backed up before applying, and\n  --panic-timeout arms a rollback so a remote shell is not a one-way trip.\n\nCorrections to the original draft, documented in the README with reasons:\n--with-srtp is not a pjproject option; --sip-border is not a pjsua option;\n--local-port 5061 puts TLS on 5062 (pjsua binds local port + 1), so the config\nuses 5060 -> 5061; --srtp-secure=2 requires sips: URIs; --tls-verify-server\nneeds --tls-ca-file; pjsua's default log level dumps SIP messages; the\n`tail -f glob` recipe never sees later files; and the UFW sketch's\n\"allow out to any port 443/53\" rules are exactly how telemetry survives a\n\"lockdown\".\n\nTests: 132 Python + 35 SIP + 45 firewall + 22 end-to-end assertions\n(./tests/run.sh), none needing root, a provider, or network access.\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-05T17:05:22Z"
+            },
+            {
+              "sha": "22afbaa484ec77e72e8559871b54aebac6fb5ab1",
+              "message": "Initial commit",
+              "date": "2026-10-05T15:41:03Z"
+            }
+          ],
+          "tree_entries": 101,
+          "tree_note": "Recursive Git tree inventoried"
+        },
+        {
+          "branch": "main",
+          "sha": "22afbaa484ec77e72e8559871b54aebac6fb5ab1",
+          "recent_commits": [
+            {
+              "sha": "22afbaa484ec77e72e8559871b54aebac6fb5ab1",
+              "message": "Initial commit",
+              "date": "2026-10-05T15:41:03Z"
+            }
+          ],
+          "tree_entries": 1,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "atrium",
+      "nameWithOwner": "flrtemis/atrium",
+      "pushedAt": "2026-10-05T02:03:43Z",
+      "url": "https://github.com/flrtemis/atrium",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "arena/01a1096b-atrium",
+          "sha": "35a93e43ae69b1aebfe964bc64de6d0c5c00c78a",
+          "recent_commits": [
+            {
+              "sha": "35a93e43ae69b1aebfe964bc64de6d0c5c00c78a",
+              "message": "Fix frontend startup: auto-run bun install, make scripts executable, and resolve Bun PATH\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-05T02:03:40Z"
+            },
+            {
+              "sha": "a40bdbe45679938b4e1b83d32b0e95a5cc58a830",
+              "message": "Atrium: gemma-avatar with eyes \u2014 real-time camera vision for local Ollama models\n\nAtrium is gemma-avatar, complete and unchanged (silero-VAD \u2192 parakeet STT \u2192\nOllama \u2192 Qwen3-TTS \u2192 TalkingHead 3D avatar over the OpenAI Realtime WS\nprotocol), plus the one thing it could not do: see the user back.\n\nThe voice pipeline is untouched. What is new is a second, independent input\nthat joins it at the Ollama step \u2014 a live webcam perception loop whose\nobservations are pushed into the same conversation.\n\nThree perception layers, each of which degrades on its own:\n\n  motion.js     frame differencing, zero dependencies, ~1ms/frame. Always on.\n                Answers \"are you there / did you move / which way\".\n  landmarks.js  MediaPipe hands/pose/face, optional (download_vision_assets.py).\n                Exact finger counts, hand position, posture, lean, face.\n  frames        JPEG stills sent as input_image for a vision-capable model.\n\nFinger counting is the headline case and needs no vision model: a finger\ncounts as up when its tip is farther from the wrist than its middle knuckle\n(distance test, so it survives rotation), the thumb against the pinky\nknuckle. That makes it instant and correct on a text-only model.\n\nBuilt for a slow machine on purpose. The loop (eyes.js) times each pass and\nstretches its own interval to match \u2014 a 400ms pass becomes a ~600ms cadence\ninstead of a queue of frames. Every vision path is optional and wrapped: no\ncamera, no models, no GPU and no network each degrade to \"still talking,\njust not seeing\".\n\nAlso:\n  - /lab, a Camera Lab that runs the whole pipeline with no model attached,\n    and prints the exact text Atrium hands the model.\n  - five new model tools: look_at_camera, count_my_fingers,\n    describe_what_you_see, start_watching_me, stop_watching_me.\n  - server-side frame handling in local_s2s_launcher.py: camera frames and\n    uploads are resized before they reach the model (a 1.5M-char frame drops\n    to 80K), with ATRIUM_* knobs and ATRIUM_STRIP_IMAGES for text-only models.\n  - wires up the avatar-parts panel that was dead markup upstream.\n  - 23 tests for the pure vision logic (bun test).\n\nCo-authored-by: arena-agent <297053741+arena-agent@users.noreply.github.com>",
+              "date": "2026-10-05T00:54:23Z"
+            },
+            {
+              "sha": "1d27ca4ec9960aaa50fb8428799537c2859eacc0",
+              "message": "Delete README.md",
+              "date": "2026-10-05T00:02:57Z"
+            },
+            {
+              "sha": "8e6fb9edae707ae7a715b337c0930edad9321a65",
+              "message": "Initial commit",
+              "date": "2026-10-05T00:02:38Z"
+            }
+          ],
+          "tree_entries": 60,
+          "tree_note": "Recursive Git tree inventoried"
+        },
+        {
+          "branch": "main",
+          "sha": "1d27ca4ec9960aaa50fb8428799537c2859eacc0",
+          "recent_commits": [
+            {
+              "sha": "1d27ca4ec9960aaa50fb8428799537c2859eacc0",
+              "message": "Delete README.md",
+              "date": "2026-10-05T00:02:57Z"
+            },
+            {
+              "sha": "8e6fb9edae707ae7a715b337c0930edad9321a65",
+              "message": "Initial commit",
+              "date": "2026-10-05T00:02:38Z"
+            }
+          ],
+          "tree_entries": 0,
+          "tree_note": "Empty main commit/tree endpoint returns 404; substantial Arena branch inspected"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "artemis",
+      "nameWithOwner": "flrtemis/artemis",
+      "pushedAt": "2026-09-30T20:24:32Z",
+      "url": "https://github.com/flrtemis/artemis",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "main",
+          "sha": "b39062b589b4a953e826b2e6042397198df967ef",
+          "recent_commits": [
+            {
+              "sha": "b39062b589b4a953e826b2e6042397198df967ef",
+              "message": "Update README.md",
+              "date": "2026-09-30T20:24:32Z"
+            },
+            {
+              "sha": "c321ce53310e8a85d95edcd641bc622c24d3977b",
+              "message": "Update README.md",
+              "date": "2026-09-30T20:16:09Z"
+            },
+            {
+              "sha": "9860f3a840ca1baebbdeff6fc78a4a673f92b081",
+              "message": "Create README.md",
+              "date": "2026-09-30T20:03:23Z"
+            },
+            {
+              "sha": "73d72187d7295011cb4bc3b82ba8023c0b1d9a1c",
+              "message": "First-time complete directory backup of artemis",
+              "date": "2026-09-30T19:59:24Z"
+            }
+          ],
+          "tree_entries": 712,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "command-center",
+      "nameWithOwner": "flrtemis/command-center",
+      "pushedAt": "2026-09-29T21:18:28Z",
+      "url": "https://github.com/flrtemis/command-center",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "main",
+          "sha": "5226291a356ea60116678ece9200b1dc186011a9",
+          "recent_commits": [
+            {
+              "sha": "5226291a356ea60116678ece9200b1dc186011a9",
+              "message": "One-time complete directory backup",
+              "date": "2026-09-29T21:17:35Z"
+            }
+          ],
+          "tree_entries": 433,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "agent",
+      "nameWithOwner": "flrtemis/agent",
+      "pushedAt": "2026-09-29T21:08:17Z",
+      "url": "https://github.com/flrtemis/agent",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "main",
+          "sha": "a09f1d25b0aeb5700f03600618aff34408f3fcf6",
+          "recent_commits": [
+            {
+              "sha": "a09f1d25b0aeb5700f03600618aff34408f3fcf6",
+              "message": "One-time complete directory backup",
+              "date": "2026-09-29T21:04:57Z"
+            }
+          ],
+          "tree_entries": 34,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "local_ollama_arena_agent",
+      "nameWithOwner": "flrtemis/local_ollama_arena_agent",
+      "pushedAt": "2026-09-29T20:59:30Z",
+      "url": "https://github.com/flrtemis/local_ollama_arena_agent",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "main",
+          "sha": "c95d307abd2435e2598e94dbbaee5f343e688ba4",
+          "recent_commits": [
+            {
+              "sha": "c95d307abd2435e2598e94dbbaee5f343e688ba4",
+              "message": "Delete outputs/.gitkeep",
+              "date": "2026-09-29T20:59:29Z"
+            },
+            {
+              "sha": "04ae41410aaba315492c5c6e5160d3732824d8f6",
+              "message": "Create emptyfile.txt",
+              "date": "2026-09-29T20:59:14Z"
+            },
+            {
+              "sha": "8db9c083587b33305b59b8d38d02efacf43900cd",
+              "message": "Create emptyfile.txt",
+              "date": "2026-09-29T20:58:09Z"
+            },
+            {
+              "sha": "4cc40db409449fc922240a865caba7d61349fd83",
+              "message": "Delete workspace/tmp/.gitkeep",
+              "date": "2026-09-29T20:57:33Z"
+            },
+            {
+              "sha": "22ab8c09c88c87376e3440d760eb44485f73d119",
+              "message": "Create .gitkeep",
+              "date": "2026-09-29T20:57:02Z"
+            }
+          ],
+          "tree_entries": 3253,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "gemma-avatar",
+      "nameWithOwner": "flrtemis/gemma-avatar",
+      "pushedAt": "2026-09-29T19:57:17Z",
+      "url": "https://github.com/flrtemis/gemma-avatar",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "main",
+          "sha": "c4becc81781fc59d0cf6d7ff52f6099f9943f7b8",
+          "recent_commits": [
+            {
+              "sha": "c4becc81781fc59d0cf6d7ff52f6099f9943f7b8",
+              "message": "Update example.txt",
+              "date": "2026-09-29T19:57:17Z"
+            },
+            {
+              "sha": "62f80daa1f5aa3b9810640b90f42a4143b08cdfa",
+              "message": "Update README.md",
+              "date": "2026-09-29T19:54:00Z"
+            },
+            {
+              "sha": "d26bf407501907fe3c047565ae2a3cc30d2308d4",
+              "message": "Delete WSL2 CLI output proof.md",
+              "date": "2026-09-29T19:42:40Z"
+            },
+            {
+              "sha": "665250344fe47efced3968650753f6bd16f135a4",
+              "message": "Create WSL2 CLI output proof.md",
+              "date": "2026-09-29T19:40:41Z"
+            },
+            {
+              "sha": "0739dfac7f356066a5c8dcb03fbe0ae00ae844fe",
+              "message": "Add files via upload",
+              "date": "2026-09-29T18:52:57Z"
+            }
+          ],
+          "tree_entries": 1972,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "Sage",
+      "nameWithOwner": "flrtemis/Sage",
+      "pushedAt": "2026-09-29T16:32:07Z",
+      "url": "https://github.com/flrtemis/Sage",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "main",
+          "sha": "701f917eab403c32263deb08a85de24f59514518",
+          "recent_commits": [
+            {
+              "sha": "701f917eab403c32263deb08a85de24f59514518",
+              "message": "Add files via upload",
+              "date": "2026-09-29T16:32:06Z"
+            },
+            {
+              "sha": "2bbc26e06a44c25039a22c2e8dd626aa13cc479f",
+              "message": "Create test_continuity.py",
+              "date": "2026-09-29T16:31:35Z"
+            },
+            {
+              "sha": "a6f662f36d866eb43ef07fdb9c7d71455ae28bc1",
+              "message": "Create test_lookback.py",
+              "date": "2026-09-29T16:31:11Z"
+            },
+            {
+              "sha": "bce31fabf05eb3b9538d8a44234090cc99e8ada3",
+              "message": "Create test_ollama_path.py",
+              "date": "2026-09-29T16:30:49Z"
+            },
+            {
+              "sha": "9b9976ad15e5256b998a5bba334f37d0d1eafdc0",
+              "message": "Create from Brandon, 2026-09-27.md",
+              "date": "2026-09-29T16:29:38Z"
+            }
+          ],
+          "tree_entries": 33,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "neural-sim",
+      "nameWithOwner": "flrtemis/neural-sim",
+      "pushedAt": "2026-09-26T05:01:02Z",
+      "url": "https://github.com/flrtemis/neural-sim",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "main",
+          "sha": "b51dda76eaee4347efce6156f98ddaed71ddf7d9",
+          "recent_commits": [
+            {
+              "sha": "b51dda76eaee4347efce6156f98ddaed71ddf7d9",
+              "message": "Create launch.py",
+              "date": "2026-09-26T05:01:02Z"
+            },
+            {
+              "sha": "a552130f0b9325ce8e5b2a7e914492e0185172a4",
+              "message": "Create IMPROVEMENTS.md",
+              "date": "2026-09-26T05:00:00Z"
+            },
+            {
+              "sha": "62ef2f6947a295129baee152329c62d4c85f4ad7",
+              "message": "Create hooks.py",
+              "date": "2026-09-26T04:58:54Z"
+            },
+            {
+              "sha": "f6c4f435391d87c6622e05f888e74ea418cfe841",
+              "message": "Create dataset_analyzer.py",
+              "date": "2026-09-26T04:58:09Z"
+            },
+            {
+              "sha": "7d20ac92457cfeb997adea375baf0a777f35a61e",
+              "message": "Create dashboard_server.py",
+              "date": "2026-09-26T04:56:22Z"
+            }
+          ],
+          "tree_entries": 14,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "LLM as a 3D avatar, existing within a 3D virtual world",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "universe",
+      "nameWithOwner": "flrtemis/universe",
+      "pushedAt": "2026-09-23T22:46:38Z",
+      "url": "https://github.com/flrtemis/universe",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "main",
+          "sha": "458915e762dc25b280aeebca3728f5bbe961c87f",
+          "recent_commits": [
+            {
+              "sha": "458915e762dc25b280aeebca3728f5bbe961c87f",
+              "message": "Add files via upload",
+              "date": "2026-09-23T22:46:38Z"
+            },
+            {
+              "sha": "75a83edd599824cba1df463ba409c814068aaa45",
+              "message": "Add files via upload",
+              "date": "2026-09-23T22:45:14Z"
+            },
+            {
+              "sha": "ac5208c88980496da6800fd59a00da7beb6a08de",
+              "message": "Initial commit",
+              "date": "2026-09-23T22:44:42Z"
+            }
+          ],
+          "tree_entries": 3,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    },
+    {
+      "defaultBranchRef": {
+        "name": "main"
+      },
+      "description": "",
+      "isArchived": false,
+      "isPrivate": false,
+      "name": "guardian",
+      "nameWithOwner": "flrtemis/guardian",
+      "pushedAt": "2026-09-01T23:04:33Z",
+      "url": "https://github.com/flrtemis/guardian",
+      "pull_requests": [],
+      "branches": [
+        {
+          "branch": "main",
+          "sha": "173848a911e4d5e8e774e54fc293df17f189a69f",
+          "recent_commits": [
+            {
+              "sha": "173848a911e4d5e8e774e54fc293df17f189a69f",
+              "message": "Create README.md",
+              "date": "2026-09-01T23:04:33Z"
+            },
+            {
+              "sha": "1c32eb9c887f41a51d133e3021503c137eea1da8",
+              "message": "Add files via upload",
+              "date": "2026-09-01T16:31:50Z"
+            },
+            {
+              "sha": "fe74d0df9e5fcc3812d98eb75505de3f29e4b036",
+              "message": "Delete README.md",
+              "date": "2026-09-01T02:07:47Z"
+            },
+            {
+              "sha": "c485eb3d9de6b88ce4cbee62394debddabcd9e0a",
+              "message": "Add files via upload",
+              "date": "2026-09-01T02:07:21Z"
+            },
+            {
+              "sha": "a77832b1e04504988355e42df26c26648fc1e418",
+              "message": "Initial commit",
+              "date": "2026-09-01T02:06:23Z"
+            }
+          ],
+          "tree_entries": 13,
+          "tree_note": "Recursive Git tree inventoried"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+To create a bootable USB for your Dell laptop, you will need a blank USB flash drive with at least 8GB of space. Please backup any existing data on that USB first, as this process will completely erase the drive. [1, 2, 3, 4, 5] 
+
+Step 1: Create the Bootable USB with Rufus(https://github.com/pbatard/rufus/releases/download/v4.14/rufus-4.14.exe)
+
+Since you already have the official ISO file, Rufus is the fastest and most reliable tool to prepare it for a modern Dell laptop. [6, 7] 
+
+   1. Download and open the free utility from the official [Rufus Website](https://rufus.ie/).
+   2. Insert your USB flash drive into your working computer.
+   3. Select your USB drive under the Device dropdown.
+   4. Click the SELECT button and choose the Windows 10 ISO file you just downloaded.
+   5. Set the Partition scheme to GPT and the Target system to UEFI (non CSM). Dell laptops built in the last decade require UEFI mode to boot properly.
+   6. Leave all other settings at their defaults and click START.
+   7. Click OK on the data destruction warning and wait for the status bar to say "READY". [8, 9, 10, 11, 12] 
+
+Step 2: Boot Your Dell Laptop From the USB
+
+Once Rufus is finished, eject the USB drive and plug it into your target Dell laptop. [13, 14, 15, 16] 
+
+   1. Ensure the Dell laptop is completely turned off.
+   2. Turn the laptop on and immediately begin tapping the F12 key repeatedly.
+   3. Keep tapping until the One-Time Boot Menu screen appears.
+   4. Under the UEFI BOOT section of the menu, use your arrow keys to select your USB Flash Drive and press Enter.
+   5. The laptop will boot into the Windows 10 installer setup screen. [17, 18, 19, 20, 21] 
+
+Step 3: Run the Clean Install
+
+Follow the on-screen prompts until you reach the screen asking "Which type of installation do you want?"
+
+   1. Click Custom: Install Windows only (advanced).
+   2. You will see a list of drive partitions. Select each partition on your primary drive one by one and click Delete until you only see Drive 0 Unallocated Space.
+   3. Select that unallocated space and click Next. Windows will automatically partition the drive and install cleanly. [22, 23, 24, 25, 26] 
+
+If you want, I can help you verify which specific F12 boot menu settings you need to change if your USB doesn't show up right away.
+
+[1] [https://www.ockelcomputers.com](https://www.ockelcomputers.com/downloads/windows-reinstallation-guide.pdf)
+[2] [https://community.spiceworks.com](https://community.spiceworks.com/t/n00b-question-dell-lenovo-hdd-replacement/636651)
+[3] [https://learn.microsoft.com](https://learn.microsoft.com/en-us/answers/questions/4271029/backup-windows-10-os-only-%28usb-stick-and-or-extern)
+[4] [https://petri.com](https://petri.com/create-a-bootable-usb-drive-for-windows-server-2019-installation/)
+[5] [https://www.hp.com](https://www.hp.com/au-en/shop/tech-takes/post/how-to-boot-from-usb-drive-on-windows-10-pcs)
+[6] [https://www.ionos.com](https://www.ionos.com/digitalguide/server/know-how/make-a-bootable-usb-drive/)
+[7] [https://www.howtogeek.com](https://www.howtogeek.com/191054/how-to-create-bootable-usb-drives-and-sd-cards-for-every-operating-system/)
+[8] [https://techcommunity.microsoft.com](https://techcommunity.microsoft.com/discussions/windowsinsiderprogram/how-to-create-a-bootable-usb-using-rufus/4465017)
+[9] [https://www.cocosenor.com](https://www.cocosenor.com/articles/computer/how-to-burn-iso-to-usb-on-windows.html)
+[10] [https://www.cocosenor.com](https://www.cocosenor.com/articles/windows-10/how-to-create-linux-mint-bootable-usb-in-windows-10.html)
+[11] [https://www.scribd.com](https://www.scribd.com/presentation/621397992/Guide-how-to-rufus)
+[12] [https://www.dell.com](https://www.dell.com/support/manuals/en-us/native-edge-or-solutions/nativeedge-sm/use-rufus-on-windows-to-create-a-bootable-usb-disk?guid=guid-2f41b1f8-27ae-45d3-95c0-5d98885c347e&lang=en-us)
+[13] [https://learn.microsoft.com](https://learn.microsoft.com/en-us/answers/questions/3998734/help-needed-creating-a-bootable-usb-for-windows-10)
+[14] [https://wiki.bicomsystems.com](https://wiki.bicomsystems.com/serverware/howto/Create-USB-Installation-Media)
+[15] [https://docs.accops.com](https://docs.accops.com/hysecure_7_0/content_hysecure/knowledgebase_HSG/bootable_usb_iso.html)
+[16] [https://www.xda-developers.com](https://www.xda-developers.com/how-to-use-rufus-to-create-a-bootable-usb-drive-and-install-windows/)
+[17] [https://learn.microsoft.com](https://learn.microsoft.com/en-us/answers/questions/3747734/my-pc-dell-vostro-3671-in-uefi-boot-not-have-a-usb)
+[18] [https://learn.microsoft.com](https://learn.microsoft.com/en-us/answers/questions/5906441/recovery-drive-and-usb-recognition)
+[19] [https://forums.ghostbsd.org](https://forums.ghostbsd.org/d/97-am-i-permitted-to-install-ghostbsd-on-dell)
+[20] [https://www.dell.com](https://www.dell.com/support/kbdoc/en-au/000177401/restore-your-system-using-dell-supportassist-os-recovery)
+[21] [https://learn.microsoft.com](https://learn.microsoft.com/en-us/answers/questions/4119474/dead-os)
+[22] [https://learn.microsoft.com](https://learn.microsoft.com/en-us/answers/questions/2716032/windows-8-1-clean-%28custom%29-install-%28with-images%29)
+[23] [https://nzlw.co.nz](https://nzlw.co.nz/tech-posts/reinstall-windows-from-usb-quick-guide/)
+[24] [https://learn.microsoft.com](https://learn.microsoft.com/en-us/answers/questions/5737637/how-to-do-a-true-clean-install-of-windows-11-%28dele)
+[25] [https://learn.microsoft.com](https://learn.microsoft.com/en-us/answers/questions/4133645/a-question-on-how-to-install-operating-system)
+[26] [https://nzlw.co.nz](https://nzlw.co.nz/tech-posts/reinstall-windows-from-usb-quick-guide/)
+
+http://en.wikipedia.org/wiki/Free_and_open_source_software
+http://en.wikipedia.org/wiki/Free_software
+http://en.wikipedia.org/wiki/ISO_image
+http://git-scm.com/
+http://infrarecorder.org/
+http://mingw-w64.org/
+http://wiki.osdev.org/El-Torito
+http://winhelp2002.mvps.org/hosts.htm
+http://www.damnsmalllinux.org/
+http://www.fsf.org/
+http://www.gnu.org/licenses/gpl.html
+http://www.slackware.com/
+https://almalinux.org/
+https://archboot.com/
+https://archlinux.org/
+https://clonezilla.org/clonezilla-live.php
+https://dappcdn.com/download/system-rescue/rufus
+https://docs.microsoft.com/en-us/lifecycle/products/windows-7
+https://docs.microsoft.com/en-us/lifecycle/products/windows-vista
+https://docs.microsoft.com/en-us/lifecycle/products/windows-xp
+https://elementary.io/
+https://en.wiktionary.org/wiki/m%C3%A9c%C3%A9nat
+https://garudalinux.org/
+https://getfedora.org/
+https://github.com/pbatard/UEFI-Shell/releases
+https://github.com/pbatard/rufus
+https://github.com/pbatard/rufus/archive/v4.14.zip
+https://github.com/pbatard/rufus/blob/master/ChangeLog.txt
+https://github.com/pbatard/rufus/issues
+https://github.com/pbatard/rufus/releases/download/v4.14/rufus-4.14.exe
+https://github.com/pbatard/rufus/releases/download/v4.14/rufus-4.14_arm64.exe
+https://github.com/pbatard/rufus/releases/download/v4.14/rufus-4.14_x86.exe
+https://github.com/pbatard/rufus/releases/download/v4.14/rufus-4.14p.exe
+https://github.com/pbatard/rufus/releases/download/v4.15_BETA2/rufus-4.15_BETA2.exe
+https://github.com/pbatard/rufus/releases/tag/v4.15_BETA2
+https://github.com/pbatard/rufus/wiki/FAQ
+https://github.com/pbatard/rufus/wiki/Localization#wiki-Translating_the_Rufus_Homepage
+https://github.com/pbatard/uefi-ntfs
+https://gparted.org/
+https://knoppix.net/
+https://kolibrios.org/
+https://linuxmint.com/
+https://manjaro.org/
+https://pages.github.com/
+https://pete.akeo.ie/
+https://pogostick.net/~pnh/ntpasswd
+https://reactos.org/
+https://rockylinux.org/
+https://rufus.ie/downloads/
+https://rufus.ie/en/#FAQ
+https://rufus.ie/en/#about
+https://rufus.ie/en/#changelog
+https://rufus.ie/en/#download
+https://rufus.ie/en/#ref1
+https://rufus.ie/en/#source
+https://rufus.ie/en/#usage
+https://support.microsoft.com/kb/5042562
+https://tails.boum.org/
+https://trinityhome.org/
+https://ubuntu.com/
+https://www.centos.org/
+https://www.debian.org/
+https://www.fosshub.com/CDBurnerXP.html
+https://www.freedos.org/
+https://www.gentoo.org/
+https://www.hirensbootcd.org/
+https://www.kali.org/
+https://www.microsoft.com/en-ie/windows-server
+https://www.microsoft.com/en-us/software-download/windows10ISO/
+https://www.microsoft.com/en-us/software-download/windows11
+https://www.microsoft.com/en-us/software-download/windows8ISO
+https://www.opensuse.org/
+https://www.raspberrypi.com/software/
+https://www.raspbian.org/
+https://www.redhat.com/
+https://www.rodsbooks.com/refind
+https://www.supergrubdisk.org/category/download/supergrub2diskdownload/super-grub2-disk-stable
+https://www.truenas.com/download-truenas-core
+https://www.ultimatebootcd.com/
+mailto:pete@akeo.ie?subject=Rufus

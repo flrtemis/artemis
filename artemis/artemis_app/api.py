@@ -14,6 +14,7 @@ from .continuity import Continuity
 from .tools import Tools,MAX_UPLOAD,clean
 from .runtime import Runtime
 from .extensions import Extensions
+from .offline import admit_endpoint,enabled as offline_enabled
 from .bio_engine import IzhikevichNetwork,NEURONS_PER_COLUMN
 
 PROJECT=Path(__file__).resolve().parent.parent
@@ -21,6 +22,7 @@ class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False
 class Login(Body):key:str=Field(min_length=1,max_length=250)
 class NewThread(Body):title:str=Field(default='New conversation',min_length=1,max_length=100)
 class Chat(Body):thread_id:str;text:str=Field(min_length=1,max_length=20000);attachments:list[str]=Field(default_factory=list,max_length=10)
+class Correction(Body):text:str=Field(min_length=1,max_length=20000)
 class Proposal(Body):tool:str=Field(max_length=100);arguments:dict
 class Decision(Body):approved:bool;digest:str=Field(min_length=64,max_length=64)
 class Provider(Body):base_url:str=Field(min_length=1,max_length=500);model:str=Field(max_length=200);allow_remote_context:bool=False
@@ -50,11 +52,11 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     bio_lock=threading.Lock()
     @asynccontextmanager
     async def lifespan(app):
-        store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
+        store.add_event('host','Unified host started',{'milestone':'integration-03','recovery':'No ambiguous side effects automatically replayed'})
         await extensions.start()
         yield
         await extensions.close();await runtime.shutdown();store.close()
-    app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
+    app=FastAPI(title='ARTEMIS unified host',version='0.3.0',lifespan=lifespan,docs_url=None,redoc_url=None)
     app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
@@ -78,7 +80,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     @app.exception_handler(sqlite_integrity_error())
     async def integrity_error(request,e):return JSONResponse({'detail':'This conversation already has an active run. Resolve or cancel it first.'},409)
     @app.get('/healthz')
-    async def health():return {'ok':True,'milestone':'integration-02'}
+    async def health():return {'ok':True,'milestone':'integration-03','offline':offline_enabled()}
     login_attempts={}
     @app.post('/api/auth')
     async def login(body:Login,request:Request):
@@ -89,11 +91,12 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         return {'token':token,'role':'operator','expires_at':sessions[token]}
     @app.get('/api/state',dependencies=[Depends(auth)])
     async def state():
-        return {'threads':store.threads(),'runs':store.runs(),'approvals':store.approvals(),'continuity':continuity.snapshot(),'provider':runtime.provider.config(),'capabilities':tools.manifest(),'files':await asyncio.to_thread(tools.inventory),'milestone':'integration-02'}
+        return {'threads':store.threads(),'runs':store.runs(),'approvals':store.approvals(),'continuity':continuity.snapshot(),'provider':runtime.provider.config(),'capabilities':tools.manifest(),'files':await asyncio.to_thread(tools.inventory),'milestone':'integration-03','offline':offline_enabled()}
     @app.get('/api/provider/health',dependencies=[Depends(auth)])
     async def model_health():return await runtime.provider.health()
     @app.put('/api/provider',dependencies=[Depends(auth)])
     async def configure(body:Provider):
+        admit_endpoint(body.base_url)
         parsed=urlparse(body.base_url)
         if parsed.scheme not in ['http','https'] or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:raise ValueError('Use an http(s) provider origin without credentials/query/fragment')
         if parsed.path not in ['','/']:raise ValueError('Use the Ollama origin, e.g. http://127.0.0.1:11434, without /api/chat or /v1')
@@ -111,6 +114,8 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     async def tool(body:Proposal):return {'run_id':await runtime.begin_tool(body.tool,body.arguments)}
     @app.post('/api/approvals/{id}',dependencies=[Depends(auth)])
     async def decide(id:str,body:Decision):return await runtime.decide(id,body.approved,body.digest)
+    @app.post('/api/runs/{id}/correct',dependencies=[Depends(auth)])
+    async def correct(id:str,body:Correction):return await runtime.correct(id,body.text)
     @app.post('/api/runs/{id}/cancel',dependencies=[Depends(auth)])
     async def cancel(id:str):return await runtime.cancel(id)
     @app.get('/api/runs/{id}',dependencies=[Depends(auth)])
@@ -175,15 +180,22 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     @app.get('/api/integrations',dependencies=[Depends(auth)])
     async def integrations():
         manifest=json.loads((PROJECT/'SOURCE_MAP.json').read_text())
+        census=PROJECT/'docs/current-capabilities.json'
+        if census.exists():
+            current=json.loads(census.read_text())
+            return {'milestone':'integration-03','audited_at':current['audited_at'],'repositories':[
+                {**r,'detail':r['contribution']+'. '+r['limits'],
+                 'files_preserved':sum(x['repository']==r['name'] for x in manifest['files'])}
+                for r in current['repositories']]}
         stages={
             'command-center':('spatial_connected','Original Atlas and 26 facility builders/nine rooms, recovered wrist geometry, touch-look/joystick, narration and shared canonical actions are connected. Illustrative brain shapes are not scientific measurements.'),
-            'agent':('partially_connected','Original calculator and time plugins connect to the canonical registry. Plugin generation/Genesis/debug/delegation are retained but not activated.'),
+            'agent':('partially_connected','Original calculator and time plugins connect to the canonical registry. Hot create_tool → approved staging → real isolated test → versioned registration → approved use is connected to the same durable run. Genesis/debug/delegation depth remains pending.'),
             'local_ollama_arena_agent':('connected_foundation','Original workspace, eight file tools, document tools and registry schemas reused. Durable batched task/approval loop replaces volatile first-call-only loop. Kernel-isolated job execution is connected; external retrieval/media adapters still require configured workers.'),
             'gemma-avatar':('realtime_connected','Original realtime client/worklets, host-owned audio graph, PCM16 bridge, barge-in epochs, real STT/TTS workers, avatar and same conversation owner are connected. Engine/model configuration is explicit.'),
             'Sage':('autonomy_connected','Original moment/system/parser, opt-in bounded wakes/reviews, lookup/letters, private reflection and continuity share the host. User turns preempt stale wakes; profile changes remain approved proposals.'),
             'neural-sim':('training_connected','Actual HF/PEFT training worker with repaired composite SAM/replay/PCGrad/meta/distillation/EWC/token objectives and candidate evaluation, plus dataset/Bio paths. CUDA execution depends on hardware; advanced controller/rank and biology repairs remain explicit.'),
             'universe':('native_engine_connected','A new authoritative Godot World implements the blueprint baseline: native physics, partial ray-tested sensors, restricted participant intents and replay. Not a complete articulated humanoid or consciousness proof.')}
-        return {'milestone':'integration-02','repositories':[{'name':r['name'],'commit':r['head'],'state':stages[r['name']][0],'detail':stages[r['name']][1],'files_preserved':sum(x['repository']==r['name'] for x in manifest['files'])} for r in manifest['snapshots']]}
+        return {'milestone':'integration-03','repositories':[{'name':r['name'],'commit':r['head'],'state':stages[r['name']][0],'detail':stages[r['name']][1],'files_preserved':sum(x['repository']==r['name'] for x in manifest['files'])} for r in manifest['snapshots']]}
     @app.get('/api/specifications/world',dependencies=[Depends(auth)])
     async def world_spec():return {'status':'specification_not_engine','text':(PROJECT/'vendor_sources/universe/living_avatar_subjective_experience_blueprint_v0_3.md').read_text()}
     extensions.mount(app,auth,Body)

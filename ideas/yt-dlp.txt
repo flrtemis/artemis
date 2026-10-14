@@ -1,0 +1,4 @@
+https://man.archlinux.org/man/yt-dlp.1.en.txt
+
+https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#usage-and-options
+

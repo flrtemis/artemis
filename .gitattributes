@@ -1,0 +1,4 @@
+# Generated Three.js shader strings and exact upstream license text keep
+# their original trailing spaces. Hand-authored source still uses Git defaults.
+artemis/web/assets/*.js whitespace=-blank-at-eol
+docs/assets/OFL-*.txt whitespace=-blank-at-eol

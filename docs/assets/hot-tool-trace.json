@@ -1,0 +1,156 @@
+{
+  "format": "artemis.recorded-integration/v1",
+  "captured_at": "2026-10-13",
+  "scope": "Actual UI/API/runtime/namespace/seccomp execution with SCRIPTED TEST PROVIDER decisions and synthetic data. Not real Ollama, physical PC, microphone, TTS or latency proof.",
+  "run_id": "0c6f6391911d46b68d4403dc26fec795",
+  "thread_id": "dc236ad644044575a50228766c1bae53",
+  "model": "SCRIPTED_TEST_PROVIDER_NO_LLM",
+  "steps": [
+    {
+      "phase": "CANONICAL USER REQUEST",
+      "title": "The original question stays present.",
+      "explanation": "One thread and one durable ARTEMIS run own every step. The scripted test provider requests a previously absent tool.",
+      "output": "Find the median of [12, 3, 9, 6]. Create a needed capability if it is missing.",
+      "meta": "run 0c6f639191 · thread dc236ad644"
+    },
+    {
+      "phase": "EXACT OPERATOR PROPOSAL",
+      "title": "Review code, arguments and the test.",
+      "explanation": "The original Agent execute(**kwargs) contract is adapted, not imported into the gateway. No registration or execution before approval.",
+      "output": {
+        "name": "median_values",
+        "description": "Compute the median of a bounded list of numbers.",
+        "parameters": {
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": -1000000,
+              "maximum": 1000000
+            },
+            "minItems": 1,
+            "maxItems": 128
+          }
+        },
+        "required_args": [
+          "values"
+        ],
+        "python_code": "def execute(**kwargs):\n    values = sorted(kwargs['values'])\n    n = len(values)\n    median = values[n // 2] if n % 2 else (values[n // 2 - 1] + values[n // 2]) / 2\n    return {'median': median, 'count': n}\n",
+        "test_arguments": {
+          "values": [
+            1,
+            7,
+            3
+          ]
+        },
+        "expected_result": {
+          "median": 3,
+          "count": 3
+        }
+      },
+      "meta": "create_tool · code/schema/test approval"
+    },
+    {
+      "phase": "REAL ISOLATED TEST",
+      "title": "The staged code actually runs.",
+      "explanation": "Bubblewrap namespaces and a seccomp profile run the code with a JSON test vector. No user files, private continuity, network or subprocess grant.",
+      "output": {
+        "ok": true,
+        "result": {
+          "median": 3,
+          "count": 3
+        },
+        "logs": "",
+        "sandbox": {
+          "job_id": "3c99445d4b3247a0b575900a3d3de10e",
+          "backend": "bubblewrap",
+          "profile": "json-only-v1",
+          "network": "none",
+          "user_files": "none",
+          "scratch_enforcement": "kernel-sized private tmpfs",
+          "elapsed_s": 0.073
+        }
+      },
+      "meta": "real bubblewrap test · JSON-only v1"
+    },
+    {
+      "phase": "LIVE CANONICAL CATALOGUE",
+      "title": "No runtime restart. No second agent.",
+      "explanation": "Only a passing tested version is activated. The next model round can discover its schema through the same registry.",
+      "output": {
+        "name": "median_values",
+        "version": 1,
+        "contract": "artemis.capability/v1",
+        "available": true,
+        "requires_approval": true,
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": -1000000,
+                "maximum": 1000000
+              },
+              "minItems": 1,
+              "maxItems": 128
+            }
+          },
+          "required": [
+            "values"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "meta": "same runtime instance · same original run"
+    },
+    {
+      "phase": "SEPARATE INVOCATION APPROVAL",
+      "title": "Use the tool on the original numbers.",
+      "explanation": "Approving creation is not approving every future use. This exact invocation receives its own single-use, version-bound approval.",
+      "output": {
+        "arguments": {
+          "values": [
+            12,
+            3,
+            9,
+            6
+          ]
+        },
+        "result": {
+          "ok": true,
+          "result": {
+            "median": 7.5,
+            "count": 4
+          },
+          "logs": "",
+          "sandbox": {
+            "job_id": "218b0f701122482c92093190dbd70fb2",
+            "backend": "bubblewrap",
+            "profile": "json-only-v1",
+            "network": "none",
+            "user_files": "none",
+            "scratch_enforcement": "kernel-sized private tmpfs",
+            "elapsed_s": 0.05
+          },
+          "tool": "median_values",
+          "version": 1,
+          "code_sha256": "af15a7115119756a71ea5580142293117fbd43ee779f2f1508db5ea4c8ac813c"
+        }
+      },
+      "meta": "real isolated result, not a model guess"
+    },
+    {
+      "phase": "COMMITTED CANONICAL ANSWER",
+      "title": "The same job answers from the result.",
+      "explanation": "The scripted provider reads the actual sandbox result. ARTEMIS commits one answer into the original conversation. The real embodied/speech client can read that stored text when configured.",
+      "output": {
+        "status": "succeeded",
+        "reply": "The median is 7.5 across 4 values. Scripted test-provider answer using a real isolated result.",
+        "message_count": 2
+      },
+      "meta": "one final assistant message · no real inference/audio claim"
+    }
+  ]
+}

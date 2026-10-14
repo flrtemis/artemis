@@ -1,0 +1,2 @@
+https://zxing.org/w/decode.jspx
+

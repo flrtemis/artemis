@@ -1,0 +1,654 @@
+{
+  "schema": "artemis.verification/v1",
+  "milestone": "03",
+  "verified_at": "2026-10-13",
+  "branch": "arena/b4094b40-artemis",
+  "base_commit": "b39062b589b4a953e826b2e6042397198df967ef",
+  "code_under_test": "Additive feature-branch worktree; resolve its exact committed revision through git/PR, not a fabricated self-referential hash.",
+  "environment": {
+    "kind": "Arena isolated Linux x86_64 sandbox, NOT the founder physical PC/WSL",
+    "python": "3.11.2",
+    "node": "22.22.3",
+    "bubblewrap": "0.13.0 actual namespaces + libseccomp",
+    "browser": "Chromium 141, headless software WebGL; external scratch browser binary explicitly selected",
+    "sandbox_total_ram_gib_approx": 3.8,
+    "ram_note": "Environment total only; not a measured whole-app peak or model hardware minimum."
+  },
+  "backend": {
+    "command": "cd artemis && ../.venv/bin/python -m pytest tests -q -rs --junitxml=../.cache/verification/backend.xml",
+    "passed": 88,
+    "skipped": 11,
+    "failed": 0,
+    "errors": 0,
+    "suite_seconds": 19.02,
+    "groups": {
+      "tests.test_hot_tools": {
+        "passed": 36,
+        "skipped": 0
+      },
+      "tests.test_integration": {
+        "passed": 32,
+        "skipped": 0
+      },
+      "tests.test_job_presence": {
+        "passed": 7,
+        "skipped": 0
+      },
+      "tests.test_offline_sources": {
+        "passed": 4,
+        "skipped": 0
+      },
+      "tests.test_subsystems": {
+        "passed": 9,
+        "skipped": 11
+      }
+    },
+    "skip_details": [
+      {
+        "test": "tests.test_subsystems.test_native_physics_ground_and_collision",
+        "reason": "Godot not configured"
+      },
+      {
+        "test": "tests.test_subsystems.test_partial_vision_and_revision_contract",
+        "reason": "Godot not configured"
+      },
+      {
+        "test": "tests.test_subsystems.test_native_replay_reproduces_sensor_hashes",
+        "reason": "Godot not configured"
+      },
+      {
+        "test": "tests.test_subsystems.test_participant_token_cannot_access_operator_truth_or_files",
+        "reason": "No Godot"
+      },
+      {
+        "test": "tests.test_subsystems.test_model_world_step_receives_only_sensors_and_no_tools",
+        "reason": "No Godot"
+      },
+      {
+        "test": "tests.test_subsystems.test_real_cpu_lora_composite_objectives_and_checkpoint",
+        "reason": "could not import 'torch': No module named 'torch'"
+      },
+      {
+        "test": "tests.test_subsystems.test_cuda_missing_is_not_faked",
+        "reason": "could not import 'torch': No module named 'torch'"
+      },
+      {
+        "test": "tests.test_subsystems.test_managed_training_proposal_lifecycle",
+        "reason": "could not import 'torch': No module named 'torch'"
+      },
+      {
+        "test": "tests.test_subsystems.test_speech_remote_consent_and_one_use_grants",
+        "reason": "No optional voice model"
+      },
+      {
+        "test": "tests.test_subsystems.test_native_piper_whisper_roundtrip",
+        "reason": "Optional real CPU speech models not installed"
+      },
+      {
+        "test": "tests.test_subsystems.test_realtime_websocket_real_tts_same_history_and_cancel_epoch",
+        "reason": "Optional Piper model not present"
+      }
+    ],
+    "warning": "1 Starlette/httpx TestClient deprecation warning; not suppressed",
+    "scope": "Production API/Store/runtime/tools and actual Bubblewrap/seccomp. Model decisions scripted; speech tests labelled silent PCM."
+  },
+  "frontend": {
+    "commands": [
+      "cd artemis/frontend && npm run typecheck",
+      "cd artemis/frontend && npm run build",
+      "cd artemis/frontend && npm audit --json"
+    ],
+    "typecheck": "pass",
+    "build": "pass",
+    "npm_audit_vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "warnings": [
+      "Bundled optional presence chunk >500 KB",
+      "Runtime /vendor/Inter-latin.woff2 and GeistMono-latin.woff2 references retained by Vite; assets successfully served in actual browser"
+    ]
+  },
+  "browsers": {
+    "hot_tools": {
+      "command": "cd artemis/frontend && node tests/browser.03.integration.mjs TEMP_TEST_KEY http://localhost:8030 (fresh explicit demo_host --confirm-fixture-provider)",
+      "passed": 9,
+      "skipped": 0,
+      "scope": "Actual Chromium built UI/API/namespace execution; scripted provider. No PC/audio/model proof.",
+      "checks": [
+        {
+          "name": "Built UI authenticates against the labelled scripted test provider; no real model claimed",
+          "result": "pass"
+        },
+        {
+          "name": "Actual Gemma stage/GLB/HeadAudio assets render in Chromium without microphone",
+          "result": "pass"
+        },
+        {
+          "name": "Missing tool is proposed inside the actual durable chat run, not pre-registered",
+          "result": "pass"
+        },
+        {
+          "name": "Real namespace/seccomp test hot-registers its live schema in this same host",
+          "result": "pass"
+        },
+        {
+          "name": "Approved generated invocation produces 7.5; answer and original input share one stored run/thread",
+          "result": "pass"
+        },
+        {
+          "name": "Text, generated-tool and avatar flows request no mic; no competing chat job/history",
+          "result": "pass"
+        },
+        {
+          "name": "Operations distinguishes twelve current sources from actual integration status",
+          "result": "pass"
+        },
+        {
+          "name": "Narrow-screen canonical conversation remains usable",
+          "result": "pass"
+        },
+        {
+          "name": "No uncaught browser exceptions",
+          "result": "pass"
+        }
+      ]
+    },
+    "pages": {
+      "command": "cd artemis/frontend && node tests/browser.pages.mjs http://localhost:4173",
+      "passed": 9,
+      "skipped": 0,
+      "scope": "Actual Chromium static project-prefix, responsive, keyboard, automated axe, reduced-motion and link/claim checks. No deployment or physical-device verification.",
+      "checks": [
+        {
+          "name": "Project-prefix site loads with exact founder identity, ownership sentence and conspicuous proof/publication limits",
+          "result": "pass"
+        },
+        {
+          "name": "All site fragments, local links and feature-branch evidence files resolve",
+          "result": "pass",
+          "detail": "34 anchors; public deployment is not tested"
+        },
+        {
+          "name": "Keyboard skip link and captured-step controls work; desktop axe WCAG A/AA reports zero violations",
+          "result": "pass",
+          "detail": "Automated audit, not accessibility certification"
+        },
+        {
+          "name": "Captioned real images load and the code-approval disclosure is keyboard operable",
+          "result": "pass"
+        },
+        {
+          "name": "Copy button copies the exact visible feature-branch quickstart",
+          "result": "pass"
+        },
+        {
+          "name": "320/390/768/1440px layouts have no document overflow; 390px axe reports zero violations",
+          "result": "pass"
+        },
+        {
+          "name": "Reduced-motion preference disables smooth scrolling",
+          "result": "pass"
+        },
+        {
+          "name": "Without JavaScript, screenshot, setup, disclosures and complete static trace remain accessible",
+          "result": "pass"
+        },
+        {
+          "name": "All browser requests stay under /artemis/; no backend, CDN, tracking storage, failed assets or uncaught exceptions",
+          "result": "pass"
+        }
+      ]
+    },
+    "foundation": {
+      "command": "cd artemis/frontend && node tests/browser.integration.mjs TEMP_TEST_KEY http://localhost:8000 (separate disposable normal-host state)",
+      "passed": 11,
+      "skipped": 0,
+      "scope": "Actual Chromium UI/HTTP/WebGL/asset tests. Synthetic QA artifacts; no actual LLM, microphone/device, TTS backend, GPU training or embodied-world integration claimed.",
+      "checks": [
+        {
+          "name": "Authenticated UI loads with honest disconnected-model state",
+          "result": "pass"
+        },
+        {
+          "name": "New artifact creates one shared approval, not immediate mutation",
+          "result": "pass"
+        },
+        {
+          "name": "Approval executes real workspace write and updates artifact list",
+          "result": "pass"
+        },
+        {
+          "name": "Upload → shared artifact → real dataset job → correct numeric mean in browser",
+          "result": "pass"
+        },
+        {
+          "name": "Original Command Center geometry drives live artifact Atlas, without iframe",
+          "result": "pass"
+        },
+        {
+          "name": "Same approval flow persists actual Sage memory and continuity projection",
+          "result": "pass"
+        },
+        {
+          "name": "Original Gemma AvatarStage initializes its GLB/HeadAudio assets in actual Chromium",
+          "result": "pass"
+        },
+        {
+          "name": "Text, artifact and avatar paths request no microphone",
+          "result": "pass"
+        },
+        {
+          "name": "All twelve current origins tracked with implemented/partial/pending/blueprint status",
+          "result": "pass"
+        },
+        {
+          "name": "Mobile shell retains one navigation/composer without horizontal overflow",
+          "result": "pass"
+        },
+        {
+          "name": "No uncaught browser JavaScript exceptions",
+          "result": "pass"
+        }
+      ]
+    },
+    "subsystems": {
+      "command": "cd artemis/frontend && ARTEMIS_SKIP_SLOW_CAPTURES=1 node tests/browser.02.integration.mjs TEMP_TEST_KEY http://localhost:8000",
+      "passed": 7,
+      "skipped": 1,
+      "scope": "Actual Chromium HTTP/UI/WebGL and shared audio graph initialization. Native World is skipped when its real binary is unavailable; no physical microphone/device, model or real GPU validation.",
+      "checks": [
+        {
+          "name": "Subsystem controls share one authenticated Operations view",
+          "result": "pass"
+        },
+        {
+          "name": "Ported source facility renders room/furniture/lights without independent legacy UI",
+          "result": "pass"
+        },
+        {
+          "name": "Recovered wrist projection exposes all nine actual source rooms and canonical data",
+          "result": "pass"
+        },
+        {
+          "name": "Wrist map navigation moves the same camera into source brain lab",
+          "result": "pass"
+        },
+        {
+          "name": "Native Godot episode and actual physics tick",
+          "result": "skip",
+          "reason": "Native Godot unavailable; no browser substitute counts as physics proof"
+        },
+        {
+          "name": "TalkingHead/HeadAudio initialize through host-owned shared audio context",
+          "result": "pass"
+        },
+        {
+          "name": "Mobile facility/wrist/nav render without horizontal overflow",
+          "result": "pass"
+        },
+        {
+          "name": "No uncaught browser exceptions across new subsystems",
+          "result": "pass"
+        }
+      ],
+      "captures": "omitted explicitly: software-WebGL full-page capture timed out; assertions still execute"
+    }
+  },
+  "pages_accessibility": {
+    "automated_axe_wcag_a_aa_violations": 0,
+    "tested_axe_widths_px": [
+      1440,
+      390
+    ],
+    "tested_layout_widths_px": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "keyboard_skip_and_controls": "pass",
+    "horizontal_table_keyboard_focus": "implemented",
+    "reduced_motion": "pass",
+    "without_javascript": "pass",
+    "prefix": "/artemis/",
+    "static_link_targets_checked": 34,
+    "no_external_asset_or_backend_traffic": "pass",
+    "not_certification": true,
+    "deployment": "NOT ENABLED/PUBLISHED OR VERIFIED BY THIS SESSION; owner action required"
+  },
+  "cli_example": {
+    "command": "Actual Python CLI main() with noninteractive test-key prompt into normal HTTP host: propose -> explicit operator approval -> use -> approval -> status -> export/refuse overwrite -> fresh separate ASGI import/test. Public command-by-command reproduction: EXTENSIONS.md.",
+    "passed": 5,
+    "skipped": 0,
+    "scope": "Actual urllib CLI to normal unconfigured host plus fresh ASGI import; real Bubblewrap, no LLM, no personal data. Operator decisions explicit; no auto-approval in CLI.",
+    "checks": [
+      {
+        "name": "Actual CLI authentication and example proposal create one pending canonical approval; no execution/registration beforehand",
+        "result": "pass"
+      },
+      {
+        "name": "Exact operator approval executes real isolated example test and hot registration without a model",
+        "result": "pass"
+      },
+      {
+        "name": "Separate CLI invocation approval returns the actual median 7.5/count4 through canonical run status",
+        "result": "pass"
+      },
+      {
+        "name": "Opt-in selected-tool export includes code/schema/test/license, no credentials/private continuity, and refuses overwrite",
+        "result": "pass"
+      },
+      {
+        "name": "Exported proposal imports as a fresh local isolated test/approval in a separate Store; manifest is not auto-trusted or executed",
+        "result": "pass"
+      }
+    ]
+  },
+  "original_sources": [
+    {
+      "repository": "flrtemis/phone",
+      "branch": "arena/01a10cfa-phone",
+      "commit": "9dfe38af61e3a9694b883b2b9ce3dc00da82a2a6",
+      "passed": 119,
+      "command": "python -m pytest tests/test_spool.py tests/test_voice_audio.py tests/test_voice_protocol.py tests/test_voice_pipeline.py -q",
+      "scope": "Pinned original spool/audio/protocol/pipeline contracts, fixture engines; no carrier/device proof.",
+      "suite_seconds": 9.65
+    },
+    {
+      "repository": "flrtemis/atrium",
+      "branch": "arena/01a1096b-atrium",
+      "commit": "35a93e43ae69b1aebfe964bc64de6d0c5c00c78a",
+      "passed": 23,
+      "assertions": 166,
+      "command": "bun test tests/vision.test.js",
+      "scope": "Synthetic frames/landmarks and pure vision logic; no physical camera/engine proof.",
+      "bun": "1.3.5",
+      "suite_seconds": 0.084
+    },
+    {
+      "repository": "flrtemis/speech-to-speech",
+      "branch": "arena/50fd7e85-speech-to-speech",
+      "commit": "9aa12ba43193b9da19bfdbfe0eefe53d4806fc76",
+      "passed": 5,
+      "command": "PYTHONPATH=src python -m pytest tests/test_ollama_model_list.py tests/test_offline_model_path.py -q",
+      "scope": "Focused model-list/offline cache tests with huggingface_hub 0.36.2; no weights or real pipeline/voice inference.",
+      "suite_seconds": 0.23
+    }
+  ],
+  "source_preservation": {
+    "command": "cd artemis && ../.venv/bin/python scripts/verify_sources.py",
+    "byte_identical_blobs": 505,
+    "lfs_pointers_with_separately_verified_runtime_payloads": 2,
+    "total_mappings": 507,
+    "failures": 0,
+    "original_vendor_or_source_map_changes": false,
+    "census": "source-census-2026-10-13.json: 12 repos/15 pre-publication heads/all PR queries empty",
+    "selected_source_path_validation": {
+      "repositories": 12,
+      "paths": 46,
+      "missing": 0,
+      "pinned_checks": [
+        {
+          "repository": "flrtemis/speech-to-speech",
+          "commit": "9aa12ba43193b9da19bfdbfe0eefe53d4806fc76",
+          "source_paths": [
+            "start-server.sh",
+            "src/speech_to_speech/pipeline/speculative_turns.py",
+            "src/speech_to_speech/STT/parakeet_tdt_handler.py",
+            "src/speech_to_speech/TTS/qwen3_tts_handler.py",
+            "src/speech_to_speech/api/openai_realtime/websocket_router.py"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/phone",
+          "commit": "9dfe38af61e3a9694b883b2b9ce3dc00da82a2a6",
+          "source_paths": [
+            "voice/pipeline.py",
+            "voice/web.py",
+            "voice/websocket.py",
+            "sms/spool.py",
+            "android/app/src/main/java/dev/phone/voice/VoiceSession.kt"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/atrium",
+          "commit": "35a93e43ae69b1aebfe964bc64de6d0c5c00c78a",
+          "source_paths": [
+            "src/vision/eyes.js",
+            "src/vision/camera.js",
+            "src/vision/landmarks.js",
+            "src/vision/describe.js",
+            "tests/vision.test.js"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/artemis",
+          "commit": "b39062b589b4a953e826b2e6042397198df967ef",
+          "source_paths": [
+            "artemis/artemis_app/runtime.py",
+            "artemis/artemis_app/store.py",
+            "artemis/artemis_app/api.py"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/command-center",
+          "commit": "5226291a356ea60116678ece9200b1dc186011a9",
+          "source_paths": [
+            "dashboard_3d.html",
+            "recovered/dashboard_3d_may3_pipboy_sage.html",
+            "recovered/sage_avatar.js",
+            "demo/demo_server.py"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/agent",
+          "commit": "a09f1d25b0aeb5700f03600618aff34408f3fcf6",
+          "source_paths": [
+            "agent.py",
+            "agent2.py"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/local_ollama_arena_agent",
+          "commit": "c95d307abd2435e2598e94dbbaee5f343e688ba4",
+          "source_paths": [
+            "local_arena_agent/agent.py",
+            "local_arena_agent/tools/base.py",
+            "local_arena_agent/tools/files.py",
+            "local_arena_agent/tools/documents.py"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/gemma-avatar",
+          "commit": "c4becc81781fc59d0cf6d7ff52f6099f9943f7b8",
+          "source_paths": [
+            "src/avatar.js",
+            "src/s2s/s2s-ws-client.js",
+            "public/worklets/mic-capture.js",
+            "public/worklets/audio-playback.js"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/Sage",
+          "commit": "701f917eab403c32263deb08a85de24f59514518",
+          "source_paths": [
+            "awake/memory.py",
+            "awake/state.py",
+            "awake/selfmodel.py",
+            "awake/mind.py"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/neural-sim",
+          "commit": "b51dda76eaee4347efce6156f98ddaed71ddf7d9",
+          "source_paths": [
+            "dataset_analyzer.py",
+            "bio_model.py",
+            "trainer.py",
+            "metrics.py",
+            "self_modify.py"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/universe",
+          "commit": "458915e762dc25b280aeebca3728f5bbe961c87f",
+          "source_paths": [
+            "Initial-Blueprint.txt",
+            "living_avatar_subjective_experience_blueprint_v0_3.md"
+          ],
+          "missing_paths": []
+        },
+        {
+          "repository": "flrtemis/guardian",
+          "commit": "173848a911e4d5e8e774e54fc293df17f189a69f",
+          "source_paths": [
+            "android_data_guardian.py",
+            "dead-proxy-field-guide.md",
+            "set-mobile-data-access.bat"
+          ],
+          "missing_paths": []
+        }
+      ]
+    }
+  },
+  "launcher": {
+    "compileall_host_scripts_tests": "pass",
+    "bash_syntax": "pass",
+    "existing_environment_offline_install_only": "pass, no weights/downloads",
+    "site_and_s2s_js_syntax": "pass"
+  },
+  "captured_integration": {
+    "model": "SCRIPTED_TEST_PROVIDER_NO_LLM",
+    "run_id": "0c6f6391911d46b68d4403dc26fec795",
+    "thread_id": "dc236ad644044575a50228766c1bae53",
+    "phases": 6,
+    "median": 7.5,
+    "count": 4,
+    "canonical_message_count": 2,
+    "isolation": "actual Bubblewrap namespaces/seccomp, kernel-sized private scratch tmpfs",
+    "asset_sha256": {
+      "docs/index.html": "0ea91809077025c99de7978f51e4ee128b564be7776c760b759e24ac1fc229dc",
+      "docs/assets/site.css": "4e7beea456c93c04e22a71957b0e69a738fe6bc9c108ad6f1eed2de94a314e39",
+      "docs/assets/site.js": "c1da8679b0fe8ed865bf1141f281d8e60561a1b46659f55e31f117bad994db26",
+      "docs/assets/workspace.webp": "7ade23abc36aa17ac4fd6ad9f1dc3dd8c27b42bd5234bbd1b4cf8ff36dba4175",
+      "docs/assets/creation-approval.webp": "e593646979e8357ed2b7ee1d87a5209b1220b4f11473ce0697256a428686d300",
+      "docs/assets/hot-tool-trace.json": "abec35b941705785ebd6ea66165f630544609e90be266bce204d9fd9b12f392c",
+      "docs/assets/wordmark.svg": "1d8d89ab0ee96c1f96cfcad1c07406bcec5a4cb2dea799653eca525a2deff450",
+      "artemis/web/index.html": "e48d8fe503b949ff86584265d153a36922b6e74035717979f9df36c6d05d6f33"
+    }
+  },
+  "limitations_and_failed_attempts": [
+    "Earlier facility full-page software-WebGL screenshot timed out. Functional suite subsequently passed 7 checks with captures explicitly disabled; one real Godot case skipped. No physical performance claim.",
+    "Earlier broad baseline reused synthetic state and hit ambiguous historical result selectors; current script scopes/checks the actual new dataset run and unique memory text, and its latest 11 checks pass.",
+    "Earlier site checks found unfocusable mobile table, missing portable Unicode glyphs and a no-JS test targeting hidden noscript; corrected focus/font assets and tested real static content, latest 9 checks pass.",
+    "New scratch-budget test initially expected successful run status for intentionally failed ENOSPC code; expectation corrected to failed, with real kernel refusal verified."
+  ],
+  "not_verified": [
+    "Real Ollama inference, tool-authoring or original selected model quality",
+    "Founder current physical PC/WSL/RAM/VRAM",
+    "GPU/CUDA/NF4",
+    "Fresh native Godot",
+    "Physical meaningful-answer STT/TTS/mic/speakers/lip-sync or latency",
+    "Physical camera and original vision/landmark engines",
+    "Original Qwen/Parakeet engine endpoint compatibility",
+    "Docker alternative",
+    "Carrier/SIP/Android/remote networking exposure",
+    "Production multi-tenant/security/science certification",
+    "Live GitHub Pages deployment"
+  ],
+  "publication_policy": "Feature branch only; no default/source branch rewrite, force push, merge, Pages setting or publishing Action.",
+  "changed_paths_no_renames": [
+    "A\t.gitattributes",
+    "A\t.gitignore",
+    "M\tBUNDLE_README.md",
+    "M\tREADME.md",
+    "M\tartemis/README.md",
+    "M\tartemis/artemis_app/api.py",
+    "A\tartemis/artemis_app/capability_contract.py",
+    "A\tartemis/artemis_app/extension_sandbox.py",
+    "A\tartemis/artemis_app/extension_worker.py",
+    "M\tartemis/artemis_app/extensions.py",
+    "A\tartemis/artemis_app/generated_tools.py",
+    "A\tartemis/artemis_app/offline.py",
+    "M\tartemis/artemis_app/runtime.py",
+    "M\tartemis/artemis_app/speech.py",
+    "M\tartemis/artemis_app/store.py",
+    "M\tartemis/artemis_app/tools.py",
+    "A\tartemis/docs/CURRENT_CAPABILITIES.md",
+    "A\tartemis/docs/EXTENSIONS.md",
+    "A\tartemis/docs/MILESTONE_03.md",
+    "A\tartemis/docs/PROJECT_BRIEF.md",
+    "A\tartemis/docs/current-capabilities.csv",
+    "A\tartemis/docs/current-capabilities.json",
+    "A\tartemis/docs/source-census-2026-10-13.json",
+    "A\tartemis/docs/verification-03.json",
+    "A\tartemis/examples/extensions/median_values.json",
+    "M\tartemis/frontend/package-lock.json",
+    "M\tartemis/frontend/package.json",
+    "M\tartemis/frontend/src/main.tsx",
+    "M\tartemis/frontend/src/s2s-client.js",
+    "M\tartemis/frontend/src/shared-audio.ts",
+    "M\tartemis/frontend/src/style.css",
+    "M\tartemis/frontend/tests/browser.02.integration.mjs",
+    "A\tartemis/frontend/tests/browser.03.integration.mjs",
+    "M\tartemis/frontend/tests/browser.integration.mjs",
+    "A\tartemis/frontend/tests/browser.pages.mjs",
+    "M\tartemis/run.py",
+    "A\tartemis/scripts/extension_cli.py",
+    "A\tartemis/scripts/serve_pages.py",
+    "M\tartemis/scripts/verify_sources.py",
+    "M\tartemis/start.sh",
+    "A\tartemis/tests/demo_host.py",
+    "A\tartemis/tests/test_hot_tools.py",
+    "M\tartemis/tests/test_integration.py",
+    "A\tartemis/tests/test_job_presence.py",
+    "A\tartemis/tests/test_offline_sources.py",
+    "A\tartemis/web/assets/index-C-J9G3SF.css",
+    "D\tartemis/web/assets/index-DzlOMwFq.js",
+    "D\tartemis/web/assets/index-vYL2zJ0L.css",
+    "A\tartemis/web/assets/index-zqbXvZHZ.js",
+    "A\tartemis/web/assets/presence-D3Qh-qT5.js",
+    "D\tartemis/web/assets/presence-r_Oswgo-.js",
+    "M\tartemis/web/index.html",
+    "A\tdocs/.nojekyll",
+    "A\tdocs/ATTRIBUTION.md",
+    "A\tdocs/PAGES_SETUP.md",
+    "A\tdocs/assets/OFL-InstrumentSerif-upstream.txt",
+    "A\tdocs/assets/OFL-InstrumentSerif.txt",
+    "A\tdocs/assets/OFL-Wordmark-Sources.txt",
+    "A\tdocs/assets/creation-approval.webp",
+    "A\tdocs/assets/hot-tool-trace.json",
+    "A\tdocs/assets/instrument-serif-latin-italic.woff2",
+    "A\tdocs/assets/instrument-serif-latin.woff2",
+    "A\tdocs/assets/mark.svg",
+    "A\tdocs/assets/math-accent.woff2",
+    "A\tdocs/assets/site.css",
+    "A\tdocs/assets/site.js",
+    "A\tdocs/assets/wordmark.svg",
+    "A\tdocs/assets/workspace.webp",
+    "A\tdocs/index.html"
+  ],
+  "review_checks": {
+    "working_branch": "arena/b4094b40-artemis",
+    "no_vendor_source_manifest_or_analysis_changes": true,
+    "no_staged_private_state_models_environments_or_caches": true,
+    "known_ephemeral_key_and_common_secret_marker_scan": "pass",
+    "misplaced_parent_ignore_or_duplicate_app_tree": "none found",
+    "diff_whitespace": "pass; exact upstream license/generated shader trailing spaces narrowly exempted in .gitattributes, CSV uses LF"
+  }
+}

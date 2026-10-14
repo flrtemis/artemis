@@ -1,3 +1,12 @@
+> **Historical archive handoff, not the current branch census.** This document
+> and `BUNDLE_SHA256.txt` describe the original milestone-02 ZIP. Those checksums
+> are intentionally not rewritten to make new work appear historical.
+> Current launch: from this checkout root, `cd artemis && bash start.sh`.
+> Current evidence: [milestone 03](artemis/docs/MILESTONE_03.md) and
+> [twelve-source matrix](artemis/docs/CURRENT_CAPABILITIES.md).
+> [Static consumer guide](docs/index.html); publication still needs
+> [owner Pages setup](docs/PAGES_SETUP.md).
+
 # ARTEMIS milestone 02 — complete application handoff
 
 ## Contents

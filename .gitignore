@@ -1,0 +1,12 @@
+# Local environments, tests, state and downloaded engines are never public payloads.
+.venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+.cache/
+.runtime/
+.env
+.env.*
+*.log
+playwright-report/
+test-results/

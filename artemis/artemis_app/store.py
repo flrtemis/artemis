@@ -24,6 +24,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS one_active_chat ON runs(thread_id) WHERE kind=
 CREATE TABLE IF NOT EXISTS approvals(id TEXT PRIMARY KEY,run_id TEXT NOT NULL,call_id TEXT NOT NULL,tool TEXT NOT NULL,args TEXT NOT NULL,digest TEXT NOT NULL,precondition TEXT NOT NULL DEFAULT '{}',status TEXT NOT NULL,created REAL NOT NULL,output TEXT);
 CREATE INDEX IF NOT EXISTS approvals_run ON approvals(run_id);
 CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS extension_versions(name TEXT NOT NULL,version INTEGER NOT NULL,status TEXT NOT NULL,manifest TEXT NOT NULL,code TEXT NOT NULL,test_result TEXT,producer TEXT NOT NULL,created REAL NOT NULL,PRIMARY KEY(name,version));
+CREATE TABLE IF NOT EXISTS extension_active(name TEXT PRIMARY KEY,version INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS artifacts(id TEXT PRIMARY KEY,path TEXT NOT NULL UNIQUE,sha256 TEXT NOT NULL,size INTEGER NOT NULL,mime TEXT NOT NULL,producer TEXT,updated REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS revisions(id TEXT PRIMARY KEY,path TEXT NOT NULL,sha256 TEXT NOT NULL,producer TEXT,created REAL NOT NULL);
 ''')
@@ -69,6 +71,9 @@ CREATE TABLE IF NOT EXISTS revisions(id TEXT PRIMARY KEY,path TEXT NOT NULL,sha2
         with self._lock:r=self._db.execute('SELECT * FROM runs WHERE id=?',(id,)).fetchone()
         if not r:raise KeyError('Run not found')
         d=dict(r);d['state']=json.loads(d['state']);d['result']=json.loads(d['result']) if d['result'] else None;return d
+    def active_chat(self,thread_id):
+        with self._lock:r=self._db.execute("SELECT id FROM runs WHERE thread_id=? AND kind='chat' AND status IN ('queued','running','awaiting_approval','cancelling')",(thread_id,)).fetchone()
+        return self.run(r[0]) if r else None
     def update_run(self,id,**changes):
         allowed={'status','state','result','error','steps'}
         if not changes or not set(changes)<=allowed:raise ValueError('Invalid run fields')
@@ -127,3 +132,38 @@ CREATE TABLE IF NOT EXISTS revisions(id TEXT PRIMARY KEY,path TEXT NOT NULL,sha2
         kinds=('user','reply','memory','want','self_edit','arrived','offline','tool','run','approval','dataset','file','host','world','training','presence','letter','message','look_back')
         with self._lock:rows=self._db.execute('SELECT * FROM events WHERE id>? AND kind IN (%s) ORDER BY id LIMIT ?'%','.join('?'*len(kinds)),[after,*kinds,limit]).fetchall()
         return [self._row(r) for r in rows]
+
+    def extension_active_version(self,name):
+        with self._lock:r=self._db.execute('SELECT version FROM extension_active WHERE name=?',(name,)).fetchone()
+        return r[0] if r else 0
+    def extension_version(self,name,version=None):
+        version=version or self.extension_active_version(name)
+        with self._lock:r=self._db.execute('SELECT * FROM extension_versions WHERE name=? AND version=?',(name,version)).fetchone()
+        if not r:raise ValueError('Extension version not found')
+        d=dict(r)
+        for k in ['manifest','test_result']:d[k]=json.loads(d[k]) if d[k] else None
+        return d
+    def extension_versions(self,name=None):
+        with self._lock:
+            rows=self._db.execute('SELECT name,version FROM extension_versions'+(' WHERE name=?' if name else '')+' ORDER BY name,version',(name,) if name else ()).fetchall()
+        return [self.extension_version(r[0],r[1]) for r in rows]
+    def stage_extension(self,name,manifest,code,producer):
+        with self.tx() as db:
+            version=db.execute('SELECT COALESCE(MAX(version),0)+1 FROM extension_versions WHERE name=?',(name,)).fetchone()[0]
+            count=db.execute('SELECT COUNT(DISTINCT name) FROM extension_versions').fetchone()[0]
+            if version>32 or (version==1 and count>=64):raise ValueError('Local extension catalogue quota reached (64 names / 32 versions per name)')
+            manifest={**manifest,'version':version}
+            db.execute("INSERT INTO extension_versions VALUES(?,?,'staged',?,?,NULL,?,?)",(name,version,dump(manifest),code,producer,time.time()))
+        return self.extension_version(name,version)
+    def extension_test_result(self,name,version,result):
+        with self.tx() as db:db.execute('UPDATE extension_versions SET status=?,test_result=? WHERE name=? AND version=?',('tested' if result.get('ok') else 'failed',dump(result),name,version))
+    def activate_extension(self,name,version,expected_version):
+        with self.tx() as db:
+            active=db.execute('SELECT version FROM extension_active WHERE name=?',(name,)).fetchone()
+            if (active[0] if active else 0)!=expected_version:raise ValueError('Active tool version changed; create a new approval')
+            row=db.execute('SELECT status FROM extension_versions WHERE name=? AND version=?',(name,version)).fetchone()
+            if not row or row[0]!='tested':raise ValueError('Only successfully sandbox-tested versions can be activated')
+            db.execute('INSERT INTO extension_active VALUES(?,?) ON CONFLICT(name) DO UPDATE SET version=excluded.version',(name,version))
+    def supersede_pending_approvals(self,run_id):
+        with self.tx() as db:
+            return db.execute("UPDATE approvals SET status='superseded',output=? WHERE run_id=? AND status='pending'",(dump({'ok':False,'blocked':True,'error':'Superseded by a correction to this same job'}),run_id)).rowcount

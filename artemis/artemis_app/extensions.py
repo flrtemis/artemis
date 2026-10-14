@@ -6,6 +6,7 @@ from pydantic import Field
 from vendor_sources.local_ollama_arena_agent.local_arena_agent.tools.base import Tool
 from .autonomy import Autonomy
 from .execution import Execution
+from .generated_tools import GeneratedTools
 from .speech import Speech
 from .training import Training
 from .world import World
@@ -33,6 +34,7 @@ class Extensions:
         add('generate_speech','Synthesize through the configured real speech worker; save an actual WAV artifact.',{'text':{'type':'string','minLength':1,'maxLength':4000},'path':{'type':'string'}},['text','path'],lambda a:None,True,'media')
         add('transcribe_audio','Transcribe a contained PCM16 mono 16k WAV through real configured STT.',{'path':{'type':'string'}},['path'],lambda a:None,False,'media')
         t.async_methods.update(generate_speech=self.speech_artifact,transcribe_audio=self.transcribe_artifact)
+        self.generated=GeneratedTools(runtime,self.execution)
         self.sync_availability()
     def sync_availability(self):
         s=self.speech.status()
@@ -71,8 +73,12 @@ class Extensions:
         class WorldPlay(Body):running:bool
         class Intent(Body):move_x:float=Field(default=0,ge=-1,le=1);move_z:float=Field(default=0,ge=-1,le=1);look_delta:float=Field(default=0,ge=-.5,le=.5);expected_revision:int|None=None
         class ActorStep(Body):goal:str=Field(min_length=1,max_length=1000)
+        @app.get('/api/extensions',dependencies=[Depends(auth)])
+        async def generated_catalogue():return e.generated.catalogue()
+        @app.get('/api/extensions/{name}/export',dependencies=[Depends(auth)])
+        async def export_extension(name:str):return e.generated.export(name)
         @app.get('/api/subsystems',dependencies=[Depends(auth)])
-        async def subsystems():return {'autonomy':e.autonomy.status(),'speech':e.speech.status(),'execution':e.execution.available(),'training':await asyncio.to_thread(e.training.hardware),'training_models':e.training.models(),'world':e.world.status()}
+        async def subsystems():return {'generated_tools':e.generated.sandbox.available(),'autonomy':e.autonomy.status(),'speech':e.speech.status(),'execution':e.execution.available(),'training':await asyncio.to_thread(e.training.hardware),'training_models':e.training.models(),'world':e.world.status()}
         @app.put('/api/autonomy',dependencies=[Depends(auth)])
         async def autonomous(body:AutonomyConfig):return e.autonomy.configure(body.model_dump())
         @app.post('/api/autonomy/wake',dependencies=[Depends(auth)])

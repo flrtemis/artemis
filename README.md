@@ -1,37 +1,101 @@
-# https://arena.ai/agent can be fully credited for consolidating nearly all of my GitHub repositories because were it not for them, none of this would've been possible! Thank You https://arena.ai/agent Any references in here about a "ZIP" file, is strictly due to https://arena.ai/agent compiling all the work it did there, into a "ZIP" file for me when asked to. So, basically just ignore that part, since I've already extracted that same "ZIP" file before uploading its contents here. All my repositories are a result of either personal work of mine, or work that other had done but I felt needed a personal touch to them. As for what you see here, this is just the beginning...
+# ARTEMIS
+**A Reality That Enhances My Integrated Services**
 
-# ARTEMIS milestone 02
+Your assistant, remembered context, approved tools and files in one locally
+owned workspace. A substantial **partial integration**, not a finished
+all-project ecosystem or twelve apps behind a launcher.
 
-## Contents
-- `artemis/`: application source, built frontend, local UI/avatar/worklet/narration assets, retained upstream source, test suites and recorded results, setup/import/verification scripts, dependency declarations, provenance and capability plan.
-- `analysis/`: the complete seven-repository design/audit package, including the searchable report, decision ledger, source inventory, diagnostics, architecture and validation records.
-- `BUNDLE_SHA256.txt`: integrity hashes for every payload file in this ZIP (excludes itself).
+**[Website / first-run guide](https://flrtemis.github.io/artemis/)** ·
+[Pages-ready local site](docs/index.html) · [Current twelve-source evidence](artemis/docs/CURRENT_CAPABILITIES.md)
 
-## Local launch (WSL2/Linux)
-1. Extract the ZIP and open WSL2 in its `artemis` folder.
-2. Run `bash start.sh`.
-3. Open http://localhost:8000 and use the operator key printed in your terminal.
-4. In Operations, connect your existing Ollama origin and choose an installed model.
+**Pages is live:** October 14 read-only verification shows `main` + `/`, serving the older README. The newer guide and **[Sage interaction lab](docs/sage-preview.html)** are on this feature branch. [Owner-controlled preview publication](docs/PAGES_SETUP.md) uses this branch + `/docs`, never the branch root/inbox. No merge or publishing-setting change is made by the agent.
 
-The built UI is included; Node/npm is needed only for rebuilding it.
+## Sage — accessible alongside the work
 
-For existing Sage state, import into a fresh destination:
-`bash start.sh --data-dir /absolute/path/to/new-artemis-state --import-sage /absolute/path/to/Sage/data`
+The new helper is an additive projection of the existing conversation, live
+capability registry, approvals, work and files. Open **Sage** from any main view;
+no second assistant history/model/audio owner is introduced. Configured answer
+audio stays explicit; stopping speech and cancelling a job remain different.
+Voice & reading options now offers a deliberately selected device-local-reported
+voice, speed and fenced-code speech policy, without silently replacing configured TTS.
 
-For optional speech: `bash start.sh --with-speech`, then configure existing model files or compatible engine endpoints in Operations.
-For training: install a Torch build matching your CUDA/driver first, then `bash start.sh --with-training`.
-For real isolated execution: install working Bubblewrap namespaces (`sudo apt-get install bubblewrap`) or the documented Docker worker.
-For World: install Godot 4 / set ARTEMIS_GODOT_BIN, or run `python scripts/setup_optional.py --godot` in the configured Python environment.
+[Current answer-reading slice and exact checks](artemis/docs/SAGE_HELPER_02.md) ·
+[Original helper surface](artemis/docs/SAGE_HELPER_01.md) ·
+[Perchance/inbox research](artemis/docs/SAGE_HELPER_RESEARCH.md) ·
+[Cumulative work — new ideas do not replace earlier goals](artemis/docs/ONGOING_WORK.md)
 
-Read `artemis/README.md` and `artemis/docs/MILESTONE_02.md` for complete setup, contracts and limits.
+`ideas/` is owner-uploaded, **read-only and branch-only**. Do not merge this
+shared branch directly or publish its root; review/promote implementation changes
+without inbox commits/files. Raw captures are not website assets.
 
-## Authentication fix
-Both server source and the bundled frontend contain the X-Artemis-Session fix. Standard Authorization remains supported for local clients. The recorded regression test checks the custom header when Authorization is rewritten, and rejects a forged session.
+## Try a real first task (WSL2/Linux)
 
-## Verification and limits
-Recorded: 52 backend tests and 8 new Chromium UI/HTTP/WebGL checks passed; TypeScript and production build passed; 507 retained original source/asset files match pinned hashes. Current handoff verification checks ZIP integrity, every embedded checksum, workspace/package completeness and authentication-fix inclusion.
+```bash
+git clone --branch arena/b4094b40-artemis https://github.com/flrtemis/artemis.git
+cd artemis/artemis
+bash start.sh
+```
 
-No real CUDA/NF4/large local LLM, physical microphone/speaker/lip-sync timing, original Qwen/Parakeet endpoints, Docker backend, completed articulated humanoid/zero-copy World, all diagnostic/adaptive-controller science, or production security certification is claimed.
+Initial Internet access installs Python dependencies. Open **http://localhost:8000**
+and use the operator key printed in your **local** terminal. The built UI is
+included; no Node build or model weights are needed for the first task.
 
-## Deliberate exclusions
-This is the complete milestone-02 application plus audit, not a full mirror of every environment/binary from the original repositories. Installed environments, dependency/model caches, native engine binaries, large model weights, runtime operator credentials and personal Sage databases/history are excluded. Their installation/import is explicit; original local repositories remain unchanged. The complete source inventory/provenance identifies referenced assets. This archive does not grant new rights to third-party assets.
+**Workspace → New artifact:** create `notes.md`, submit the proposal, review
+Activity and approve. Open the real saved file. **Continuity → Keep a memory:**
+approve it, restart using the same data directory and inspect it again.
+These paths work without a language model.
+
+**Then connect your existing Ollama inside WSL** using its already-configured
+fixed IP and an actual installed tool-capable tag in Operations. Non-loopback
+context export needs explicit consent. Don't start another Windows Ollama
+server, silently replace/download a model or raise WSL RAM to 24 GB.
+Once installed, `bash start.sh --offline` skips installation and blocks
+public/DNS model/audio endpoints; separately configured engines still have
+their own offline requirements. No mandatory subscription for the local core
+is **not** a promise of zero hardware, electricity, setup or optional-service cost.
+
+## What's new in integration milestone 03
+
+- Agent's hot `create_tool` lifecycle now uses the **same running canonical
+  run/thread/model loop**: exact approval, immutable staging, **real isolated
+  test**, hot schema registration, separate invocation approval, result/error
+  feedback and the original answer. Versioning, rollback and opt-in export.
+- Barge-in/audio yield keeps durable work alive; explicit job cancellation and
+  same-job corrections are distinct. Busy follow-ups are held, not answered by
+  a second competing agent. Saved replies stay in canonical history.
+- Versioned local capability contract and a [model-free contributor example](artemis/docs/EXTENSIONS.md).
+- Pages-ready guide with real captioned **scripted-provider** UI/sandbox
+  evidence, honest costs/status/comparisons and owner-only publishing steps.
+
+[Full implementation, tests, local checks and remaining scope](artemis/docs/MILESTONE_03.md) ·
+[Historical milestone-03 verification](artemis/docs/verification-03.json) ·
+[Founder-approved project brief](artemis/docs/PROJECT_BRIEF.md) ·
+[Full setup / historical milestone-02 details](artemis/README.md)
+
+**Fresh evidence is not real model/device proof.** Scripted model decisions test
+actual Store/Runtime/UI/Bubblewrap namespaces/seccomp. Real Ollama, GPU,
+physical audio/camera/PC, native Godot, Docker, carriers remain
+unverified in this environment. The existing Pages deployment is verified, but
+the new Sage preview is not claimed deployed. See the exact results/skips in the verification
+record, separate from historical tests.
+
+## Repository and preservation
+
+- `artemis/`: authoritative host, adapters, built local UI, retained source,
+  contracts, examples, tests and current commit-pinned census/evidence matrix.
+- `docs/`: static consumer site only; no Python/Ollama backend, private state,
+  CDN, tracking or localhost API calls.
+- `analysis/`, `BUNDLE_README.md`, `BUNDLE_SHA256.txt`: **historical milestone-02
+  seven-origin audit / ZIP handoff**, not a complete current census or checksum
+  for this changed branch. Their original records are retained.
+
+Original repositories, existing agent branches and retained source stay
+unchanged. Private Sage databases/transcripts, credentials, weights, caches,
+installed environments and native binaries are excluded. Public source does
+not grant new rights: the original Ready Player Me avatar is declared
+**CC BY-NC 4.0**; model/component terms still apply.
+[Site attribution and license limits](docs/ATTRIBUTION.md).
+
+## Founder's original repository note (preserved)
+
+> https://arena.ai/agent can be fully credited for consolidating nearly all of my GitHub repositories because were it not for them, none of this would've been possible! Thank You https://arena.ai/agent Any references in here about a "ZIP" file, is strictly due to https://arena.ai/agent compiling all the work it did there, into a "ZIP" file for me when asked to. So, basically just ignore that part, since I've already extracted that same "ZIP" file before uploading its contents here. All my repositories are a result of either personal work of mine, or work that other had done but I felt needed a personal touch to them. As for what you see here, this is just the beginning...

@@ -1,0 +1,5 @@
+Verizon Cell Towers:
+https://www.cellmapper.net/map?MCC=311&MNC=480&type=LTE&latitude=40.779329062026335&longitude=-76.21837938091217&zoom=13.486141195815785&showTowers=true&showIcons=true&showTowerLabels=true&clusterEnabled=true&tilesEnabled=true&showOrphans=false&showNoFrequencyOnly=false&showFrequencyOnly=true&showBandwidthOnly=false&DateFilterType=Last&showHex=false&showVerifiedOnly=false&showUnverifiedOnly=false&showLTECAOnly=false&showENDCOnly=false&showBand=13&showSectorColours=true&mapType=roadmap&darkMode=false&imperialUnits=false
+
+AT&T Cell Towers:
+https://www.cellmapper.net/map?MCC=310&MNC=410&type=LTE&latitude=40.75695844260201&longitude=-76.22045696547335&zoom=12.149268818162398&showTowers=true&showIcons=true&showTowerLabels=true&clusterEnabled=true&tilesEnabled=true&showOrphans=false&showNoFrequencyOnly=false&showFrequencyOnly=false&showBandwidthOnly=true&DateFilterType=Last&showHex=false&showVerifiedOnly=true&showUnverifiedOnly=false&showLTECAOnly=false&showENDCOnly=false&showBand=0&showSectorColours=true&mapType=roadmap&darkMode=false&imperialUnits=false

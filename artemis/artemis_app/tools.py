@@ -106,12 +106,12 @@ class Tools:
         return {'ok':accepted,'message':why,'versions':self.continuity.profile.versions()}
     def manifest(self):
         rows=[]
-        for t in self.registry._tools.values():
+        for t in list(self.registry._tools.values()):
             schema=self.schema(t.name)
-            rows.append({'name':t.name,'description':t.description,'category':t.category,'requires_approval':t.requires_approval,'available':t.name not in self.unavailable,'unavailable_reason':self.unavailable.get(t.name),'parameters':schema})
+            rows.append({'name':t.name,'description':t.description,'category':t.category,'requires_approval':t.requires_approval,'available':t.name not in self.unavailable,'unavailable_reason':self.unavailable.get(t.name),'parameters':schema,**({'extension':self.generated.store.extension_version(t.name)['manifest']} if t.category=='generated' and hasattr(self,'generated') else {})})
         return rows
     def schemas(self):
-        return [{'type':'function','function':{'name':t.name,'description':t.description,'parameters':self.schema(t.name)}} for t in self.registry._tools.values() if t.name not in self.unavailable]
+        return [{'type':'function','function':{'name':t.name,'description':t.description,'parameters':self.schema(t.name)}} for t in list(self.registry._tools.values()) if t.name not in self.unavailable]
     def schema(self,name):
         t=self.registry.get(name)
         if not t:raise ValueError('Unknown tool')
@@ -123,11 +123,14 @@ class Tools:
         return schema
     def validate(self,name,args):
         t=self.registry.get(name)
-        if not t:raise ValueError('Unknown tool: '+name)
+        if not t:raise ValueError('Unknown tool: '+str(name))
         if name in self.unavailable:raise ValueError(self.unavailable[name])
         errors=list(Draft202012Validator(self.schema(name)).iter_errors(args))
         if errors:raise ValueError('Invalid tool arguments: '+errors[0].message)
         dump(args) # also rejects NaN/infinity
+        if hasattr(self,'generated') and self.generated.owns(name):
+            self.generated.validate(name,args)
+            return t # JSON-only extensions never interpret arguments as gateway paths.
         for key,value in args.items():
             if key in ['path','source','destination','source_path','destination_path','output_path'] and isinstance(value,str):self.ws.safe_path(value)
         if name in ['delete_file','move_file']:
@@ -135,6 +138,7 @@ class Tools:
             if p and self.ws.safe_path(p)==self.ws.root:raise ValueError('Cannot delete/move the workspace root')
         return t
     def fingerprint(self,name,args):
+        if hasattr(self,'generated') and self.generated.owns(name):return self.generated.fingerprint(name,args)
         result={}
         if name=='promote_execution_changes' and hasattr(self,'execution'):return self.execution.promotion_precondition(args['job_id'])
         if name in ['run_bash','run_python'] and hasattr(self,'execution'):return {'workspace':self.execution.scan(self.ws.root)}
@@ -166,7 +170,7 @@ class Tools:
     def dispatch(self,name,args,producer):
         self.validate(name,args)
         if hasattr(self,'local_context'):self.local_context.producer=producer
-        if name in ['run_bash','run_python','start_training']:
+        if name in ['run_bash','run_python','start_training'] or (hasattr(self,'generated') and self.generated.isolated(name)):
             result=clean(self.registry.dispatch(name,args));dump(result);return result
         with self.lock:
             t=self.registry.get(name)

@@ -1,0 +1,404 @@
+{
+  "schema": "artemis.verification/v1",
+  "slice": "sage-helper-01",
+  "verified_at": "2026-10-14",
+  "branch": "arena/b4094b40-artemis",
+  "parent_owner_commit": "1c61efc66fcded617b3bbfa0c5b7cb4b4af8456c",
+  "prior_implementation_commit": "94d47e06bab96507b8a9bb619df281d2b7811540",
+  "environment": "Restored Arena Linux sandbox, Python 3.11.2 / Node 22.22.3 / Vite 6.4.4 / Chromium 141 headless software rendering; NOT owner PC/WSL/GPU.",
+  "backend": {
+    "command": ".venv/bin/python -m pytest artemis/tests -q -rs",
+    "passed": 50,
+    "skipped": 49,
+    "failed": 0,
+    "seconds": 10.4,
+    "warnings": 1,
+    "skip_groups": {
+      "hot_isolation_backend_unavailable": 35,
+      "other_execution_isolation_unavailable": 3,
+      "godot": 5,
+      "torch": 3,
+      "optional_speech_models": 3
+    },
+    "reason": "Bubblewrap/Docker and optional engines not installed/permitted in restored environment. No unsafe fallback. Earlier 88/11 real-kernel result belongs to separate dated verification-03.json."
+  },
+  "foundation_subset": {
+    "command": ".venv/bin/python -m pytest artemis/tests/test_integration.py artemis/tests/test_job_presence.py artemis/tests/test_offline_sources.py -q -rs",
+    "passed": 43,
+    "seconds": 6.45,
+    "included_in_full": true
+  },
+  "frontend": {
+    "commands": [
+      "cd artemis/frontend && npm run typecheck",
+      "cd artemis/frontend && npm run build",
+      "cd artemis/frontend && npm run build:sage-preview",
+      "cd artemis/frontend && npm audit --json"
+    ],
+    "typecheck": "pass",
+    "application_build": "pass",
+    "static_lab_build": "pass",
+    "npm_audit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "warnings": [
+      "Existing runtime vendor font references are served successfully in browser",
+      "Existing optional >500KB presence chunk"
+    ]
+  },
+  "browser_commands": [
+    "LD_LIBRARY_PATH=/tmp/al2023/lib FONTCONFIG_PATH=/tmp/fonts ARTEMIS_CHROMIUM_BIN=/tmp/chromium node artemis/frontend/tests/browser.sage.integration.mjs TEMP_DISPOSABLE_KEY http://localhost:8000 normal",
+    "LD_LIBRARY_PATH=/tmp/al2023/lib FONTCONFIG_PATH=/tmp/fonts ARTEMIS_CHROMIUM_BIN=/tmp/chromium node artemis/frontend/tests/browser.sage.integration.mjs TEMP_DISPOSABLE_KEY http://localhost:8040 scripted (explicit tests/sage_ui_host.py --confirm-scripted-provider)",
+    "LD_LIBRARY_PATH=/tmp/al2023/lib FONTCONFIG_PATH=/tmp/fonts ARTEMIS_CHROMIUM_BIN=/tmp/chromium node artemis/frontend/tests/browser.sage.preview.mjs http://localhost:4173",
+    "LD_LIBRARY_PATH=/tmp/al2023/lib FONTCONFIG_PATH=/tmp/fonts ARTEMIS_CHROMIUM_BIN=/tmp/chromium ARTEMIS_TEST_OUTPUT=IGNORED_DISPOSABLE_OUTPUT node artemis/frontend/tests/browser.integration.mjs TEMP_DISPOSABLE_KEY http://localhost:8000",
+    "LD_LIBRARY_PATH=/tmp/al2023/lib FONTCONFIG_PATH=/tmp/fonts ARTEMIS_CHROMIUM_BIN=/tmp/chromium node artemis/frontend/tests/browser.pages.mjs http://localhost:4173"
+  ],
+  "browsers": {
+    "normal_helper": {
+      "passed": 9,
+      "failed": 0,
+      "scope": "Actual production frontend/API/Store/Runtime. Unconfigured real host, no model.",
+      "checks": [
+        {
+          "name": "Sage is available across all five views; open/close/navigation create no chat or second model owner",
+          "result": "pass"
+        },
+        {
+          "name": "Draft persists; Escape returns focus; focus stays contained; tabs support keyboard navigation",
+          "result": "pass"
+        },
+        {
+          "name": "Actual canonical registry is discoverable, including disabled capabilities/reasons—not invented parity",
+          "result": "pass"
+        },
+        {
+          "name": "Helper proposes through existing tool UI and renders the same exact approval; actual file writes only after decision",
+          "result": "pass"
+        },
+        {
+          "name": "Open/download use the actual authenticated workspace artifact; no raw inbox or unrelated project imported",
+          "result": "pass"
+        },
+        {
+          "name": "Missing model/TTS are explicit, no fabricated reply or silent browser/hosted voice fallback",
+          "result": "pass"
+        },
+        {
+          "name": "All four helper sections have zero scoped automated axe violations, including real work/results and file lists",
+          "result": "pass"
+        },
+        {
+          "name": "Helper keyboard/1440-320px layout and scoped desktop/mobile automated axe checks pass; not certification",
+          "result": "pass"
+        },
+        {
+          "name": "No microphone request, external model call or uncaught browser exception in exercised helper paths",
+          "result": "pass"
+        }
+      ]
+    },
+    "scripted_helper": {
+      "passed": 10,
+      "failed": 0,
+      "scope": "Actual production frontend/API/Store/Runtime. Explicit scripted provider, no inference. Real file approvals, durable run/thread. No physical speech or model-quality proof.",
+      "checks": [
+        {
+          "name": "Sage is available across all five views; open/close/navigation create no chat or second model owner",
+          "result": "pass"
+        },
+        {
+          "name": "Draft persists; Escape returns focus; focus stays contained; tabs support keyboard navigation",
+          "result": "pass"
+        },
+        {
+          "name": "Actual canonical registry is discoverable, including disabled capabilities/reasons—not invented parity",
+          "result": "pass"
+        },
+        {
+          "name": "Helper proposes through existing tool UI and renders the same exact approval; actual file writes only after decision",
+          "result": "pass"
+        },
+        {
+          "name": "Open/download use the actual authenticated workspace artifact; no raw inbox or unrelated project imported",
+          "result": "pass"
+        },
+        {
+          "name": "Scripted decision / REAL runtime: helper stays in view, approval/result/answer share one original run/thread and full history",
+          "result": "pass"
+        },
+        {
+          "name": "Closing helper preserves pending durable job; explicit Cancel job cancels that exact job only",
+          "result": "pass"
+        },
+        {
+          "name": "All four helper sections have zero scoped automated axe violations, including real work/results and file lists",
+          "result": "pass"
+        },
+        {
+          "name": "Helper keyboard/1440-320px layout and scoped desktop/mobile automated axe checks pass; not certification",
+          "result": "pass"
+        },
+        {
+          "name": "No microphone request, external model call or uncaught browser exception in exercised helper paths",
+          "result": "pass"
+        }
+      ]
+    },
+    "static_lab": {
+      "passed": 8,
+      "failed": 0,
+      "scope": "Static shared-component visual interaction lab. Synthetic examples, mocked browser speech dispatch, no runtime, model, physical audio or deployment proof.",
+      "checks": [
+        {
+          "name": "Project-prefix preview loads with explicit static/no-model/no-backend evidence boundary and preserved ARTEMIS name",
+          "result": "pass"
+        },
+        {
+          "name": "Actual shared helper component supports keyboard close/focus, draft retention and clearly labelled non-AI design response",
+          "result": "pass"
+        },
+        {
+          "name": "Example capability/approval interactions stay synthetic and planned capabilities stay disabled",
+          "result": "pass"
+        },
+        {
+          "name": "Download generates only the labelled synthetic browser file, never a backend or private artifact request",
+          "result": "pass"
+        },
+        {
+          "name": "Optional narration requires gesture, selects device-reported local voice and has explicit stop; fixture is NOT physical audio proof",
+          "result": "pass"
+        },
+        {
+          "name": "Page/dialog automated axe, keyboard, 320-1440px layout and reduced-motion checks pass; not certification",
+          "result": "pass"
+        },
+        {
+          "name": "Guide link is accessible and static server refuses inbox/backend/out-of-prefix paths",
+          "result": "pass"
+        },
+        {
+          "name": "Only self-hosted /artemis/ assets requested; no model/API/localhost/third-party/credential traffic or tracking storage",
+          "result": "pass"
+        }
+      ]
+    },
+    "legacy_foundation": {
+      "passed": 11,
+      "failed": 0,
+      "scope": "Actual Chromium UI/HTTP/WebGL/asset tests. Synthetic QA artifacts; no actual LLM, microphone/device, TTS backend, GPU training or embodied-world integration claimed.",
+      "checks": [
+        {
+          "name": "Authenticated UI loads with honest disconnected-model state",
+          "result": "pass"
+        },
+        {
+          "name": "New artifact creates one shared approval, not immediate mutation",
+          "result": "pass"
+        },
+        {
+          "name": "Approval executes real workspace write and updates artifact list",
+          "result": "pass"
+        },
+        {
+          "name": "Upload → shared artifact → real dataset job → correct numeric mean in browser",
+          "result": "pass"
+        },
+        {
+          "name": "Original Command Center geometry drives live artifact Atlas, without iframe",
+          "result": "pass"
+        },
+        {
+          "name": "Same approval flow persists actual Sage memory and continuity projection",
+          "result": "pass"
+        },
+        {
+          "name": "Original Gemma AvatarStage initializes its GLB/HeadAudio assets in actual Chromium",
+          "result": "pass"
+        },
+        {
+          "name": "Text, artifact and avatar paths request no microphone",
+          "result": "pass"
+        },
+        {
+          "name": "All twelve current origins tracked with implemented/partial/pending/blueprint status",
+          "result": "pass"
+        },
+        {
+          "name": "Mobile shell retains one navigation/composer without horizontal overflow",
+          "result": "pass"
+        },
+        {
+          "name": "No uncaught browser JavaScript exceptions",
+          "result": "pass"
+        }
+      ]
+    },
+    "static_guide": {
+      "passed": 9,
+      "failed": 0,
+      "scope": "Actual Chromium static project-prefix, responsive, keyboard, automated axe, reduced-motion and link/claim checks. No deployment or physical-device verification.",
+      "checks": [
+        {
+          "name": "Project-prefix site loads with exact founder identity, ownership sentence and conspicuous proof/publication limits",
+          "result": "pass"
+        },
+        {
+          "name": "All site fragments, local links and feature-branch evidence files resolve",
+          "result": "pass",
+          "detail": "36 anchors; public deployment is not tested"
+        },
+        {
+          "name": "Keyboard skip link and captured-step controls work; desktop axe WCAG A/AA reports zero violations",
+          "result": "pass",
+          "detail": "Automated audit, not accessibility certification"
+        },
+        {
+          "name": "Captioned real images load and the code-approval disclosure is keyboard operable",
+          "result": "pass"
+        },
+        {
+          "name": "Copy button copies the exact visible feature-branch quickstart",
+          "result": "pass"
+        },
+        {
+          "name": "320/390/768/1440px layouts have no document overflow; 390px axe reports zero violations",
+          "result": "pass"
+        },
+        {
+          "name": "Reduced-motion preference disables smooth scrolling",
+          "result": "pass"
+        },
+        {
+          "name": "Without JavaScript, screenshot, setup, disclosures and complete static trace remain accessible",
+          "result": "pass"
+        },
+        {
+          "name": "All browser requests stay under /artemis/; no backend, CDN, tracking storage, failed assets or uncaught exceptions",
+          "result": "pass"
+        }
+      ]
+    }
+  },
+  "accessibility": {
+    "helper_all_four_sections_automated_axe_violations": 0,
+    "helper_desktop_mobile_violations": 0,
+    "static_lab_page_dialog_violations": 0,
+    "static_guide_violations": 0,
+    "layout_widths_px": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "keyboard_escape_focus_containment_return_arrow_tabs": "pass",
+    "scroll_regions_keyboard_focus": "pass",
+    "reduced_motion_static_lab": "pass",
+    "not_certification": true
+  },
+  "inbox": {
+    "files_read": 58,
+    "owner_commit": "1c61efc66fcded617b3bbfa0c5b7cb4b4af8456c",
+    "read_only": true,
+    "not_materialized": true,
+    "not_executed": true,
+    "not_copied_to_app_or_site": true,
+    "not_changed_in_agent_patch": true,
+    "metadata_manifest": "ideas-reviewed-2026-10-14.json",
+    "private_capture_values_replayed_or_published": false
+  },
+  "preservation": {
+    "command": ".venv/bin/python artemis/scripts/verify_sources.py",
+    "exact_blobs": 505,
+    "separate_lfs_pointer_payload_mappings": 2,
+    "total": 507,
+    "failures": 0,
+    "original_vendor_manifest_or_analysis_change": false
+  },
+  "pages": {
+    "owner_reported_live": true,
+    "read_only_api_verified": "built",
+    "existing_source": {
+      "branch": "main",
+      "path": "/"
+    },
+    "observed_deployed_content": "historical milestone-02 README",
+    "new_static_lab_deployment_verified": false,
+    "source_or_setting_changed": false,
+    "publishing_action_added": false,
+    "required_owner_source_for_feature": "arena/b4094b40-artemis + /docs, NEVER branch root or direct merge of inbox commits"
+  },
+  "earlier_failed_attempts": [
+    "Helper close effect could return focus to body after launcher hid; corrected to visible launcher at next render frame.",
+    "Prototype/footer/file-meta contrast and un-focusable chat scroll found by axe; corrected and all-section/browser suites rerun.",
+    "320px legacy page-heading action overflow corrected by wrapping, not hiding document overflow.",
+    "Initial async wait predicate let scripted test observe zero runs before actual send; replaced by bounded awaited canonical-state reads, no false duplicate-history claim.",
+    "One ad-hoc all-tab axe invocation used browser.newPage instead of an explicit context; replaced by the committed context-based all-tab suite."
+  ],
+  "unverified": [
+    "Exact Perchance backend/model/version internals and parity",
+    "Real selected Ollama model authoring/inference",
+    "Physical meaningful-answer mic/TTS/speaker/latency/lip-sync",
+    "Current owner PC/WSL/RAM/VRAM",
+    "Full original speech/vision/phone engine bridges",
+    "GPU/NF4/native world/scientific validity",
+    "Restored environment kernel execution (explicit skips)",
+    "Richer voice/rate/streaming presentation, task queue and universal undo",
+    "Production multi-user/device/network boundaries",
+    "Deployment of new Sage lab"
+  ],
+  "asset_sha256": {
+    "docs/index.html": "ef4091222aaa2e6017983c6355ff084ef53845aacf92424f49d028118c469e13",
+    "docs/sage-preview.html": "2e03c95a3feb6d52f78c3c2b19cc82aa4fd8e5f2c2ed7f37ed9333e566fc289c",
+    "artemis/web/index.html": "3bdfaf4ee86c663a9537f9f915481a102e77968407c1f311a116a7f15daf9941",
+    "artemis/frontend/src/SageHelper.tsx": "71b0cf49c7d7d32dfcb5b32a66587889743cfdfbb8f711fd304cde7072442564",
+    "artemis/frontend/src/main.tsx": "79d6f5695396cf9c1c0a0e15da55281b3a04f5f86425f75254450ad01ac96c78"
+  },
+  "publication_policy": "Feature branch only; preserve all owner upload commits. No ideas/main/default/other branch edits, merge, force push or Pages mutation. Current shared PR MUST NOT be merged directly because inbox commits are branch-only.",
+  "changed_paths_no_renames": [
+    "M\tREADME.md",
+    "M\tartemis/README.md",
+    "A\tartemis/docs/ONGOING_WORK.md",
+    "M\tartemis/docs/PROJECT_BRIEF.md",
+    "A\tartemis/docs/SAGE_HELPER_01.md",
+    "A\tartemis/docs/SAGE_HELPER_RESEARCH.md",
+    "A\tartemis/docs/ideas-reviewed-2026-10-14.json",
+    "A\tartemis/docs/verification-sage-01.json",
+    "M\tartemis/frontend/package.json",
+    "A\tartemis/frontend/sage-preview.html",
+    "A\tartemis/frontend/src/SageHelper.tsx",
+    "M\tartemis/frontend/src/main.tsx",
+    "A\tartemis/frontend/src/sage-helper.css",
+    "A\tartemis/frontend/src/sage-preview.css",
+    "A\tartemis/frontend/src/sage-preview.tsx",
+    "M\tartemis/frontend/src/style.css",
+    "A\tartemis/frontend/tests/browser.sage.integration.mjs",
+    "A\tartemis/frontend/tests/browser.sage.preview.mjs",
+    "A\tartemis/frontend/vite.sage-preview.config.ts",
+    "A\tartemis/tests/sage_ui_host.py",
+    "A\tartemis/web/assets/index-C-9o9zqo.js",
+    "D\tartemis/web/assets/index-C-J9G3SF.css",
+    "A\tartemis/web/assets/index-GPDhAe5D.css",
+    "D\tartemis/web/assets/index-zqbXvZHZ.js",
+    "M\tartemis/web/index.html",
+    "M\tdocs/ATTRIBUTION.md",
+    "M\tdocs/PAGES_SETUP.md",
+    "A\tdocs/assets/sage-preview-BV-m0lHX.css",
+    "A\tdocs/assets/sage-preview-BWo3BdX3.woff2",
+    "A\tdocs/assets/sage-preview-CwvVGij3.woff2",
+    "A\tdocs/assets/sage-preview-x6xN3ELT.js",
+    "M\tdocs/index.html",
+    "A\tdocs/sage-preview.html"
+  ],
+  "review": {
+    "captured_session_values_and_test_keys_not_in_patch": true,
+    "private_state_tooling_models_not_staged": true,
+    "inbox_originals_no_patch": true,
+    "main_or_pages_mutation": false
+  }
+}

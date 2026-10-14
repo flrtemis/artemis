@@ -198,9 +198,12 @@ def test_bio_gaba_repair_and_probe_contract(host):
     id=c.post('/api/lab/bio',json={'steps':5,'seed':17}).json()['run_id'];r=wait(c,id)['result'];assert r['finite_voltage_state'] and r['neurons']==1090 and r['actual_cortical_inhibitory']==50 and r['declared_cortical_inhibitory']==200
     assert 'not_scientifically_validated' in r['quality'] and r['known_issues']
 
-def test_seven_sources_and_no_world_engine_claim(host):
-    app,c=host;data=c.get('/api/integrations').json();assert len(data['repositories'])==7
-    u=next(r for r in data['repositories'] if r['name']=='universe');assert u['state'] in ['specification_preserved','native_engine_connected']
+def test_current_sources_and_no_complete_world_engine_claim(host):
+    app,c=host;data=c.get('/api/integrations').json();assert len(data['repositories'])==12
+    assert {r['name'] for r in data['repositories']} >= {'atrium','phone','speech-to-speech','guardian'}
+    assert next(r for r in data['repositories'] if r['name']=='atrium')['branch']=='arena/01a1096b-atrium'
+    assert next(r for r in data['repositories'] if r['name']=='phone')['state']=='source_present_integration_pending'
+    u=next(r for r in data['repositories'] if r['name']=='universe');assert u['state'] in ['specification_preserved','native_engine_connected','blueprint_bounded_baseline']
     assert c.get('/api/specifications/world').json()['status']=='specification_not_engine'
 
 def test_remote_context_requires_explicit_consent(host):

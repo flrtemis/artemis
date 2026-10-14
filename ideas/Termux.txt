@@ -1,0 +1,18 @@
+▬▬▬▬▬▬▬▬
+(always needed on the 1st line of a Python script for Android/Termux/Mobile)
+#!/data/data/com.termux/files/usr/bin/env python3
+▬▬▬▬▬▬▬▬
+https://wiki.termux.com/wiki/Termux-services
+▬▬▬▬▬▬▬▬
+cd ~/.shortcuts
+▬▬▬▬▬▬▬▬
+am start com.termux.widget/com.termux.widget.activities.TermuxWidgetMainActivity
+▬▬▬▬▬▬▬▬
+python "/storage/emulated/0/Download/Sage Currently/Sage5d.py" train --file "/storage/emulated/0/Download/Datasets/en_train.txt" --val_file "/storage/emulated/0/Download/Datasets/en_val.txt" --epochs 1 --batch_size 16 --learning_rate 0.001 --checkpoint_interval 1000 --checkpoint "/storage/emulated/0/Download/Datasets/cpu_chatbot_checkpoint_epoch1_batch34500.pt"
+▬▬▬▬▬▬▬▬
+adb install --bypass-low-target-sdk-block FILENAME.apk
+▬▬▬▬▬▬▬▬
+cd /storage/emulated/0/Download
+▬▬▬▬▬▬▬▬
+ollama list
+▬▬▬▬▬▬▬▬
