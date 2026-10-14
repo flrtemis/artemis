@@ -48,3 +48,7 @@ Familiar-category comparisons identify everyday jobs, not endorsement, product
 parity, unlimited performance or a free replacement for managed services.
 Hardware, setup, energy, optional connectivity, privacy configuration and
 unfinished integrations are deliberately visible.
+
+## Sage interaction lab
+
+`sage-preview.html` reuses the newly authored ARTEMIS helper component. Its examples are explicitly synthetic, and its optional browser narration is not a model/speech-pipeline demonstration. The derived `sage-preview-*.woff2` outputs are byte-preserving copies of the local Instrument Serif files identified above, produced by the static build; the same OFL notices apply. No source or personal capture from the owner-only `ideas/` inbox is published here. Perchance-inspired interaction patterns do not imply copied/licensed Perchance runtime code, an endorsement, or a Muse/Google dependency.

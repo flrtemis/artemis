@@ -1,0 +1,609 @@
+{
+  "schema": "artemis.inbox-review/v1",
+  "reviewed_at": "2026-10-14",
+  "branch": "arena/b4094b40-artemis",
+  "owner_commit": "1c61efc66fcded617b3bbfa0c5b7cb4b4af8456c",
+  "read_only": true,
+  "source": "Git blob reads; directory not materialized or changed",
+  "files": [
+    {
+      "path": "ideas/1980sTVshows.txt",
+      "git_blob_sha": "4b23053f748d2663ea659a1193b371d44a6571dc",
+      "bytes": 118,
+      "sha256": "7e6511ccaca04b119f5d6c4f95bebc8512ec9e083739f968f6e1d4a57ea95834",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/3D File System.txt",
+      "git_blob_sha": "6102c12e946daef80d86cd0c74ff306668c49429",
+      "bytes": 63,
+      "sha256": "47a6353ec08e99b0a98817d4ccc788ec1d5d8f22754fe633acbcbc7dd7e77813",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/3D games.txt",
+      "git_blob_sha": "7e00506ffe5f995e0a108fe27768d8206fc5a373",
+      "bytes": 50,
+      "sha256": "afd07370853c2aa1e3d62fe8154b264bf541bf8b757d37ec83857eac849aeb38",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/AI Image Creation.txt",
+      "git_blob_sha": "815a5b1928ee3d27aef1e7447141e0cced03a3ac",
+      "bytes": 151,
+      "sha256": "21f817efaa5f491c468d04ae95bbd740d51c106752400adc4f1cf586af5d8bd8",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/AI Music Generator.txt",
+      "git_blob_sha": "1c22fc644ff592c167c8ddd30171fc11d2fdd90a",
+      "bytes": 25,
+      "sha256": "c025022d7f7d51e3cc9ea7e5c3ddb69bac5bb92c5a4c7222a38ee70abf1ab756",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Android app creation.txt",
+      "git_blob_sha": "41ed0aff678ca0c99f7c984a4d3ea4849ee2e8d5",
+      "bytes": 32,
+      "sha256": "24a74292aa87ea3a2272f6a0933537c3c49a8ba7dad222a8d9489d6943bc26f0",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Avatar Creation Software.txt",
+      "git_blob_sha": "7eac720a15f860e215b19367ced5f0986a3eb8e2",
+      "bytes": 34,
+      "sha256": "a862d2878bec2bd6dd043b00ca568eb55cb4b67a1e43d3495688b41528ba50ed",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Base64 Encoder.txt",
+      "git_blob_sha": "c1fe7df34fabfddcd09a955da68699a63488e0be",
+      "bytes": 41,
+      "sha256": "0ead400d9b0b3e9a43456620cf9a7bf242f00236c888c568aa93e692461b5081",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/CRUSHON_AI_remove_all_actions_in_responses.js",
+      "git_blob_sha": "2574c3b385dad579880b369f96fff819915149fa",
+      "bytes": 3460,
+      "sha256": "020c6c9930d57fbf8c913f990a434bd9a4cb2f7c68f5cf9e9a3901716f8f1171",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Cell Tower Locations.txt",
+      "git_blob_sha": "e76123b23b854c6b13dd891f9c9ca8b75328a5c2",
+      "bytes": 1086,
+      "sha256": "202e97215b0820f764a3c0032f5461a023872617d425a6955828243535a207ae",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/ChatGPT.txt",
+      "git_blob_sha": "64108fd8ddfb9a62fc23426c521ee202bf1143e7",
+      "bytes": 151,
+      "sha256": "6b61941feae752f696b2ea5b48a3e3ee52838ab44a5a020da2db5f0d0d970157",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Chatbots.txt",
+      "git_blob_sha": "7dc31b467096515fcb4df70bf57db2f33943d58c",
+      "bytes": 1935,
+      "sha256": "344dda0886d0228df6b1e3366ac502ae930fbea7c26bfec610bdb2fb928e8918",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Clipboard Dump.txt",
+      "git_blob_sha": "0b21d072324283a10822450f51ec8eaefa44b24e",
+      "bytes": 89192,
+      "sha256": "39da91a27c61f9cb2b5f9da0d9b1e84395f5072969e78b5945a5c3a9539edf12",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Code Editors.txt",
+      "git_blob_sha": "34804dc686dcab166d83daa9b75aa5ad11a0bd57",
+      "bytes": 450,
+      "sha256": "438951adfa84c20f14421b026cedefb111e86bf2ddb325cc3debd59c7eecacbb",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Colab.txt",
+      "git_blob_sha": "e934e250495c3f350df2ef403db1c40bf8dcd0d8",
+      "bytes": 530,
+      "sha256": "2de3a274cba9efc71b13c8fd02ab9db41728002aff90dce60da4928c0013fe57",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Create a Random Generator ― Perchance (10_14_2026 1：51：29 AM).html",
+      "git_blob_sha": "121d4203828a479e087149f93f5fc4cd368c3b35",
+      "bytes": 637272,
+      "sha256": "c9aafce103841980dabb45aac513d124ff7322f8d3a4643deea15a12fe0ad6f9",
+      "read_in_full": true,
+      "analysis": "inert HTML parse",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Emoji Encoder.txt",
+      "git_blob_sha": "b6f501e71962e092e2eeb6155488eebf88ce973c",
+      "bytes": 47,
+      "sha256": "2d2df8d7c47d742d7c61fe753065df58195edf62bde02d45798370158e8d690a",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Fancy Font Generator.txt",
+      "git_blob_sha": "d5427917132a73f6eba7bc8a2ffca2c42ff725a8",
+      "bytes": 41,
+      "sha256": "6afe8aa8fe62a54f119f98f0abd60b3752bc6200fd9a514fe5a2e87342cb8328",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Firefox Desktop Secret Settings.txt",
+      "git_blob_sha": "09357fe7fa501a68f4d094c584e4b95b3e234f5e",
+      "bytes": 75,
+      "sha256": "5d30f1f797d055360f69c1cb697001eabff1607d5e4c91de515aa89593222827",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Github.txt",
+      "git_blob_sha": "582b611a475e2aca533f85a26988d42cd0de9b39",
+      "bytes": 1062,
+      "sha256": "51675c42d7e5da1bd730982c38879d158ff9b9fac4f3879d070b1037ae3dcafd",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Google AI Studio auto-TTS.js",
+      "git_blob_sha": "980ead894c043253fd6ab3c09e35d93342b9d26a",
+      "bytes": 6357,
+      "sha256": "ad24a7191532602983b42ccbd393f1fed106870de054edc50cef0dad40bd390a",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/INPUTcodeOUTPUTexplanation.txt",
+      "git_blob_sha": "aee2956917b15a511517135dd13e8fd09fc6793f",
+      "bytes": 47,
+      "sha256": "009a7ac84cb1474e97eed3a182aeb9d5b777ae6af4513d1016c409f895d85692",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/IP Tools.txt",
+      "git_blob_sha": "003db561441aea71b665cb8fc7c1c2c69ad7c2e3",
+      "bytes": 211,
+      "sha256": "8baf2be523fff341e467a06a3e3a6b92e166c7611aae0a3e89c4f3be4bc0daa8",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Information I saved while using perchance ai-agent.txt",
+      "git_blob_sha": "afe9aa2171682971d7f428a1d5afd0728cd36f3d",
+      "bytes": 34345,
+      "sha256": "7ead4c1aa81d17858266a15a98d69a46ff95e0c5f8f1bd697fd8b86dfaea12ca",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 63,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/MSStoreShareLinktoDirectDLlinkConverter.txt",
+      "git_blob_sha": "64742f8d47ffd80392991f429165d28f5dc861bc",
+      "bytes": 47,
+      "sha256": "0c76b9c7e1a1b626f2a76d59c32fe6702cda0948b415820735f892f434015cc7",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Modyolo apk list.txt",
+      "git_blob_sha": "290b60c92233814144feab88ec7cded24291531b",
+      "bytes": 78,
+      "sha256": "9b5129a8d28e4ceefe776c6c9d23fd29b2ef97da3aef88fd8fc6688ca3016364",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/My Website.txt",
+      "git_blob_sha": "41fd70b2adc03ccef5324e0333e7075bc9088af5",
+      "bytes": 117,
+      "sha256": "c948c76f83297992b6a04ed940f30bc8721c48261ec03188382147ba30209e0b",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Online Calculators.txt",
+      "git_blob_sha": "ebd83b3e91518e3151939872faeeb7b0f732a91c",
+      "bytes": 97,
+      "sha256": "83ac6e5e99f01c95c35267e5b3b34e6bfae4128883be7b88d4bf77d0da2ef7f3",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Online Tools.txt",
+      "git_blob_sha": "b7eca84ffa435ebb0d8ff678a53b14c9cc1d9b7e",
+      "bytes": 622,
+      "sha256": "e29fe1ab43df288d0ac8f30d939c284df888bd8a191a2a26a4d6eb92f13e7f3a",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Programs.txt",
+      "git_blob_sha": "a4c3b381255beb11c1b3f1a916754757acef5fbc",
+      "bytes": 92,
+      "sha256": "df90d7b11383eec2dfe66e040e4983e90ff1703cd310d651db7e7769d7fc96a9",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/README.md",
+      "git_blob_sha": "7dcfdd8afc4d097277ef8a23b88648279e9f6bdc",
+      "bytes": 287,
+      "sha256": "bd4b8b06f5c9c5d9382a104c63989077f86f13941fb7831d359d58038dafb713",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Shizuku stuff.txt",
+      "git_blob_sha": "aab286df4afbc793fb8d57ee6d2a30514f856542",
+      "bytes": 38,
+      "sha256": "1ead0dc58d0d3dd51b598bf7494931587b782c72d9bd51c1e7564d684fa3348f",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/SillyTavern.txt",
+      "git_blob_sha": "eb17ab2d4d7c2333b8966978550a4902186987fa",
+      "bytes": 50,
+      "sha256": "b296d05293c935de02fb29126052644ad4695e17dd817e80f19927a5bb18b62f",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/SunoDownloader.txt",
+      "git_blob_sha": "55b0a8b0653eeacc7ee29021e076734177368557",
+      "bytes": 37,
+      "sha256": "f2e628c28b1598e058e686d6a6db6a47b3726e5cf905f83a65f08eaf6dd7a349",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/TTS stuff.txt",
+      "git_blob_sha": "49382a6face8d60208f372a2677e9a78752167f8",
+      "bytes": 716,
+      "sha256": "c99bd241bd1a881f92ceba83a8ab41866db7decb0acf61439806171d71a1b122",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/TV.txt",
+      "git_blob_sha": "80cdd1f8cf1c743307dd295339b618bff4ef7af0",
+      "bytes": 248,
+      "sha256": "35ced26aebbffa31b92daa5cd7185ed7d96eb432f0d7eaf59b58af8664d0223a",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Temp Phone Numbers.txt",
+      "git_blob_sha": "ca99e6297fb114b35a82971848e54229a4da83af",
+      "bytes": 50,
+      "sha256": "9208f88f48b9995ae5de99e5e158a5fed9f6c2c64855ee88e184afca515c082f",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Termux.txt",
+      "git_blob_sha": "18580e12e4f145ef030d432194cdd4367543653d",
+      "bytes": 957,
+      "sha256": "92442aa056e99ba6b0c862cc6eeefb956d4b89797d06da9e72b93bef891c7cdb",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/TrademarkApplication.txt",
+      "git_blob_sha": "857cda9d2725a7d73f0e1a884db769abd5588b82",
+      "bytes": 54,
+      "sha256": "c6067a8b12c5abaf27b3f01f1368e59b1f7ee7d8cca9bcf715f4dc071580ec03",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/TranscribeAudioToText.txt",
+      "git_blob_sha": "dbbb2c96a734c60c2e763590c8d69bb22fb3069b",
+      "bytes": 79,
+      "sha256": "fadf44b179ea6c758425593e69f89a76cdfdc5a8de521d7cb0489d30f8b1c6af",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Unicode.txt",
+      "git_blob_sha": "bbdaf6ee3b7284522dc92a2923ff48d1c1dcd575",
+      "bytes": 406,
+      "sha256": "ac78286b43caddc72be58d91fcd4150b67ec97c1e6e4c36f748977d333705059",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Unsloth.txt",
+      "git_blob_sha": "5d57a9e295c131f2759fd500f76836c08c04baba",
+      "bytes": 144,
+      "sha256": "c5782715c34e2f85f33abbe81f6059eb8d06ddaa73e3eb2bed1ad1c52be46545",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Video creation.txt",
+      "git_blob_sha": "28a17adaecf13d3068236ae50dc6679de6abe426",
+      "bytes": 984,
+      "sha256": "0767eb971794061c6955e80d99246d34cc2bcb18402658c29710fba528851cb0",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Visual Studio.txt",
+      "git_blob_sha": "7b6d66a3f040bf0098d3107dbcd37c987d1db8c7",
+      "bytes": 672,
+      "sha256": "421bad6f7781673a719d7f38352a1570523fbf2fd92924adc67f4d0ba674931c",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/VoiceInMusicRemover.txt",
+      "git_blob_sha": "3c946949e985fe803c247449b142be28591f4e36",
+      "bytes": 117,
+      "sha256": "ae271e4a7d8b4595dd58e80ca55a75f17c3f1311d96dc6e413d1e8bebe3e3783",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Webpage creation.txt",
+      "git_blob_sha": "3d7fc668e3e1df3d96816d2b54e46eceb5f6a915",
+      "bytes": 187,
+      "sha256": "ca82bdb513b761dff30e4d834e6f1e55ebb185254d422260b172d532655adbe2",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/Websites for downloading apks.txt",
+      "git_blob_sha": "56818df93c575d5d22e91695c9b70f3da73b507f",
+      "bytes": 110,
+      "sha256": "519ea25264a07c30301b856d509d4f6b8fe1a7a42c6cddebaadeffee6b78f1ce",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/ai_studio_code.py",
+      "git_blob_sha": "a7f450808f380e8ed232c2278a888db8b3bd7622",
+      "bytes": 3971,
+      "sha256": "cea501942a09e4aeec12d28207460723d97338333462b73debe22307add46eda",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/authenticator.txt",
+      "git_blob_sha": "14464f1fc07250cc9461511f90066055b73476fa",
+      "bytes": 33,
+      "sha256": "8d1fd0cf780f2491a9381e44e5503af9b1d653cce648ad56f7b6aca9f140c5a8",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/auto-tts.js",
+      "git_blob_sha": "4d153d905a1b6f542f75121c2c1d439141b7840a",
+      "bytes": 6209,
+      "sha256": "bc218a8e706e992868af8c786ecbbbbeb9f58f514ddfd8088c4e2db469a03ccd",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/huggingface.txt",
+      "git_blob_sha": "c87bb56cef5e61ed9b605a8dccfa0a04a7fed317",
+      "bytes": 1680,
+      "sha256": "9d8693ed492edd93ba3a04021d5bdca2b805d24bd12f3408046f9a8361125ba7",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/ollama.txt",
+      "git_blob_sha": "e8aada83c64d331bbe0f641094a1684b28281faa",
+      "bytes": 723,
+      "sha256": "e6cda45891a3b4c40c6ff47033edfa5fbd1819e1bcdbd9e4ab0c9bbd14cdb307",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/perchance-ai-tts.user.js",
+      "git_blob_sha": "6fbbd5559d55770dc627fe2d77b71fc2f2e8a033",
+      "bytes": 8465,
+      "sha256": "5b9be75364ba8361a511c338302b0f3126224dd8ee2febe0f2703aecc1a7d0de",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/play musical instruments online.txt",
+      "git_blob_sha": "e438b15470df43ae31b2fa8724fae02ca39c85f7",
+      "bytes": 89,
+      "sha256": "a5f8d703627bcfafbadca827e7a769f9d1b8120691937d5048bb7d079459af66",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/rufus.txt",
+      "git_blob_sha": "dc046115c957442a0749ac3f23f25ead78baa43b",
+      "bytes": 8875,
+      "sha256": "49a0f899a95b4d79230458780f79a8c3a368b2c82bedfde085c0eb51285e7f91",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/test if Tor is being used.txt",
+      "git_blob_sha": "170038e54d453bf8eeba5f32984ad11f1ec53ea2",
+      "bytes": 28,
+      "sha256": "dcd2cfc6fa9329fbf40b645f1988a58db99cfc66ea0e93f32a5eb268863860df",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/xbox.txt",
+      "git_blob_sha": "a2786facb972842cb44500fa249cb0b98321d2c6",
+      "bytes": 512,
+      "sha256": "8c4d6c947e6868f735706de311e9feafd4e27c524df93c34674fa1c06607d87a",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    },
+    {
+      "path": "ideas/yt-dlp.txt",
+      "git_blob_sha": "7fc61f4fea4778fae2acac029c11d0c0ba307142",
+      "bytes": 118,
+      "sha256": "0136344550bd1304f314ed200c2dd9d41c2178d405d43349a26da1a11efb0622",
+      "read_in_full": true,
+      "analysis": "text/static inspection; no execution",
+      "credential_like_field_count": 0,
+      "raw_content_published": false
+    }
+  ],
+  "duplicate_family": {
+    "files": [
+      "auto-tts.js",
+      "Google AI Studio auto-TTS.js"
+    ],
+    "equal_after_crlf_and_terminal_newline_normalization": true
+  },
+  "notes": "Metadata only. No captured credential/session values, personal transcripts, scripts or saved HTML are republished. Do not execute source files or promote inbox to main/Pages. Compare blob identities at next work session and analyze additions/changes.",
+  "review_history": [
+    {
+      "owner_commit": "f3388e47eeb8538e7a0b0a5bbf6c58b979260cab",
+      "files_read": 8
+    },
+    {
+      "owner_commit": "1c61efc66fcded617b3bbfa0c5b7cb4b4af8456c",
+      "files_read": 58,
+      "scope": "New bookmark/clipboard batch and revised owner README; full reads, no execution or raw republication. External visits separately logged; no private/signed/login links replayed."
+    }
+  ]
+}

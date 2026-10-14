@@ -8,9 +8,22 @@ all-project ecosystem or twelve apps behind a launcher.
 **[Website / first-run guide](https://flrtemis.github.io/artemis/)** ·
 [Pages-ready local site](docs/index.html) · [Current twelve-source evidence](artemis/docs/CURRENT_CAPABILITIES.md)
 
-**The website is prepared, not verified live. Only the owner enables Pages:**
-[Settings → Pages → Deploy from a branch → this branch + `/docs` → Save](docs/PAGES_SETUP.md).
-No merge or Pages settings change is part of this implementation.
+**Pages is live:** October 14 read-only verification shows `main` + `/`, serving the older README. The newer guide and **[Sage interaction lab](docs/sage-preview.html)** are on this feature branch. [Owner-controlled preview publication](docs/PAGES_SETUP.md) uses this branch + `/docs`, never the branch root/inbox. No merge or publishing-setting change is made by the agent.
+
+## Sage — accessible alongside the work
+
+The new helper is an additive projection of the existing conversation, live
+capability registry, approvals, work and files. Open **Sage** from any main view;
+no second assistant history/model/audio owner is introduced. Configured answer
+audio stays explicit; stopping speech and cancelling a job remain different.
+
+[Current Sage slice and exact checks](artemis/docs/SAGE_HELPER_01.md) ·
+[Perchance/inbox research](artemis/docs/SAGE_HELPER_RESEARCH.md) ·
+[Cumulative work — new ideas do not replace earlier goals](artemis/docs/ONGOING_WORK.md)
+
+`ideas/` is owner-uploaded, **read-only and branch-only**. Do not merge this
+shared branch directly or publish its root; review/promote implementation changes
+without inbox commits/files. Raw captures are not website assets.
 
 ## Try a real first task (WSL2/Linux)
 
@@ -52,14 +65,15 @@ is **not** a promise of zero hardware, electricity, setup or optional-service co
   evidence, honest costs/status/comparisons and owner-only publishing steps.
 
 [Full implementation, tests, local checks and remaining scope](artemis/docs/MILESTONE_03.md) ·
-[Machine-readable fresh verification](artemis/docs/verification-03.json) ·
+[Historical milestone-03 verification](artemis/docs/verification-03.json) ·
 [Founder-approved project brief](artemis/docs/PROJECT_BRIEF.md) ·
 [Full setup / historical milestone-02 details](artemis/README.md)
 
 **Fresh evidence is not real model/device proof.** Scripted model decisions test
 actual Store/Runtime/UI/Bubblewrap namespaces/seccomp. Real Ollama, GPU,
-physical audio/camera/PC, native Godot, Docker, carriers and live Pages remain
-unverified in this session. See the exact results/skips in the verification
+physical audio/camera/PC, native Godot, Docker, carriers remain
+unverified in this environment. The existing Pages deployment is verified, but
+the new Sage preview is not claimed deployed. See the exact results/skips in the verification
 record, separate from historical tests.
 
 ## Repository and preservation

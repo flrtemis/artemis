@@ -54,5 +54,7 @@ other people's ideas. “My” extends that origin; it does not erase it.
 Current proof and limits: [MILESTONE_03.md](MILESTONE_03.md),
 [CURRENT_CAPABILITIES.md](CURRENT_CAPABILITIES.md), and root
 [`docs/index.html`](../../docs/index.html). The site is a static guide, not a
-hosted ARTEMIS backend. **Only the owner enables Pages; publication is not
-claimed by this implementation.**
+hosted ARTEMIS backend. **Only the owner enables Pages; the owner reports publication live and an October 14 read-only check confirms
+`main` + `/`. The newer feature guide/Sage preview is not claimed deployed;
+publication source selection remains owner-only. New ideas are cumulative: see
+[ONGOING_WORK.md](ONGOING_WORK.md).**

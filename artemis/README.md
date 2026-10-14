@@ -4,15 +4,17 @@
 conversation, continuity, jobs/approvals, workspace and capability registry.
 Substantial partial unification, **not** every source contribution connected.
 
-[Website / first-run guide](https://flrtemis.github.io/artemis/) (owner Pages setup
-pending; not verified live) · [Current twelve-source matrix](docs/CURRENT_CAPABILITIES.md) ·
+[Website / first-run guide](https://flrtemis.github.io/artemis/) (live from `main` + `/`; feature preview requires owner source selection) · [Current twelve-source matrix](docs/CURRENT_CAPABILITIES.md) ·
 [Fresh milestone handoff](docs/MILESTONE_03.md) · [Local extensions/example](docs/EXTENSIONS.md)
 
 **New:** approved, versioned JSON-only hot tools in the same durable model
 loop; real isolated test before registration, separate invocation approval,
 rollback/export; audio yield distinct from job cancellation, safe same-job
 corrections and held busy-model inputs. No real Ollama/physical-PC/audio/GPU
-or Pages proof is implied by scripted-provider tests.
+proof is implied by scripted-provider tests. The existing Pages deployment is verified separately; no new preview deployment is claimed.
+
+**Additive Sage helper:** available across main views, projecting the same
+thread, registry, approvals, files and audio owner. [Current slice/tests](docs/SAGE_HELPER_01.md), [research](docs/SAGE_HELPER_RESEARCH.md), and [cumulative plan](docs/ONGOING_WORK.md). The owner-only `ideas/` inbox remains read-only/branch-only and is never a runtime or website input.
 
 The sections below continue the milestone-02 architecture. **Their old optional
 Godot, CPU training and installed voice-model results are explicitly historical**,

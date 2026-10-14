@@ -25,3 +25,6 @@
 
 /* Job state is independent of the shared audio owner. */
 .job-controls{display:flex;align-items:center;gap:8px}.held-input-note{font-size:12px;line-height:1.5;padding:10px 12px;border:1px solid var(--line,#343942);border-radius:8px;margin-bottom:8px}.composer-toolbar{flex-wrap:wrap;gap:10px}.composer-toolbar .text-action{margin:0;font-size:11px}
+
+/* Narrow-phone page actions must not push the document outside a Sage dialog. */
+@media(max-width:400px){.page-heading{flex-wrap:wrap}.heading-actions{max-width:100%;flex-wrap:wrap;margin-top:0}}
