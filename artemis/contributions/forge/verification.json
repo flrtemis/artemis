@@ -1,0 +1,50 @@
+{
+  "schema": "forge.review-evidence/v1",
+  "reviewed_at": "2026-10-19",
+  "branch": "arena/b4094b40-artemis",
+  "base_artemis_commit": "23f96612e700f443ea52403940ff3d1b256893ef",
+  "source_files": 17,
+  "drive_originals_modified": false,
+  "real_soundfile_numpy_contracts_passed": 28,
+  "torch_conversion_in_cpu_tests": "explicit NumPy facade, NOT actual Torch",
+  "governor_tests": "scripted percentages and reviewed AST class, not Windows native sampling/hard RAM cap",
+  "real_torch_audio_contract": "NOT RUN: Torch not installed in this sandbox",
+  "live_xtts_training": "NOT RUN",
+  "real_checkpoint_optimizer_reload": "NOT RUN",
+  "audible_voice_quality": "NOT RUN",
+  "package_zip_relocation": "actual file/ZIP checks, synthetic model/reference bytes; not XTTS quality",
+  "source_overlay_scratch_tests": [
+    "read-only check",
+    "explicit apply with backup",
+    "idempotent second apply",
+    "refusal on synthetic Rowan source drift"
+  ],
+  "failure_probe": {
+    "command": ".venv/bin/python artemis/contributions/forge/verify_forge.py --source .cache/forge-review/candidate --out .cache/forge-review/no-torch-probe",
+    "actual_status": "failed",
+    "actual_error": "ModuleNotFoundError: torch",
+    "live_training": "NOT RUN"
+  },
+  "pytest_command": ".venv/bin/python -m pytest artemis/contributions/forge/tests -q -rs",
+  "small_test_dependencies": [
+    "numpy 2.4.6",
+    "soundfile 0.14.0",
+    "pytest"
+  ],
+  "model_voice_gpu_downloads": false,
+  "raw_recordings_weights_or_credentials_used": false,
+  "automatic_roam_provider_upload_enabled": false,
+  "prior_work_retained": true,
+  "shared_review_folder_id": "117MeRT4Pg3zzvri3ZykqokA1j2Ho0kh4",
+  "next_gate": "Bob existing venv: audio contract, then explicit cached CUDA one-epoch train/checkpoint/relocated inference; return reviewed verification.json only",
+  "bundle_revision": 2,
+  "revision_note": "Exclude generated .pycache entry from original-source manifest; exactly 17 originals; add manifest boundary regression.",
+  "shared_artifacts": {
+    "folder_id": "117MeRT4Pg3zzvri3ZykqokA1j2Ho0kh4",
+    "v2_zip_id": "1RRd4vLVmp9YNX4LqwbKkZLAB54bD5ubd",
+    "v2_handoff_id": "16xmHvEpmNixQYZYhKB3JxSvTlDOCZ8nv",
+    "v2_evidence_id": "1rw1L6zRzH8poh_hZV45VazXIMx2CSns-",
+    "v2_archive_sha256": "73238e671a7f261003a5d70184afa68818d679b1073782d44230223e0676cf62",
+    "original_v1_zip_marked_superseded": true
+  }
+}

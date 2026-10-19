@@ -1,0 +1,112 @@
+{
+  "schema": "forge.source-review/v1",
+  "retrieved_at": "2026-10-19",
+  "drive_folder_id": "1McyKcxeNYV_pOWJXmTLyKoZRp4WRfDSP",
+  "count": 17,
+  "source_files": [
+    {
+      "path": "README.md",
+      "bytes": 4631,
+      "md5": "a8d85490205b943c12416b31211c5e18",
+      "sha256": "1053daba0ba0069843fae02f46b546d5304613a56d7f60881904efa7d45b91f8"
+    },
+    {
+      "path": "forge/__init__.py",
+      "bytes": 1328,
+      "md5": "b1dafdb681930e020bc9003b823bf849",
+      "sha256": "168817166508822c3b2527ae653740a3ac5e1838aef830b6ddc81b6a5f883eb1"
+    },
+    {
+      "path": "forge/app.py",
+      "bytes": 14825,
+      "md5": "8cfc9e76b3d9be4a2246d0368aa2573c",
+      "sha256": "7d4eec076f75baf14ac26f62a402c39908f2a5fa9900a8f9009e5c5c2ee5f5e8"
+    },
+    {
+      "path": "forge/dataset.py",
+      "bytes": 10406,
+      "md5": "1af0f7b9d460e3526010b6e1435b618d",
+      "sha256": "96a2bcf7b161d1c8b29668e958a76f88855e3298d7de7edfa68a42868dfe6ab3"
+    },
+    {
+      "path": "forge/files.py",
+      "bytes": 1804,
+      "md5": "9ef7d43b1c87e7d98134b842b2751fcc",
+      "sha256": "2849f32893291c33f8320e52ea15cb665f83993a69f2a1527380c15d4b5d723c"
+    },
+    {
+      "path": "forge/roam/DESIGN.md",
+      "bytes": 3627,
+      "md5": "6f3fe03dc0d4b64e189d3c125009b95e",
+      "sha256": "1daf8555310cf6c63a36df75b4fc5829a10a6143629696364d0f2e11eb889adf"
+    },
+    {
+      "path": "forge/roam/__init__.py",
+      "bytes": 257,
+      "md5": "48972d4c20c7c5d3d497ef4a884414aa",
+      "sha256": "fb217f0fbc7e5691afb1f25b3ffe9120060f7e2f5a6d241ab4e2766605f4d453"
+    },
+    {
+      "path": "forge/roam/job.py",
+      "bytes": 2583,
+      "md5": "884b31ab9754b06f28d9465929e5cf72",
+      "sha256": "1150864b47f98acc44481075beea8bb77faea4b9c91466553a7f2733a33d6c54"
+    },
+    {
+      "path": "forge/roam/orchestrator.py",
+      "bytes": 4966,
+      "md5": "838622ab5bea951c2897a50e1e1b1dac",
+      "sha256": "a5bff337fd1244a65d3b034b4f9ca0f15a0fe6bc2f1ed1972be40a3a32185ee0"
+    },
+    {
+      "path": "forge/roam/providers.py",
+      "bytes": 10196,
+      "md5": "d9e7f053a82fd4a70fbe0810f9e54e41",
+      "sha256": "db07ab0fec2571feff390f2218cfd7f231894489ae36c0bc085a26707b9bc2f5"
+    },
+    {
+      "path": "forge/synth.py",
+      "bytes": 3337,
+      "md5": "00376342f4bca892aa341c3ca3110d56",
+      "sha256": "2f5b3becb205dad1255032625e3c5a8e28aa3ad6bc5c3d1a45126754939ad307"
+    },
+    {
+      "path": "forge/train.py",
+      "bytes": 12241,
+      "md5": "003607297e4094b20e1b05a02a4390f8",
+      "sha256": "6cc3fea0784d5c3ac066590a976645ce105f0c33451b1f286d211ab86e74e947"
+    },
+    {
+      "path": "recording-script.txt",
+      "bytes": 3643,
+      "md5": "e621b970d0c738b63778f8422ff55f77",
+      "sha256": "b6623390e26ad55be369db3525bbe12feda1c0320dba7f3d754c06dabb70a1b1"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 1214,
+      "md5": "b91b2ffd749450f4cb58b0c7e6f05715",
+      "sha256": "0993c1b635fdf99c5907db587e091e3669874a95cdd9813b1e1da0136dfe4e5c"
+    },
+    {
+      "path": "run-forge.bat",
+      "bytes": 762,
+      "md5": "dad91bb38c17d50470e8620e30c814de",
+      "sha256": "7282973e964a5a7cca531d245a3330a0846efd25ea244e515d348294f18d3b0c"
+    },
+    {
+      "path": "run.py",
+      "bytes": 750,
+      "md5": "cde235efe6bd3b161743a980e9cdf5cc",
+      "sha256": "23d851c1680a44875d6d5c1580b000319b0820f48c37830eeebc2b8517c10c18"
+    },
+    {
+      "path": "setup-forge.bat",
+      "bytes": 1589,
+      "md5": "831eb0f4efbe4eb1a2b4b0e144f4c277",
+      "sha256": "8bc639ca0cfd2ca7920735a748a208894a8efe9be2aebd560d1dbff0c8ff27ca"
+    }
+  ],
+  "handling": "Originals read/cached only; source/code and metadata, no voice recordings/model/credentials; candidate overlay isolated; no live training claimed",
+  "license_note": "train.py/dataset.py declare MPL-2.0 adaptation from Coqui code; do not infer that this licenses XTTS weights, voices or all FORGE files. Preserve authorship and existing terms."
+}

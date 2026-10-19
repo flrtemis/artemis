@@ -91,3 +91,31 @@ reconnect/admission cleanup race is fixed and has three deterministic tests.
 The original engine/vision/phone/privacy/native-worker tasks remain active;
 this UI/device presentation does not establish physical audio or model parity.
 The 58-file inbox was compared again: no additions or changed blobs found.
+
+### Rowan/Bob shared-table contribution — FORGE (2026-10-19)
+
+FORGE is Bob/Rowan's local **XTTS v2 voice trainer**, distinct from the historical
+image-generation backend of the same name. Its 17 source files were read from the
+user-provided Drive folder and fingerprinted without changing originals. Drive
+is now an approved collaboration exchange; raw voice/model/credentials stay off
+Git/Pages and are not uploaded by the agent.
+
+| ID | Additional work | Current evidence / next gate |
+|---|---|---|
+| FORGE-01 | WAV loading fix / encoder / packaging validation | [Candidate and handoff](../contributions/forge/HANDOFF.md): **28 CPU contracts** with real SoundFile/NumPy but an explicitly simulated Torch conversion; source options gap reproduced, finite WAV writer/relative package candidate; no real Torch/XTTS training claim |
+| FORGE-02 | Native end-to-end voice-training verification | Immediate next: Rowan runs audio gate in Bob's existing venv, then cached-CUDA bounded one-epoch/checkpoint/reloaded-package inference gate. Return reviewed JSON only. No new downloads/reinstalls/WSL/memory prescription |
+| FORGE-03 | RAM/governor/checkpoint honesty | Source guard logic tests only, earlier preflight gate candidate, remove guaranteed-safe-checkpoint wording. Real Windows sampling, RAM/VRAM peak, crash-safe save/resume and long-run behavior remain unverified |
+| FORGE-04 | Fold training/inference into one ARTEMIS | Optional worker → canonical run/approval/resource lease/events/artifacts; explicit voice-candidate promotion and tested 24k→16k audio bridge; not another UI/LLM/history owner |
+| FORGE-05 | Roam/provider behavior | Review stop/resume/retry/checkpoint names/completeness and per-provider/data-egress consent before integration. Local-only default; do not auto-upload private voice data to Kaggle/Colab |
+
+Shared review: `ARTEMIS-FORGE-review-2026-10-19` under Bob's provided Drive folder.
+Use **v2** bundle/START-HERE/evidence: first ZIP was superseded after excluding a
+generated test bytecode file from the original-source manifest. Exactly 17 source
+fingerprints now have a regression gate. No original Drive source was overwritten.
+The full native training job is **NOT RUN here** (Torch/XTTS/GPU absent), not silently
+replaced with a tiny/random training model. Source/MPL, XTTS CPML model/output terms
+and voice consent are separate; no unrestricted commercial license inferred.
+
+All prior hot-tool, Sage helper, speech/perception/phone/private-state/native work
+and the outstanding Pages permission blocker remain active. This contribution is
+additive, not a claim the whole product or voice training is already unified.
