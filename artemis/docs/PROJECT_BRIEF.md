@@ -28,6 +28,21 @@ unfinished features. The quoted original remains unchanged.
 
 ## Product commitment, not a completion claim
 
+### Founder correction: the self-building core is the real build
+
+ARTEMIS is not complete when it inventories or exposes what its contributors
+can already do. Its requirement is **existing capabilities AND autonomous growth
+of new capabilities**: recognize unmet needs, construct candidates, run independent
+acceptance checks, learn from real failures, repair, integrate verified versions
+and reuse them without direct human steering of each routine step.
+
+Owner-defined authority/resource/privacy boundaries remain; continual per-step
+approval is not itself autonomous growth, and self-authorization is not a valid
+shortcut. The current hot-tool and continuity paths are prerequisites, **not a
+claim that the unattended self-building core already exists**. The versioned
+mission, actual execution/repair/reuse completion test and exact next seams are
+specified in [SELF_BUILDING_CORE.md](SELF_BUILDING_CORE.md).
+
 The complete ARTEMIS does not exist in one repository yet. Continue from the
 substantial partial foundation, integrating capabilities—not independent apps—
 into one canonical identity, conversation, continuity, task/approval state,

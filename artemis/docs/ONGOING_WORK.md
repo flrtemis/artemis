@@ -119,3 +119,20 @@ and voice consent are separate; no unrestricted commercial license inferred.
 All prior hot-tool, Sage helper, speech/perception/phone/private-state/native work
 and the outstanding Pages permission blocker remain active. This contribution is
 additive, not a claim the whole product or voice training is already unified.
+
+### Founder correction relayed by Rowan — self-building core (2026-10-19)
+
+This is a clarification of the north star, not a cancellation of prior work:
+**ARTEMIS must do existing useful work AND grow new capabilities autonomously.**
+A capability inventory is evidence/discovery infrastructure, not the real build.
+
+| ID | Core requirement / next build | Honest current status |
+|---|---|---|
+| GROWTH-01 | [Self-building core contract](SELF_BUILDING_CORE.md): unattended gap/goal → candidate → real independent acceptance test → repair → validated registration → actual use → durable reuse | Spec corrected. Existing `create_tool` is approval-driven; continuity wakes get no tools. Do not call either the finished unattended core |
+| GROWTH-02 | Versioned owner mission authority, oracle/budget/revocation and same Runtime/Store loop | Required next implementation in proposed construction.py plus existing runtime/generated/store/autonomy seams; no global removal of approvals, sandbox or privacy gates |
+| GROWTH-03 | Real unattended failing-first/repaired-second demonstration and later independent reuse | Required acceptance test with actual isolation, persistent lineage, negative/recovery tests and no per-attempt human clicks within an admitted grant. Not yet implemented/verified |
+
+FORGE's native verification is still active, as are voice/perception/phone/private
+state/spatial/native/resource and website work. They contribute capabilities to
+this growing core, not substitute for it. This spec change is not counted as a
+runtime implementation; no existing grant/permission behavior changed here.

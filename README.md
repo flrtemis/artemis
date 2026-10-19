@@ -10,6 +10,17 @@ all-project ecosystem or twelve apps behind a launcher.
 
 **Pages is live:** October 14 read-only verification shows `main` + `/`, serving the older README. The newer guide and **[Sage interaction lab](docs/sage-preview.html)** are on this feature branch. [Owner-controlled preview publication](docs/PAGES_SETUP.md) uses this branch + `/docs`, never the branch root/inbox. No merge or publishing-setting change is made by the agent.
 
+## The self-building core is the real build
+
+ARTEMIS's target is **useful existing abilities AND autonomous growth of new
+capabilities**—not an inventory or launcher. It must eventually notice gaps,
+build/test/repair candidates, integrate verified abilities and reuse them without
+human steering of each routine step, within owner-defined authority and budgets.
+
+**That unattended core is not finished today.** Current hot tools, durable runs,
+isolation and continuity are prerequisites; approval-driven tool creation is not
+presented as full autonomy. [Founder-corrected spec and concrete completion test](artemis/docs/SELF_BUILDING_CORE.md).
+
 ## Sage — accessible alongside the work
 
 The new helper is an additive projection of the existing conversation, live

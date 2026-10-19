@@ -21,6 +21,15 @@ Godot, CPU training and installed voice-model results are explicitly historical*
 not fresh checks in this session. Current exact commands/counts/skips are in
 [verification-03.json](docs/verification-03.json). Originals are preserved.
 
+## Self-building core requirement
+
+The founder's target is not just today's registry: **existing capabilities AND
+autonomous construction/growth of new ones**. Current approval-driven hot tools
+and tool-less continuity wakes are prerequisites, not the completed unattended
+core. [SELF_BUILDING_CORE.md](docs/SELF_BUILDING_CORE.md) defines the versioned
+authority, same-loop build/test/repair/register/reuse path and required actual
+execution tests. No permissions were weakened to re-label current behavior.
+
 ## Run locally in WSL2/Linux
 
 ```bash
