@@ -15,6 +15,7 @@ from .tools import Tools,MAX_UPLOAD,clean
 from .runtime import Runtime
 from .extensions import Extensions
 from .bio_engine import IzhikevichNetwork,NEURONS_PER_COLUMN
+from .web_search import WebSearchService
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -48,6 +49,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         cfg=store.settings('provider',{'base_url':'http://127.0.0.1:11434','model':'','allow_remote_context':False})
         cfg.update({k:v for k,v in {'base_url':os.getenv('ARTEMIS_OLLAMA_URL'),'model':os.getenv('ARTEMIS_OLLAMA_MODEL')}.items() if v});store.setting('provider',cfg)
     bio_lock=threading.Lock()
+    web_search=WebSearchService(data/'web_search')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -55,7 +57,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -186,6 +188,26 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         return {'milestone':'integration-02','repositories':[{'name':r['name'],'commit':r['head'],'state':stages[r['name']][0],'detail':stages[r['name']][1],'files_preserved':sum(x['repository']==r['name'] for x in manifest['files'])} for r in manifest['snapshots']]}
     @app.get('/api/specifications/world',dependencies=[Depends(auth)])
     async def world_spec():return {'status':'specification_not_engine','text':(PROJECT/'vendor_sources/universe/living_avatar_subjective_experience_blueprint_v0_3.md').read_text()}
+    # ── Web Search / Fetch endpoints (video: web research for Ollama agents) ──
+    class WebSearchBody(Body):query:str=Field(min_length=1,max_length=1000);limit:int=Field(default=5,ge=1,le=10)
+    class WebFetchBody(Body):url:str=Field(min_length=1,max_length=2000);max_chars:int=Field(default=12000,ge=100,le=200000)
+    class WebBackendBody(Body):configured:bool
+    @app.get('/api/web/search',dependencies=[Depends(auth)])
+    async def web_search_endpoint(query:str,limit:int=5):
+        return web_search.search(query,limit)
+    @app.post('/api/web/search',dependencies=[Depends(auth)])
+    async def web_search_post(body:WebSearchBody):
+        return web_search.search(body.query,body.limit)
+    @app.post('/api/web/fetch',dependencies=[Depends(auth)])
+    async def web_fetch(body:WebFetchBody):
+        return web_search.fetch(body.url,body.max_chars)
+    @app.get('/api/web/status',dependencies=[Depends(auth)])
+    async def web_status():
+        return web_search.status()
+    @app.put('/api/web/backend',dependencies=[Depends(auth)])
+    async def web_backend(body:WebBackendBody):
+        # Placeholder: a real backend callable must be wired via set_search_backend.
+        return {"ok": True, "notice": "Use artemis_app.web_search.WebSearchService.set_search_backend(callable) to wire a retrieval provider."}
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')

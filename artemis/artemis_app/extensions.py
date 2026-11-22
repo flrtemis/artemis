@@ -8,6 +8,7 @@ from .autonomy import Autonomy
 from .execution import Execution
 from .speech import Speech
 from .training import Training
+from .web_search import WebSearchService, WebSearchToolHost
 from .world import World
 
 class Extensions:
@@ -15,6 +16,8 @@ class Extensions:
         self.runtime=runtime;self.tools=runtime.tools;self.store=runtime.store
         self.autonomy=Autonomy(runtime,data/'sage');self.execution=Execution(self.tools,data/'execution');self.speech=Speech(runtime,data/'speech');self.training=Training(self.tools,self.store,data/'training');self.world=World(self.store)
         self.participants={};runtime.extensions=self;runtime.autonomy=self.autonomy
+        self.web_search=WebSearchService(data/'web_search');self.web_search_host=WebSearchToolHost(self.web_search)
+        runtime.web_search=self.web_search
         t=self.tools;t.execution=self.execution;t.async_methods={};t.local_context=__import__('threading').local()
         def add(name,desc,props,required,fn,approval=True,category='execution'):
             t.registry.add(Tool(name,desc,{'type':'object','properties':props,'required':required},fn,approval,category));t.unavailable.pop(name,None)
@@ -29,6 +32,9 @@ class Extensions:
         for name,prop,options in [('set_mood','mood',['neutral','happy','angry','sad','fear','disgust','love','sleep']),('make_hand_gesture','gesture',['handup','index','ok','thumbup','thumbdown','side','shrug']),('make_facial_expression','emoji',['😊','😢','😠','😮','❤️'])]:
             def fn(a,name=name):self.store.add_event('presence','Avatar choreography',{'tool':name,'arguments':a});return {'ok':True,'projection':'expressive_avatar','tool':name}
             add(name,'Gemma’s original avatar choreography, projected onto the same actor.',{prop:{'type':'string','enum':options}},[prop],fn,False,'presence')
+        # Web search / fetch — wire the previously-unavailable tool slots to real retrieval.
+        add('web_search','Search the web for current information to ground answers. Results include title, url, snippet.',{'query':{'type':'string','minLength':1,'maxLength':1000},'limit':{'type':'integer','minimum':1,'maximum':10}},['query'],lambda a:self.web_search_host.web_search(a),False,'retrieval')
+        add('web_fetch','Fetch a URL and extract readable text (egress/SSRF guarded).',{'url':{'type':'string','minLength':1,'maxLength':2000},'max_chars':{'type':'integer','minimum':100,'maximum':200000}},['url'],lambda a:self.web_search_host.web_fetch(a),False,'retrieval')
         # Real speech generation/transcription are runtime-dispatched async callbacks.
         add('generate_speech','Synthesize through the configured real speech worker; save an actual WAV artifact.',{'text':{'type':'string','minLength':1,'maxLength':4000},'path':{'type':'string'}},['text','path'],lambda a:None,True,'media')
         add('transcribe_audio','Transcribe a contained PCM16 mono 16k WAV through real configured STT.',{'path':{'type':'string'}},['path'],lambda a:None,False,'media')
