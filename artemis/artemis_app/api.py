@@ -16,6 +16,7 @@ from .runtime import Runtime
 from .extensions import Extensions
 from .bio_engine import IzhikevichNetwork,NEURONS_PER_COLUMN
 from .web_search import WebSearchService
+from .sim import SIMService
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -50,6 +51,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         cfg.update({k:v for k,v in {'base_url':os.getenv('ARTEMIS_OLLAMA_URL'),'model':os.getenv('ARTEMIS_OLLAMA_MODEL')}.items() if v});store.setting('provider',cfg)
     bio_lock=threading.Lock()
     web_search=WebSearchService(data/'web_search')
+    sim_service=SIMService(data/'sim')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -57,7 +59,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.sim_service=sim_service
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -208,6 +210,27 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     async def web_backend(body:WebBackendBody):
         # Placeholder: a real backend callable must be wired via set_search_backend.
         return {"ok": True, "notice": "Use artemis_app.web_search.WebSearchService.set_search_backend(callable) to wire a retrieval provider."}
+    # ── SIM Self-Improvement Memory endpoints (video: Google SIM) ──
+    from dataclasses import asdict as _ad
+    class SimRecord(Body):kind:str;model:str;task:str;content:str=Field(min_length=1);outcome:str|None=None;lesson:str|None=None;source_model:str|None=None
+    class SimRecall(Body):task:str;exclude_model:str|None=None;limit:int=Field(default=10,ge=1,le=50)
+    @app.get('/api/sim/entries',dependencies=[Depends(auth)])
+    async def sim_entries(model:str|None=None,task:str|None=None,kind:str|None=None,limit:int=100):
+        return {'entries':sim_service.entries(model=model,task=task,kind=kind,limit=limit)}
+    @app.get('/api/sim/failures',dependencies=[Depends(auth)])
+    async def sim_failures(model:str|None=None):
+        return {'failures':sim_service.failures(model)}
+    @app.post('/api/sim/record',dependencies=[Depends(auth)])
+    async def sim_record(body:SimRecord):
+        return sim_service.record(kind=body.kind,model=body.model,task=body.task,
+            content=body.content,outcome=body.outcome,lesson=body.lesson,
+            source_model=body.source_model)
+    @app.post('/api/sim/recall',dependencies=[Depends(auth)])
+    async def sim_recall(body:SimRecall):
+        return {'recall':sim_service.recall(body.task,exclude_model=body.exclude_model,limit=body.limit)}
+    @app.get('/api/sim/status',dependencies=[Depends(auth)])
+    async def sim_status():
+        return sim_service.harness_status()
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
