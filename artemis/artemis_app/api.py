@@ -16,6 +16,7 @@ from .runtime import Runtime
 from .extensions import Extensions
 from .bio_engine import IzhikevichNetwork,NEURONS_PER_COLUMN
 from .web_search import WebSearchService
+from .benchmarks import BenchmarkService, BenchmarkSuite, build_suites, CostTracker
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -50,6 +51,10 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         cfg.update({k:v for k,v in {'base_url':os.getenv('ARTEMIS_OLLAMA_URL'),'model':os.getenv('ARTEMIS_OLLAMA_MODEL')}.items() if v});store.setting('provider',cfg)
     bio_lock=threading.Lock()
     web_search=WebSearchService(data/'web_search')
+    cost_tracker=CostTracker(data)
+    benchmark_service=BenchmarkService(runtime,cost_tracker,data)
+    for suite in build_suites():
+        benchmark_service.register_suite(suite)
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -57,7 +62,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -208,6 +213,48 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     async def web_backend(body:WebBackendBody):
         # Placeholder: a real backend callable must be wired via set_search_backend.
         return {"ok": True, "notice": "Use artemis_app.web_search.WebSearchService.set_search_backend(callable) to wire a retrieval provider."}
+    # ── Benchmark / Evaluation endpoints (video: Terminal Bench, Cursor Bench,
+    #     Swiss Sweep, Graph Walks; score-per-dollar ranking) ──
+    from dataclasses import asdict as _ad
+    class BenchRunCase(Body):suite_id:str;case_id:str;model:str
+    class BenchRunSuite(Body):suite_id:str;model:str
+    @app.get('/api/benchmarks/suites',dependencies=[Depends(auth)])
+    async def bench_suites():
+        return {'suites':benchmark_service.list_suites()}
+    @app.post('/api/benchmarks/run_case',dependencies=[Depends(auth)])
+    async def bench_run_case(body:BenchRunCase):
+        return benchmark_service.run_case(body.suite_id,body.case_id,body.model)
+    @app.post('/api/benchmarks/run_suite',dependencies=[Depends(auth)])
+    async def bench_run_suite(body:BenchRunSuite):
+        return benchmark_service.run_suite(body.suite_id,body.model)
+    @app.get('/api/benchmarks/results',dependencies=[Depends(auth)])
+    async def bench_results():
+        return {'results':benchmark_service.results()}
+    @app.get('/api/benchmarks/summary',dependencies=[Depends(auth)])
+    async def bench_summary():
+        return benchmark_service.summary()
+    @app.get('/api/benchmarks/compare',dependencies=[Depends(auth)])
+    async def bench_compare(model_a:str,model_b:str):
+        results=benchmark_service.results()
+        ra=[r for r in results if r.get('model')==model_a]
+        rb=[r for r in results if r.get('model')==model_b]
+        from .benchmarks.compare import compare_models
+        return compare_models(ra,rb,model_a,model_b)
+    @app.get('/api/benchmarks/rank',dependencies=[Depends(auth)])
+    async def bench_rank():
+        results=benchmark_service.results()
+        models=sorted({r.get('model') for r in results if r.get('model')})
+        from .benchmarks.compare import score_per_dollar
+        out=[score_per_dollar([r for r in results if r.get('model')==m],m) for m in models]
+        out.sort(key=lambda x:-x['score_per_1000_usd'])
+        for i,r in enumerate(out):r['rank']=i+1
+        return {'rankings':out}
+    @app.get('/api/benchmarks/costs',dependencies=[Depends(auth)])
+    async def bench_costs(model:str|None=None):
+        return cost_tracker.totals(model)
+    @app.get('/api/benchmarks/costs/by_model',dependencies=[Depends(auth)])
+    async def bench_costs_by_model():
+        return {'by_model':cost_tracker.by_model()}
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
