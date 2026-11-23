@@ -16,6 +16,7 @@ from .runtime import Runtime
 from .extensions import Extensions
 from .bio_engine import IzhikevichNetwork,NEURONS_PER_COLUMN
 from .web_search import WebSearchService
+from .avatar import AvatarService
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -50,6 +51,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         cfg.update({k:v for k,v in {'base_url':os.getenv('ARTEMIS_OLLAMA_URL'),'model':os.getenv('ARTEMIS_OLLAMA_MODEL')}.items() if v});store.setting('provider',cfg)
     bio_lock=threading.Lock()
     web_search=WebSearchService(data/'web_search')
+    avatar=AvatarService(store,data/'avatar')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -57,7 +59,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.avatar=avatar
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -208,6 +210,42 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     async def web_backend(body:WebBackendBody):
         # Placeholder: a real backend callable must be wired via set_search_backend.
         return {"ok": True, "notice": "Use artemis_app.web_search.WebSearchService.set_search_backend(callable) to wire a retrieval provider."}
+    # ── Avatar Enhancement endpoints (video: HeyGen Avatar 6 lifelike avatars) ──
+    from dataclasses import asdict as _ad
+    class AvatarMood(Body):mood:str
+    class AvatarGesture(Body):gesture:str
+    class AvatarExpression(Body):expression:str
+    class AvatarModel(Body):model:str
+    class AvatarViseme(Body):rms:float;dominant_freq:float|None=None
+    class AvatarSpeaking(Body):speaking:bool
+    @app.get('/api/avatar/status',dependencies=[Depends(auth)])
+    async def avatar_status():
+        return avatar.status()
+    @app.get('/api/avatar/variants',dependencies=[Depends(auth)])
+    async def avatar_variants():
+        return {'variants':avatar.list_variants(),'default':avatar.default_variant}
+    @app.post('/api/avatar/model',dependencies=[Depends(auth)])
+    async def avatar_model(body:AvatarModel):
+        return avatar.controller.set_avatar(body.model)
+    @app.post('/api/avatar/mood',dependencies=[Depends(auth)])
+    async def avatar_mood(body:AvatarMood):
+        return avatar.controller.set_mood(body.mood)
+    @app.post('/api/avatar/gesture',dependencies=[Depends(auth)])
+    async def avatar_gesture(body:AvatarGesture):
+        return avatar.controller.make_hand_gesture(body.gesture)
+    @app.post('/api/avatar/expression',dependencies=[Depends(auth)])
+    async def avatar_expression(body:AvatarExpression):
+        return avatar.controller.make_facial_expression(body.expression)
+    @app.post('/api/avatar/speaking',dependencies=[Depends(auth)])
+    async def avatar_speaking(body:AvatarSpeaking):
+        if body.speaking:return avatar.controller.start_speaking()
+        return avatar.controller.stop_speaking()
+    @app.post('/api/avatar/viseme',dependencies=[Depends(auth)])
+    async def avatar_viseme(body:AvatarViseme):
+        return avatar.controller.viseme_frame(body.rms,body.dominant_freq)
+    @app.get('/api/avatar/idle',dependencies=[Depends(auth)])
+    async def avatar_idle():
+        return avatar.controller.idle_frame()
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
