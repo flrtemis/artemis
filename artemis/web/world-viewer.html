@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARTEMIS World Viewer — Project Genie</title>
+<style>body{margin:0;overflow:hidden;background:#111;font-family:sans-serif}
+#info{position:absolute;top:10px;left:10px;color:#fff;padding:10px;
+background:rgba(0,0,0,0.5);border-radius:4px;pointer-events:none}
+#loader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+color:#fff;font-size:18px}</style>
+</head>
+<body>
+<div id="info">ARTEMIS World Viewer — Project Genie<br>WASD = move | Mouse = look | Click = load world</div>
+<div id="loader">Loading world…</div>
+<script type="importmap">
+{
+  "imports": {
+    "three": "/vendor/three.module.js",
+    "three/addons/": "/vendor/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {FirstPersonControls} from 'three/addons/controls/FirstPersonControls.js';
+
+const params = new URLSearchParams(window.location.search);
+const worldId = params.get('id');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+scene.fog = new THREE.Fog(0x1a1a2e, 5, 60);
+
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+
+const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+scene.add(ambient);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+dirLight.position.set(10, 20, 10);
+scene.add(dirLight);
+
+// Grid floor
+const grid = new THREE.GridHelper(100, 50, 0x333344, 0x222233);
+scene.add(grid);
+
+let controls;
+let move = {forward:0, right:0};
+const keys = {};
+window.addEventListener('keydown', e=>{keys[e.code]=true;});
+window.addEventListener('keyup', e=>{keys[e.code]=false;});
+
+function loadWorld(id) {
+  fetch(`/api/worlds/get?id=${encodeURIComponent(id)}`)
+    .then(r=>r.json())
+    .then(world => {
+      document.getElementById('loader').style.display='none';
+      if (!world || !world.scene_json) {
+        document.getElementById('loader').textContent = 'World not found';
+        return;
+      }
+      buildScene(world.scene_json);
+      document.title = `ARTEMIS World — ${world.name || id}`;
+    })
+    .catch(err => {
+      document.getElementById('loader').textContent = 'Error loading world';
+      console.error(err);
+    });
+}
+
+function buildScene(sceneJson) {
+  const objects = sceneJson.objects || [];
+  objects.forEach(obj => {
+    let mesh;
+    const geo = obj.type === 'sphere' ? new THREE.SphereGeometry(1, 16, 16)
+      : obj.type === 'plane' ? new THREE.PlaneGeometry(2, 2)
+      : new THREE.BoxGeometry(1, 1, 1);
+    const mat = new THREE.MeshStandardMaterial({
+      color: obj.color || '#4488ff',
+      emissive: obj.emissive || '#000000',
+    });
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(obj.position?.[0]||0, obj.position?.[1]||0, obj.position?.[2]||0);
+    mesh.rotation.set(obj.rotation?.[0]||0, obj.rotation?.[1]||0, obj.rotation?.[2]||0);
+    mesh.scale.set(obj.scale?.[0]||1, obj.scale?.[1]||1, obj.scale?.[2]||1);
+    scene.add(mesh);
+  });
+}
+
+if (worldId) {
+  loadWorld(worldId);
+} else {
+  // Default scene if no world id
+  const box = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),
+    new THREE.MeshStandardMaterial({color:'#4488ff'}));
+  box.position.set(0,0.5,0);
+  scene.add(box);
+  document.getElementById('loader').style.display='none';
+}
+
+camera.position.set(0, 2, 5);
+camera.lookAt(0, 0, 0);
+
+controls = new FirstPersonControls(camera, renderer.domElement);
+controls.movementSpeed = 3;
+controls.lookSpeed = 0.002;
+controls.lookVertical = true;
+
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const delta = clock.getDelta();
+  controls.update(delta);
+  renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+animate();
+</script>
+</body>
+</html>
