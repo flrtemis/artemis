@@ -18,6 +18,7 @@ from .bio_engine import IzhikevichNetwork,NEURONS_PER_COLUMN
 from .web_search import WebSearchService
 from .benchmarks import BenchmarkService, BenchmarkSuite, build_suites, CostTracker
 from .sim import SIMService
+from .world_model import WorldModelService
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -57,6 +58,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     for suite in build_suites():
         benchmark_service.register_suite(suite)
     sim_service=SIMService(data/'sim')
+    world_model=WorldModelService(runtime,data/'world_model')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -64,7 +66,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -278,6 +280,26 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     @app.get('/api/sim/status',dependencies=[Depends(auth)])
     async def sim_status():
         return sim_service.harness_status()
+    # ── World Model endpoints (video: Project Genie / Genie 4) ──
+    from dataclasses import asdict as _ad
+    class WorldGen(Body):prompt:str=Field(min_length=1,max_length=2000);name:str|None=None;model:str|None=None
+    class WorldRemix(Body):id:str;new_name:str;new_prompt:str=Field(min_length=1,max_length=2000)
+    @app.post('/api/worlds/generate',dependencies=[Depends(auth)])
+    async def worlds_generate(body:WorldGen):
+        return world_model.generate(body.prompt,name=body.name,model=body.model)
+    @app.get('/api/worlds/list',dependencies=[Depends(auth)])
+    async def worlds_list():
+        return {'worlds':world_model.list()}
+    @app.get('/api/worlds/get',dependencies=[Depends(auth)])
+    async def worlds_get(id:str):
+        w=world_model.get(id)
+        return {'world':w} if w else {'error':'not found'}
+    @app.post('/api/worlds/remix',dependencies=[Depends(auth)])
+    async def worlds_remix(body:WorldRemix):
+        return world_model.remix(body.id,body.new_name,body.new_prompt)
+    @app.get('/api/worlds/view',dependencies=[Depends(auth)])
+    async def worlds_view(id:str):
+        return {'viewer_url':f'/web/world-viewer.html?id={id}'}
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
