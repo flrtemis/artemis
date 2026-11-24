@@ -20,6 +20,7 @@ from .benchmarks import BenchmarkService, BenchmarkSuite, build_suites, CostTrac
 from .sim import SIMService
 from .world_model import WorldModelService
 from .media.image_generation import ImageGenerationService
+from .media.video_generation import VideoGenerationService
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -61,6 +62,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     sim_service=SIMService(data/'sim')
     world_model=WorldModelService(runtime,data/'world_model')
     image_generation=ImageGenerationService(data/'media')
+    video_generation=VideoGenerationService(data/'media')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -68,7 +70,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -318,6 +320,22 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     @app.post('/api/media/image/configure',dependencies=[Depends(auth)])
     async def image_configure(body:ImageConfig):
         return image_generation.configure(provider=body.provider,base_url=body.base_url,api_key=body.api_key)
+    # ── Video Generation endpoints (video: HeyGen Avatar 6 / Kling-class) ──
+    from dataclasses import asdict as _ad
+    class VideoGen(Body):prompt:str=Field(min_length=1,max_length=2000);preset:str='1080p';provider:str|None=None;avatar_id:str|None=None;width:int|None=None;height:int|None=None;duration_s:int=Field(default=5,ge=1,le=120)
+    class VideoConfig(Body):provider:str|None=None;base_url:str|None=None;api_key:str|None=None
+    @app.post('/api/media/video/generate',dependencies=[Depends(auth)])
+    async def video_generate(body:VideoGen):
+        job=video_generation.generate(body.prompt,preset=body.preset,provider=body.provider,
+            avatar_id=body.avatar_id,width=body.width,height=body.height,duration_s=body.duration_s)
+        return _ad(job)
+    @app.get('/api/media/video/status/{job_id}',dependencies=[Depends(auth)])
+    async def video_status(job_id:str):
+        job=video_generation.get(job_id)
+        return _ad(job) if job else {'error':'not found'}
+    @app.post('/api/media/video/configure',dependencies=[Depends(auth)])
+    async def video_configure(body:VideoConfig):
+        return video_generation.configure(provider=body.provider,base_url=body.base_url,api_key=body.api_key)
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')

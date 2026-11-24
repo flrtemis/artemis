@@ -10,11 +10,12 @@ from .execution import Execution
 from .speech import Speech
 from .training import Training
 from .media.image_generation import ImageGenerationService
+from .media.video_generation import VideoGenerationService
 from .web_search import WebSearchService, WebSearchToolHost
 from .world import World
 
 class Extensions:
-    def __init__(self,runtime,data,image_generation=None):
+    def __init__(self,runtime,data,image_generation=None,video_generation=None):
         self.runtime=runtime;self.tools=runtime.tools;self.store=runtime.store
         self.autonomy=Autonomy(runtime,data/'sage');self.execution=Execution(self.tools,data/'execution');self.speech=Speech(runtime,data/'speech');self.training=Training(self.tools,self.store,data/'training');self.world=World(self.store)
         self.participants={};runtime.extensions=self;runtime.autonomy=self.autonomy
@@ -36,6 +37,25 @@ class Extensions:
                     'height':{'type':'integer','minimum':256,'maximum':4320}
                 },'required':['prompt']},img_gen,True,'media'))
             t.unavailable.pop('generate_image',None)
+        self.video_generation=video_generation
+        if video_generation is not None:
+            t=self.tools
+            def vid_gen(a):
+                job=video_generation.generate(a['prompt'],preset=a.get('preset','1080p'),
+                    provider=a.get('provider'),avatar_id=a.get('avatar_id'),
+                    width=a.get('width'),height=a.get('height'),duration_s=a.get('duration_s',5))
+                return {'ok':True,'job':asdict(job)}
+            t.registry.add(Tool('generate_video','Generate video via HeyGen Avatar 6 / Kling-class providers (kling/heygen/command/placeholder).',
+                {'type':'object','properties':{
+                    'prompt':{'type':'string','minLength':1,'maxLength':2000},
+                    'preset':{'type':'string','enum':['8k','4k','1080p'],'default':'1080p'},
+                    'provider':{'type':'string','enum':['kling','heygen','command','placeholder']},
+                    'avatar_id':{'type':'string'},
+                    'width':{'type':'integer','minimum':256,'maximum':7680},
+                    'height':{'type':'integer','minimum':256,'maximum':4320},
+                    'duration_s':{'type':'integer','minimum':1,'maximum':120}
+                },'required':['prompt']},vid_gen,True,'media'))
+            t.unavailable.pop('generate_video',None)
         t=self.tools;t.execution=self.execution;t.async_methods={};t.local_context=__import__('threading').local()
         def add(name,desc,props,required,fn,approval=True,category='execution'):
             t.registry.add(Tool(name,desc,{'type':'object','properties':props,'required':required},fn,approval,category));t.unavailable.pop(name,None)
