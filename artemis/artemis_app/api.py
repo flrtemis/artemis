@@ -22,6 +22,7 @@ from .world_model import WorldModelService
 from .media.image_generation import ImageGenerationService
 from .media.video_generation import VideoGenerationService
 from .nas import NASService
+from .long_context import LongContextService, LongContextCase, LongContextResult
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -65,6 +66,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     image_generation=ImageGenerationService(data/'media')
     video_generation=VideoGenerationService(data/'media')
     nas=NASService(runtime,data/'nas')
+    long_context=LongContextService(runtime,data/'long_context')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -72,7 +74,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas;app.state.long_context=long_context
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -361,6 +363,29 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     @app.get('/api/nas/status',dependencies=[Depends(auth)])
     async def nas_status():
         return nas.status()
+    # ── Long-Context Evaluation endpoints (video: graph walks, million-token) ──
+    from dataclasses import asdict as _ad
+    class LCGenerate(Body):family:str='graph_walk';context_tokens:int=Field(default=100000,ge=1000,le=2000000);needle:str|None=None;num_hops:int=Field(default=5,ge=1,le=50)
+    class LCRunCase(Body):case_id:str;model:str;context:str|None=None;question:str|None=None;answer:str|None=None
+    class LCRunGenerated(Body):family:str='graph_walk';model:str;context_tokens:int=Field(default=100000,ge=1000,le=2000000);needle:str|None=None;num_hops:int=Field(default=5,ge=1,le=50)
+    @app.post('/api/long_context/generate',dependencies=[Depends(auth)])
+    async def lc_generate(body:LCGenerate):
+        return long_context.generate_case(body.family,
+            context_tokens=body.context_tokens,needle=body.needle,num_hops=body.num_hops)
+    @app.post('/api/long_context/run_case',dependencies=[Depends(auth)])
+    async def lc_run_case(body:LCRunCase):
+        return long_context.run_case(body.case_id,body.model,
+            context=body.context,question=body.question,answer=body.answer)
+    @app.post('/api/long_context/run_generated',dependencies=[Depends(auth)])
+    async def lc_run_generated(body:LCRunGenerated):
+        return long_context.run_generated(body.family,body.model,
+            context_tokens=body.context_tokens,needle=body.needle,num_hops=body.num_hops)
+    @app.get('/api/long_context/results',dependencies=[Depends(auth)])
+    async def lc_results(model:str|None=None,family:str|None=None,limit:int=100):
+        return {'results':long_context.results(model=model,family=family,limit=limit)}
+    @app.get('/api/long_context/summary',dependencies=[Depends(auth)])
+    async def lc_summary():
+        return long_context.summary()
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
