@@ -25,6 +25,7 @@ from .nas import NASService
 from .long_context import LongContextService, LongContextCase, LongContextResult
 from .cost_analytics import CostService, ModelPrice
 from .model_registry import ModelService, Provider, ModelEntry
+from .avatar import AvatarService
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -71,6 +72,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     long_context=LongContextService(runtime,data/'long_context')
     cost_analytics=CostService(data/'cost_analytics')
     model_registry=ModelService(data/'model_registry')
+    avatar=AvatarService(store,data/'avatar')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -78,7 +80,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas;app.state.long_context=long_context;app.state.cost_analytics=cost_analytics;app.state.model_registry=model_registry
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas;app.state.long_context=long_context;app.state.cost_analytics=cost_analytics;app.state.model_registry=model_registry;app.state.avatar=avatar
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -229,7 +231,6 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     async def web_backend(body:WebBackendBody):
         # Placeholder: a real backend callable must be wired via set_search_backend.
         return {"ok": True, "notice": "Use artemis_app.web_search.WebSearchService.set_search_backend(callable) to wire a retrieval provider."}
-    from dataclasses import asdict as _ad
     class BenchRunCase(Body):suite_id:str;case_id:str;model:str
     class BenchRunSuite(Body):suite_id:str;model:str
     @app.get('/api/benchmarks/suites',dependencies=[Depends(auth)])
@@ -453,6 +454,42 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
                            prefer:str='cost',model_hint:str|None=None):
         return model_registry.router.route(task=task,require_tools=require_tools,
             require_vision=require_vision,prefer=prefer,model_hint=model_hint)
+    # ── Avatar Enhancement endpoints (video: HeyGen Avatar 6 lifelike avatars) ──
+    from dataclasses import asdict as _ad
+    class AvatarMood(Body):mood:str
+    class AvatarGesture(Body):gesture:str
+    class AvatarExpression(Body):expression:str
+    class AvatarModel(Body):model:str
+    class AvatarViseme(Body):rms:float;dominant_freq:float|None=None
+    class AvatarSpeaking(Body):speaking:bool
+    @app.get('/api/avatar/status',dependencies=[Depends(auth)])
+    async def avatar_status():
+        return avatar.status()
+    @app.get('/api/avatar/variants',dependencies=[Depends(auth)])
+    async def avatar_variants():
+        return {'variants':avatar.list_variants(),'default':avatar.default_variant}
+    @app.post('/api/avatar/model',dependencies=[Depends(auth)])
+    async def avatar_model(body:AvatarModel):
+        return avatar.controller.set_avatar(body.model)
+    @app.post('/api/avatar/mood',dependencies=[Depends(auth)])
+    async def avatar_mood(body:AvatarMood):
+        return avatar.controller.set_mood(body.mood)
+    @app.post('/api/avatar/gesture',dependencies=[Depends(auth)])
+    async def avatar_gesture(body:AvatarGesture):
+        return avatar.controller.make_hand_gesture(body.gesture)
+    @app.post('/api/avatar/expression',dependencies=[Depends(auth)])
+    async def avatar_expression(body:AvatarExpression):
+        return avatar.controller.make_facial_expression(body.expression)
+    @app.post('/api/avatar/speaking',dependencies=[Depends(auth)])
+    async def avatar_speaking(body:AvatarSpeaking):
+        if body.speaking:return avatar.controller.start_speaking()
+        return avatar.controller.stop_speaking()
+    @app.post('/api/avatar/viseme',dependencies=[Depends(auth)])
+    async def avatar_viseme(body:AvatarViseme):
+        return avatar.controller.viseme_frame(body.rms,body.dominant_freq)
+    @app.get('/api/avatar/idle',dependencies=[Depends(auth)])
+    async def avatar_idle():
+        return avatar.controller.idle_frame()
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
