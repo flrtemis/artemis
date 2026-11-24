@@ -1,5 +1,6 @@
 """Milestone 02 mounts six subsystems on the SAME authenticated host/runtime."""
 import asyncio,json,time,secrets,io,wave,base64,os
+from dataclasses import asdict
 from pathlib import Path
 from fastapi import Depends,WebSocket,HTTPException
 from pydantic import Field
@@ -8,16 +9,33 @@ from .autonomy import Autonomy
 from .execution import Execution
 from .speech import Speech
 from .training import Training
+from .media.image_generation import ImageGenerationService
 from .web_search import WebSearchService, WebSearchToolHost
 from .world import World
 
 class Extensions:
-    def __init__(self,runtime,data):
+    def __init__(self,runtime,data,image_generation=None):
         self.runtime=runtime;self.tools=runtime.tools;self.store=runtime.store
         self.autonomy=Autonomy(runtime,data/'sage');self.execution=Execution(self.tools,data/'execution');self.speech=Speech(runtime,data/'speech');self.training=Training(self.tools,self.store,data/'training');self.world=World(self.store)
         self.participants={};runtime.extensions=self;runtime.autonomy=self.autonomy
         self.web_search=WebSearchService(data/'web_search');self.web_search_host=WebSearchToolHost(self.web_search)
         runtime.web_search=self.web_search
+        self.image_generation=image_generation
+        if image_generation is not None:
+            t=self.tools
+            def img_gen(a):
+                job=image_generation.generate(a['prompt'],preset=a.get('preset','8k'),
+                    provider=a.get('provider'),width=a.get('width'),height=a.get('height'))
+                return {'ok':True,'job':asdict(job)}
+            t.registry.add(Tool('generate_image','Generate an image via Kling Image 4.0 class providers (auto1111/kling/command/placeholder; 8K preset).',
+                {'type':'object','properties':{
+                    'prompt':{'type':'string','minLength':1,'maxLength':2000},
+                    'preset':{'type':'string','enum':['8k','4k','1080p'],'default':'8k'},
+                    'provider':{'type':'string','enum':['auto1111','kling','command','placeholder']},
+                    'width':{'type':'integer','minimum':256,'maximum':7680},
+                    'height':{'type':'integer','minimum':256,'maximum':4320}
+                },'required':['prompt']},img_gen,True,'media'))
+            t.unavailable.pop('generate_image',None)
         t=self.tools;t.execution=self.execution;t.async_methods={};t.local_context=__import__('threading').local()
         def add(name,desc,props,required,fn,approval=True,category='execution'):
             t.registry.add(Tool(name,desc,{'type':'object','properties':props,'required':required},fn,approval,category));t.unavailable.pop(name,None)

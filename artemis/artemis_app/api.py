@@ -19,6 +19,7 @@ from .web_search import WebSearchService
 from .benchmarks import BenchmarkService, BenchmarkSuite, build_suites, CostTracker
 from .sim import SIMService
 from .world_model import WorldModelService
+from .media.image_generation import ImageGenerationService
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -47,7 +48,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
             store.context(t['id'],context[-40:])
     continuity=Continuity(data/'sage',store);tools=Tools(data/'workspace',data/'revisions',store,continuity)
     runtime=Runtime(store,tools,continuity,provider)
-    extensions=Extensions(runtime,data)
+    extensions=Extensions(runtime,data,image_generation=image_generation)
     if os.getenv('ARTEMIS_OLLAMA_URL') or os.getenv('ARTEMIS_OLLAMA_MODEL'):
         cfg=store.settings('provider',{'base_url':'http://127.0.0.1:11434','model':'','allow_remote_context':False})
         cfg.update({k:v for k,v in {'base_url':os.getenv('ARTEMIS_OLLAMA_URL'),'model':os.getenv('ARTEMIS_OLLAMA_MODEL')}.items() if v});store.setting('provider',cfg)
@@ -59,6 +60,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         benchmark_service.register_suite(suite)
     sim_service=SIMService(data/'sim')
     world_model=WorldModelService(runtime,data/'world_model')
+    image_generation=ImageGenerationService(data/'media')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -66,7 +68,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -300,6 +302,22 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     @app.get('/api/worlds/view',dependencies=[Depends(auth)])
     async def worlds_view(id:str):
         return {'viewer_url':f'/web/world-viewer.html?id={id}'}
+    # ── Image Generation endpoints (video: Kling Image 4.0 native 8K) ──
+    from dataclasses import asdict as _ad
+    class ImageGen(Body):prompt:str=Field(min_length=1,max_length=2000);preset:str='8k';provider:str|None=None;width:int|None=None;height:int|None=None
+    class ImageConfig(Body):provider:str|None=None;base_url:str|None=None;api_key:str|None=None
+    @app.post('/api/media/image/generate',dependencies=[Depends(auth)])
+    async def image_generate(body:ImageGen):
+        job=image_generation.generate(body.prompt,preset=body.preset,provider=body.provider,
+            width=body.width,height=body.height)
+        return _ad(job)
+    @app.get('/api/media/image/status/{job_id}',dependencies=[Depends(auth)])
+    async def image_status(job_id:str):
+        job=image_generation.get(job_id)
+        return _ad(job) if job else {'error':'not found'}
+    @app.post('/api/media/image/configure',dependencies=[Depends(auth)])
+    async def image_configure(body:ImageConfig):
+        return image_generation.configure(provider=body.provider,base_url=body.base_url,api_key=body.api_key)
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
