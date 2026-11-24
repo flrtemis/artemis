@@ -23,6 +23,7 @@ from .media.image_generation import ImageGenerationService
 from .media.video_generation import VideoGenerationService
 from .nas import NASService
 from .long_context import LongContextService, LongContextCase, LongContextResult
+from .cost_analytics import CostService, ModelPrice
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -67,6 +68,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     video_generation=VideoGenerationService(data/'media')
     nas=NASService(runtime,data/'nas')
     long_context=LongContextService(runtime,data/'long_context')
+    cost_analytics=CostService(data/'cost_analytics')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -74,7 +76,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas;app.state.long_context=long_context
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas;app.state.long_context=long_context;app.state.cost_analytics=cost_analytics
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -225,7 +227,6 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     async def web_backend(body:WebBackendBody):
         # Placeholder: a real backend callable must be wired via set_search_backend.
         return {"ok": True, "notice": "Use artemis_app.web_search.WebSearchService.set_search_backend(callable) to wire a retrieval provider."}
-    # ── Benchmark / Evaluation endpoints (video: Terminal Bench, Cursor Bench,
     #     Swiss Sweep, Graph Walks; score-per-dollar ranking) ──
     from dataclasses import asdict as _ad
     class BenchRunCase(Body):suite_id:str;case_id:str;model:str
@@ -386,6 +387,39 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     @app.get('/api/long_context/summary',dependencies=[Depends(auth)])
     async def lc_summary():
         return long_context.summary()
+    # ── Cost-Efficiency Analytics endpoints (video: Neon $3.50 vs Opus $720/job) ──
+    from dataclasses import asdict as _ad
+    class CostRecord(Body):model:str;input_tokens:int;output_tokens:int;run_id:str|None=None;benchmark_case:str|None=None;benchmark_score:float|None=None;metadata:dict={}
+    class CostPrice(Body):model:str;input_per_1m:float;output_per_1m:float;context_tokens:int;source:str='ollama-local'
+    class CostCompare(Body):model:str;score:float;input_tokens:int;output_tokens:int
+    @app.get('/api/cost/status',dependencies=[Depends(auth)])
+    async def cost_status():
+        return cost_analytics.status()
+    @app.get('/api/cost/totals',dependencies=[Depends(auth)])
+    async def cost_totals(model:str|None=None):
+        return cost_analytics.totals(model)
+    @app.get('/api/cost/by_model',dependencies=[Depends(auth)])
+    async def cost_by_model():
+        return {'by_model':cost_analytics.by_model()}
+    @app.get('/api/cost/rank',dependencies=[Depends(auth)])
+    async def cost_rank():
+        return {'rankings':cost_analytics.rank()}
+    @app.post('/api/cost/record',dependencies=[Depends(auth)])
+    async def cost_record(body:CostRecord):
+        r=cost_analytics.record(model=body.model,input_tokens=body.input_tokens,output_tokens=body.output_tokens,
+            run_id=body.run_id,benchmark_case=body.benchmark_case,benchmark_score=body.benchmark_score,metadata=body.metadata)
+        return _ad(r)
+    @app.put('/api/cost/price',dependencies=[Depends(auth)])
+    async def cost_price(body:CostPrice):
+        cost_analytics.set_price(ModelPrice(model=body.model,input_per_1m=body.input_per_1m,
+            output_per_1m=body.output_per_1m,context_tokens=body.context_tokens,source=body.source))
+        return {'ok':True,'model':body.model}
+    @app.post('/api/cost/compare',dependencies=[Depends(auth)])
+    async def cost_compare(body:CostCompare):
+        return cost_analytics.video_comparison(body.model,body.score,body.input_tokens,body.output_tokens)
+    @app.post('/api/cost/savings',dependencies=[Depends(auth)])
+    async def cost_savings(body:CostCompare,jobs:int=1):
+        return cost_analytics.savings_vs_opus(body.model,body.score,jobs)
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
