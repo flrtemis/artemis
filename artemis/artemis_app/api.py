@@ -26,6 +26,7 @@ from .long_context import LongContextService, LongContextCase, LongContextResult
 from .cost_analytics import CostService, ModelPrice
 from .model_registry import ModelService, Provider, ModelEntry
 from .avatar import AvatarService
+from .gemma_avatar import GemmaAvatarService
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -73,6 +74,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     cost_analytics=CostService(data/'cost_analytics')
     model_registry=ModelService(data/'model_registry')
     avatar=AvatarService(store,data/'avatar')
+    gemma_avatar=GemmaAvatarService(store,data/'gemma_avatar',runtime=runtime)
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -80,7 +82,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas;app.state.long_context=long_context;app.state.cost_analytics=cost_analytics;app.state.model_registry=model_registry;app.state.avatar=avatar
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas;app.state.long_context=long_context;app.state.cost_analytics=cost_analytics;app.state.model_registry=model_registry;app.state.avatar=avatar;app.state.gemma_avatar=gemma_avatar
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -231,7 +233,6 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     async def web_backend(body:WebBackendBody):
         # Placeholder: a real backend callable must be wired via set_search_backend.
         return {"ok": True, "notice": "Use artemis_app.web_search.WebSearchService.set_search_backend(callable) to wire a retrieval provider."}
-    class BenchRunCase(Body):suite_id:str;case_id:str;model:str
     class BenchRunSuite(Body):suite_id:str;model:str
     @app.get('/api/benchmarks/suites',dependencies=[Depends(auth)])
     async def bench_suites():
@@ -490,6 +491,44 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     @app.get('/api/avatar/idle',dependencies=[Depends(auth)])
     async def avatar_idle():
         return avatar.controller.idle_frame()
+    # ── Gemma Avatar endpoints (video: 3D lip-synced talking head) ──
+    from dataclasses import asdict as _ad
+    class GemAvatarLoad(Body):model:str|None=None
+    class GemAvatarMood(Body):mood:str
+    class GemAvatarGesture(Body):gesture:str
+    class GemAvatarExpression(Body):expression:str
+    class GemAvatarSpeak(Body):text:str=Field(min_length=1,max_length=4000);model:str|None=None;voice:str|None=None
+    class GemAvatarViseme(Body):rms:float;dominant_freq:float|None=None
+    @app.get('/api/gemma_avatar/status',dependencies=[Depends(auth)])
+    async def gemma_avatar_status():
+        return gemma_avatar.status()
+    @app.get('/api/gemma_avatar/variants',dependencies=[Depends(auth)])
+    async def gemma_avatar_variants():
+        return {'variants':gemma_avatar.list_variants(),'default':gemma_avatar.default_variant}
+    @app.post('/api/gemma_avatar/load',dependencies=[Depends(auth)])
+    async def gemma_avatar_load(body:GemAvatarLoad):
+        return gemma_avatar.load(body.model)
+    @app.post('/api/gemma_avatar/mood',dependencies=[Depends(auth)])
+    async def gemma_avatar_mood(body:GemAvatarMood):
+        return gemma_avatar.controller.set_mood(body.mood)
+    @app.post('/api/gemma_avatar/gesture',dependencies=[Depends(auth)])
+    async def gemma_avatar_gesture(body:GemAvatarGesture):
+        return gemma_avatar.controller.hand_gesture(body.gesture)
+    @app.post('/api/gemma_avatar/expression',dependencies=[Depends(auth)])
+    async def gemma_avatar_expression(body:GemAvatarExpression):
+        return gemma_avatar.controller.facial_expression(body.expression)
+    @app.post('/api/gemma_avatar/speak',dependencies=[Depends(auth)])
+    async def gemma_avatar_speak(body:GemAvatarSpeak):
+        return await gemma_avatar.speak(body.text, body.model, body.voice)
+    @app.post('/api/gemma_avatar/barge_in',dependencies=[Depends(auth)])
+    async def gemma_avatar_barge_in():
+        return gemma_avatar.controller.barge_in()
+    @app.post('/api/gemma_avatar/viseme',dependencies=[Depends(auth)])
+    async def gemma_avatar_viseme(body:GemAvatarViseme):
+        return gemma_avatar.controller.viseme_frame(body.rms,body.dominant_freq)
+    @app.get('/api/gemma_avatar/idle',dependencies=[Depends(auth)])
+    async def gemma_avatar_idle():
+        return gemma_avatar.controller.idle_frame()
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
