@@ -24,6 +24,7 @@ from .media.video_generation import VideoGenerationService
 from .nas import NASService
 from .long_context import LongContextService, LongContextCase, LongContextResult
 from .cost_analytics import CostService, ModelPrice
+from .model_registry import ModelService, Provider, ModelEntry
 
 PROJECT=Path(__file__).resolve().parent.parent
 class Body(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -69,6 +70,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     nas=NASService(runtime,data/'nas')
     long_context=LongContextService(runtime,data/'long_context')
     cost_analytics=CostService(data/'cost_analytics')
+    model_registry=ModelService(data/'model_registry')
     @asynccontextmanager
     async def lifespan(app):
         store.add_event('host','Unified host started',{'milestone':'integration-02','recovery':'No ambiguous side effects automatically replayed'})
@@ -76,7 +78,7 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
         yield
         await extensions.close();await runtime.shutdown();store.close()
     app=FastAPI(title='ARTEMIS unified host',version='0.2.0',lifespan=lifespan,docs_url=None,redoc_url=None)
-    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas;app.state.long_context=long_context;app.state.cost_analytics=cost_analytics
+    app.state.operator_key=key;app.state.store=store;app.state.runtime=runtime;app.state.tools=tools;app.state.continuity=continuity;app.state.web_search=web_search;app.state.cost_tracker=cost_tracker;app.state.benchmark_service=benchmark_service;app.state.sim_service=sim_service;app.state.world_model=world_model;app.state.image_generation=image_generation;app.state.video_generation=video_generation;app.state.nas=nas;app.state.long_context=long_context;app.state.cost_analytics=cost_analytics;app.state.model_registry=model_registry
     async def auth(authorization:str|None=Header(default=None),x_artemis_session:str|None=Header(default=None)):
         token=x_artemis_session or (authorization or '').removeprefix('Bearer ')
         expiry=sessions.get(token)
@@ -227,7 +229,6 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     async def web_backend(body:WebBackendBody):
         # Placeholder: a real backend callable must be wired via set_search_backend.
         return {"ok": True, "notice": "Use artemis_app.web_search.WebSearchService.set_search_backend(callable) to wire a retrieval provider."}
-    #     Swiss Sweep, Graph Walks; score-per-dollar ranking) ──
     from dataclasses import asdict as _ad
     class BenchRunCase(Body):suite_id:str;case_id:str;model:str
     class BenchRunSuite(Body):suite_id:str;model:str
@@ -420,6 +421,38 @@ def create_app(data_dir:Path|None=None,operator_key:str|None=None,provider=None)
     @app.post('/api/cost/savings',dependencies=[Depends(auth)])
     async def cost_savings(body:CostCompare,jobs:int=1):
         return cost_analytics.savings_vs_opus(body.model,body.score,jobs)
+    # ── Multi-Provider Model Registry endpoints ──
+    from dataclasses import asdict as _ad
+    @app.get('/api/models/providers',dependencies=[Depends(auth)])
+    async def models_providers(enabled_only:bool=True):
+        return {'providers':[_ad(p) for p in model_registry.list_providers(enabled_only)]}
+    @app.post('/api/models/providers',dependencies=[Depends(auth)])
+    async def models_add_provider(body:Provider):
+        model_registry.add_provider(body)
+        return {'ok':True,'id':body.id}
+    @app.get('/api/models/providers/{pid}',dependencies=[Depends(auth)])
+    async def models_get_provider(pid:str):
+        p=model_registry.get_provider(pid)
+        return {'ok':p is not None,'provider':_ad(p) if p else None}
+    @app.delete('/api/models/providers/{pid}',dependencies=[Depends(auth)])
+    async def models_remove_provider(pid:str):
+        model_registry.remove_provider(pid)
+        return {'ok':True}
+    @app.get('/api/models',dependencies=[Depends(auth)])
+    async def models_list(provider_id:str|None=None):
+        return {'models':[_ad(m) for m in model_registry.list_models(provider_id)]}
+    @app.post('/api/models',dependencies=[Depends(auth)])
+    async def models_add_model(body:ModelEntry):
+        model_registry.add_model(body)
+        return {'ok':True,'id':body.id}
+    @app.post('/api/models/health',dependencies=[Depends(auth)])
+    async def models_health(pid:str|None=None):
+        return await model_registry.check_health(pid)
+    @app.post('/api/models/route',dependencies=[Depends(auth)])
+    async def models_route(task:str='chat',require_tools:bool=False,require_vision:bool=False,
+                           prefer:str='cost',model_hint:str|None=None):
+        return model_registry.router.route(task=task,require_tools=require_tools,
+            require_vision=require_vision,prefer=prefer,model_hint=model_hint)
     extensions.mount(app,auth,Body)
     # Built UI and original avatar/worklet/font assets. These contain no private state.
     if (PROJECT/'web/assets').exists():app.mount('/assets',StaticFiles(directory=PROJECT/'web/assets'),name='assets')
